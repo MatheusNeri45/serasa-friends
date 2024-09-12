@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  name        String
+  phoneNumber String
+  groups      Group[]   @relation("UserGroups")
+  paidExpenses    Expense[] @relation("UserExpensesPaid")
+  DebtorIn     Debtors[]  @relation("UserDebtors")
+}
+
+model Group {
+  id Int    @id @default(autoincrement())
+  members User[] @relation("UserGroups")
+  expenses Expense[]
+}
+
+model Expense {
+  id   Int       @id @default(autoincrement())
+  description String
+  value       Float
+  paidBy      User      @relation("UserExpensesPaid", fields: [userId], references: [id])
+  userId    Int
+  debtors      Debtors[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  group       Group @relation(fields: [groupId], references: [id])
+  groupId     Int
+}
+
+model Debtors {
+  user      User     @relation("UserDebtors", fields: [userId], references: [id])
+  userId    Int
+  expense   Expense  @relation(fields: [expenseId], references: [id])
+  expenseId Int
+
+  @@id([userId, expenseId])
+}
