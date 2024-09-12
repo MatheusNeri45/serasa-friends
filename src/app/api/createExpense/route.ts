@@ -1,36 +1,29 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt'
+import { PrismaClient } from "@prisma/client";
+import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient()
-function createUser(res: any) : object {
+const prisma = new PrismaClient();
 
-    const duck = prisma.user.create({
-        data: {
-                email: res.get('email'),
-                name: res.get('name'),
-                password: bcrypt.hashSync(res.get('password'),10)
-            },
+export async function POST(request: NextRequest) {
+  const req = await request.json();
+  try {
+    const expense = await prisma.expense.create({
+      data: {
+        description: req.description,
+        value: req.value,
+        userId: req.userId,
+        groupId: req.groupId,
+        debtors: req.debtors
+      },
     });
-    
-    return duck
-};
-export async function POST(request: Request) {
-    const res = await request.json()
-    const email = res.get('email')
-    const duckFound = await prisma.duck.findFirst({
-            where: {
-                email: email,
-            },
-        });
-    if(duckFound){
-        return Response.json({
-            'message': 'There is already a duck with this email.'
-        })
-    }else{
-        const duckCreated = createDuck(res)
-        return Response.json({
-            'message': 'Account succesfully created, you are not a sad lonely duck anymore!',
-            'duckInfo': duckCreated,
-        },
-    )};
+    return NextResponse.json(
+      { message: "Expense created", expenseCreated: expense },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Unable to create expense" },
+      { status: 500 }
+    );
+  }
 }
