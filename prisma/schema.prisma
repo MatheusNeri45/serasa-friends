@@ -1,47 +1,43 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
-
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
-  name         String?
-  phoneNumber  String?
-  password     String
-  DebtorIn     Debtors[] @relation("UserDebtors")
-  paidExpenses Expense[] @relation("UserExpensesPaid")
-  groups       Group[]   @relation("UserGroups")
-}
-
-model Group {
-  id       Int       @id @default(autoincrement())
-  expenses Expense[]
-  members  User[]    @relation("UserGroups")
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  chavePix      String?
+  name          String?
+  phoneNumber   String?
+  password      String
+  paidExpenses  Expense[]      @relation("PaidExpense")
+  splitExpenses SplitExpense[]
 }
 
 model Expense {
-  id          Int       @id @default(autoincrement())
+  id          Int            @id @default(autoincrement())
   description String
   value       Float
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  paidBy      User           @relation("PaidExpense", fields: [userId], references: [id])
   userId      Int
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  groupId     Int
-  debtors     Debtors[]
-  group       Group     @relation(fields: [groupId], references: [id])
-  paidBy      User      @relation("UserExpensesPaid", fields: [userId], references: [id])
+  debtors     SplitExpense[]
 }
 
-model Debtors {
-  userId    Int
-  expenseId Int
-  expense   Expense @relation(fields: [expenseId], references: [id])
-  user      User    @relation("UserDebtors", fields: [userId], references: [id])
+model SplitExpense {
+  id            Int       @id @default(autoincrement())
+  value         Float
+  expenseId     Int
+  expense       Expense   @relation(fields: [expenseId], references: [id])
+  participantId Int
+  participant   User      @relation(fields: [participantId], references: [id])
+  updatedAt     DateTime  @updatedAt
+  status        Boolean   @default(false)
 
-  @@id([userId, expenseId])
+  @@unique([expenseId, participantId])
 }
