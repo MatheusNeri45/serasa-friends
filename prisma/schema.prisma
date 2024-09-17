@@ -37,7 +37,6 @@ model SplitExpense {
   participantId Int
   participant   User      @relation(fields: [participantId], references: [id])
   updatedAt     DateTime  @updatedAt
-  status        Boolean   @default(false)
-
+  paid          Boolean   @default(false)
   @@unique([expenseId, participantId])
 }
