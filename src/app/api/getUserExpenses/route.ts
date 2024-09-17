@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
-  const userId = parseInt(request.headers.get("user-id") || "0");
+  const userId = parseInt(request.headers.get("userId") || "0");
   if (!userId) {
     return NextResponse.json(
       { message: "User ID is required to get its expenses" },
