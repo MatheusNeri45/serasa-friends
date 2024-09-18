@@ -1,20 +1,19 @@
-import styles from "./page.module.css";
-import ExpensesList from "./expensesList/page";
+import styles from "../page.module.css";
+import ExpensesList from "../expensesList/page";
 export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <ExpensesList />
 
         <footer className={styles.ctas}>
           <a
-            className={styles.primary}
+            className={styles.secondary}
             href="http://localhost:3000/">
                Summary
           </a>
           <a
             href="http://localhost:3000/addExpense"
-            className={styles.secondary}
+            className={styles.primary}
           >
             +
           </a>
