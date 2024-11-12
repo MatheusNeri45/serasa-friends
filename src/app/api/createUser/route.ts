@@ -13,10 +13,15 @@ export async function POST(request: NextRequest) {
     },
   });
   if (userFound) {
-    return NextResponse.json(
-      { message: "User already in use" },
-      { status: 500 }
-    );
+    bcrypt.compare(req.body.password, "superSecret", () => {
+      if (req.body.password != userFound.password) {
+        return NextResponse.json(
+          { message: "Passwords do not match." },
+          { status: 200 }
+        );
+      }
+      return NextResponse.json({ userFound }, { status: 200 });
+    });
   }
   try {
     const user = await prisma.user.create({
@@ -26,10 +31,7 @@ export async function POST(request: NextRequest) {
         password: bcrypt.hashSync(req.password, 10),
       },
     });
-    return NextResponse.json(
-      { message: "User created", userCreated: user },
-      { status: 200 }
-    );
+    return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { message: "Unable to register user" },

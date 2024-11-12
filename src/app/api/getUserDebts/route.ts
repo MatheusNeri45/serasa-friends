@@ -18,11 +18,13 @@ export async function POST(request: NextRequest) {
     );
   }
   try {
-    const expense = await prisma.expense.findMany({
-      where: { userId: userId },
+    const debt = await prisma.expense.findMany({
+      where: {
+        NOT: { userId: userId },
+      },
     });
     return NextResponse.json(
-      { message: "User expenses", expenseList: expense },
+      { message: "User expenses", debtList: debt },
       { status: 200 }
     );
   } catch (error) {

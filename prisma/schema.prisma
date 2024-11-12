@@ -26,6 +26,7 @@ model Expense {
   updatedAt   DateTime       @updatedAt
   paidBy      User           @relation("PaidExpense", fields: [userId], references: [id])
   userId      Int
+  paid        Boolean @default(false)
   debtors     SplitExpense[]
 }
 
