@@ -16,15 +16,6 @@ interface Expense {
   userId: number;
 }
 
-interface expenseItem {
-  id: number;
-  value: number;
-  expenseId: number;
-  participantId: number;
-  updatedAt: string;
-  paid: boolean;
-}
-
 interface Debtor{
   id:number;
   email:string;
@@ -64,7 +55,7 @@ export default function Home() {
 
   return (
     <div>
-        <ExpensesList userId={userId} updateList={updateList}/>
+        <ExpensesList userId={userId} updateList={updateList} setUpdateList={setUpdateList}/>
       <FormDialog
         userId={userId}
         debtors={debtors}

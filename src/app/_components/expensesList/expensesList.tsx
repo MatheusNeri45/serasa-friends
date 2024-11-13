@@ -8,8 +8,9 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import BasicModal from "../modal/modal";
-import { SplitExpense } from "@prisma/client";
-
+import SplitPayButton from "../payButton/expenseSplitPayButton/splitPayButton";
+import ExpensePayButton from "../payButton/expensePayButton/expensePayButton";
+import SplitExpensesList from "../splitExpenseList/splitExpensesList";
 
 interface expenseItem {
   id: number;
@@ -22,6 +23,7 @@ interface expenseItem {
 interface expenseListProps {
   userId:number;
   updateList:boolean;
+  setUpdateList:Function;
 }
 interface expenseSplit{
 
@@ -34,27 +36,13 @@ interface expenseSplit{
 
 }
 
-export default function ExpensesList({ userId, updateList}:expenseListProps) {
+export default function ExpensesList({ userId, updateList, setUpdateList}:expenseListProps) {
   const [expenseList, setExpenseList] = useState<expenseItem[]>([]);
   const [users, setUsers] = useState([])
   const [selectedExpense, setSelectedExpense] = useState<expenseItem|null>(null)
-  const [selectedExpenseSplits, setSelectedExpenseSplits] = useState([])
 
   const handleClickExpense = (expenseItem:expenseItem) => {
     setSelectedExpense(expenseItem)
-    fetchSplitExpenses(expenseItem.id)
-  }
-
-  const fetchSplitExpenses = async(expenseId:number) =>{
-    const res = await fetch("/api/getExpenseSplits",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ expenseId: expenseId }),
-      }
-    );
-    const response = await res.json();
-    setSelectedExpenseSplits(response.splitExpenseList)
   }
   const fetchExpenseList = async () => {
     const res = await fetch("/api/getAllExpenses");
@@ -70,9 +58,11 @@ export default function ExpensesList({ userId, updateList}:expenseListProps) {
 
   useEffect(() => {
     if (userId) {
-      fetchExpenseList().then((data) => setExpenseList(data));
-    }
-  }, [userId, updateList]);
+      fetchExpenseList().then((data) =>{
+        setExpenseList(data)
+        console.log(data)
+    })
+  }}, [userId, updateList]);
 
   useEffect(()=>{
     fetchUsers().then((users)=>setUsers(users))
@@ -105,45 +95,14 @@ export default function ExpensesList({ userId, updateList}:expenseListProps) {
               <TableCell align="center">{expenseItem.value}</TableCell>
               <TableCell align="center">{expenseItem.createdAt.slice(0,10)}</TableCell>
               <TableCell align="center">
-                {expenseItem.paid ? "Paid" : "Not paid"}
+              <ExpensePayButton  paidInitialStatus={expenseItem.paid} expenseId={expenseItem.id}></ExpensePayButton>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
       {selectedExpense&&(
-            <BasicModal component={"View expense details"} onClose={()=>setSelectedExpense(null)} open={!!selectedExpense}>
-            <TableContainer component={Paper} sx={{ maxWidth: 650 }}>
-
-            <Table sx={{ maxWidth: 600 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">Particpant</TableCell>
-                  <TableCell align="center">Value</TableCell>
-                  <TableCell align="center">Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {selectedExpenseSplits.map((expenseSplit:expenseSplit) => (
-                  <TableRow
-                    key={expenseSplit.id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }
-                    }
-                  >
-                    <TableCell align='center'component="th" scope="row">
-                      {expenseSplit.participantId}
-                    </TableCell>
-                    <TableCell align="center">{expenseSplit.value}</TableCell>
-                    <TableCell align="center">
-                      {expenseSplit.paid ? "Paid" : <button>Pay debt</button>}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            </TableContainer>
-            </BasicModal>
-        
+        <SplitExpensesList selectedExpense={selectedExpense} setUpdateList={setUpdateList} setSelectedExpense={setSelectedExpense}/>
       )}
     </TableContainer>
   );
