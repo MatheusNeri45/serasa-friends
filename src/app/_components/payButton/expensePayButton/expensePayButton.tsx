@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 
-interface expenseSplit {
-  id: number;
-  value: number;
-  expenseId: number;
-  participantId: number;
-  updatedAt: string;
-  paid: boolean;
+interface ExpensePayButtonProps {
+paidExpense: boolean;
+expenseId: number;
 }
 
-export default function ExpensePayButton({ paidInitialStatus, expenseId}) {
-  const [paid, setPaid] = useState(paidInitialStatus);
+export default function ExpensePayButton({ paidExpense, expenseId}:ExpensePayButtonProps) {
+  const [paid, setPaid] = useState<boolean>();
   //colocar status de loading pro botão
-  const changePayStatus = async (expenseId, paid) => {
+  const changePayStatus = async (expenseId:number, paid:boolean|undefined) => {
 
     const expenseUpdate = await fetch("/api/updateExpenseStatus", {
       method: "PUT",
@@ -22,6 +18,10 @@ export default function ExpensePayButton({ paidInitialStatus, expenseId}) {
     });
     return expenseUpdate;
   };
+
+  useEffect(()=>{
+    setPaid(paidExpense)
+  },[paidExpense])
 
   const onPay = async () => {
     const res = await changePayStatus(expenseId, paid);

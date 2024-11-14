@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 
-interface expenseSplit {
+interface splitExpense {
   id: number;
   value: number;
   expenseId: number;
@@ -9,14 +9,18 @@ interface expenseSplit {
   updatedAt: string;
   paid: boolean;
 }
+interface splitPayButtonProps{
+  splitExpense: splitExpense
+  setUpdateList:Function
+}
 
 export default function SplitPayButton({
   splitExpense,
   setUpdateList,
-}) {
+}:splitPayButtonProps) {
   const [paid, setPaid] = useState(splitExpense.paid);
   const [splitExpenseList, setSplitExpenseList] = useState([]);
-  //colocar status de loading pro botão
+  
   const changePayStatus = async () => {
     const splitExpenseUpdated = await fetch("/api/updateSplitExpenseStatus", {
       method: "PUT",
@@ -41,7 +45,7 @@ export default function SplitPayButton({
     setSplitExpenseList(updatedSplitExpenseList);
     const numberSplits = updatedSplitExpenseList.length;
     let counterSplits = 0;
-    updatedSplitExpenseList.forEach((element: expenseSplit) => {
+    updatedSplitExpenseList.forEach((element: splitExpense) => {
       if (element.paid) {
         counterSplits++;
       }
@@ -63,8 +67,6 @@ export default function SplitPayButton({
         }
       }
     }
-
-    //se for o ultimo split mudar o valor de paid do expense pai
     //adicionar algo para usuario saber q deu erro
   };
 

@@ -95,7 +95,7 @@ export default function ExpensesList({ userId, updateList, setUpdateList}:expens
               <TableCell align="center">{expenseItem.value}</TableCell>
               <TableCell align="center">{expenseItem.createdAt.slice(0,10)}</TableCell>
               <TableCell align="center">
-              <ExpensePayButton  paidInitialStatus={expenseItem.paid} expenseId={expenseItem.id}></ExpensePayButton>
+              <ExpensePayButton  paidExpense={expenseItem.paid} expenseId={expenseItem.id}></ExpensePayButton>
               </TableCell>
             </TableRow>
           ))}
