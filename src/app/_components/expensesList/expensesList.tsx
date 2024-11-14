@@ -10,13 +10,22 @@ import Paper from "@mui/material/Paper";
 import ExpensePayButton from "../payButton/expensePayButton/expensePayButton";
 import SplitExpensesList from "../splitExpenseList/splitExpensesList";
 
-interface expenseItem {
+interface User {
+  id: number;
+  email: string;
+  name: string;
+  password: string;
+  paidExpenses: Expense[];
+}
+
+interface Expense {
   id: number;
   value: number;
   description: string;
   createdAt: string;
   paid: boolean;
   userId: number;
+  paidBy: User;
 }
 interface expenseListProps {
   userId:number;
@@ -25,36 +34,24 @@ interface expenseListProps {
 }
 
 export default function ExpensesList({ userId, updateList, setUpdateList}:expenseListProps) {
-  const [expenseList, setExpenseList] = useState<expenseItem[]>([]);
-  const [users, setUsers] = useState([])
-  const [selectedExpense, setSelectedExpense] = useState<expenseItem|null>(null)
+  const [expenseList, setExpenseList] = useState<Expense[]>([]);
+  const [selectedExpense, setSelectedExpense] = useState<Expense|null>(null)
 
-  const handleClickExpense = (expenseItem:expenseItem) => {
-    setSelectedExpense(expenseItem)
+  const handleClickExpense = (expense:Expense) => {
+    setSelectedExpense(expense)
   }
   const fetchExpenseList = async () => {
     const res = await fetch("/api/getAllExpenses");
     const response = await res.json();
     return response.expenseList;
   };
-  
-  const fetchUsers = async()=>{
-    const res = await fetch("api/getUsers")
-    const response = await res.json()
-    return response.users;
-  }
 
   useEffect(() => {
     if (userId) {
       fetchExpenseList().then((data) =>{
         setExpenseList(data)
-        console.log(data)
     })
   }}, [userId, updateList]);
-
-  useEffect(()=>{
-    fetchUsers().then((users)=>setUsers(users))
-  },[])
 
   return (
     <TableContainer component={Paper} sx={{ maxWidth: 650 }}>
@@ -69,21 +66,21 @@ export default function ExpensesList({ userId, updateList, setUpdateList}:expens
           </TableRow>
         </TableHead>
         <TableBody>
-          {expenseList.map((expenseItem) => (
+          {expenseList.map((expense:Expense) => (
             <TableRow
-              key={expenseItem.id}
-              onClick = {()=>handleClickExpense(expenseItem)}
+              key={expense.id}
+              onClick = {()=>handleClickExpense(expense)}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }
               }
             >
               <TableCell align='center'component="th" scope="row">
-                {expenseItem.userId}
+                {expense.paidBy.name}
               </TableCell>
-              <TableCell align="center">{expenseItem.description}</TableCell>
-              <TableCell align="center">{expenseItem.value}</TableCell>
-              <TableCell align="center">{expenseItem.createdAt.slice(0,10)}</TableCell>
+              <TableCell align="center">{expense.description}</TableCell>
+              <TableCell align="center">{expense.value}</TableCell>
+              <TableCell align="center">{expense.createdAt.slice(0,10)}</TableCell>
               <TableCell align="center">
-              <ExpensePayButton  paidExpense={expenseItem.paid} expense={expenseItem}></ExpensePayButton>
+              <ExpensePayButton  paidExpense={expense.paid} expense={expense}></ExpensePayButton>
               </TableCell>
             </TableRow>
           ))}

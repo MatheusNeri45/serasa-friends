@@ -6,7 +6,15 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
-    const expenses = await prisma.expense.findMany();
+    const expenses = await prisma.expense.findMany({
+      include:{
+        paidBy:{
+          select:{
+            name:true,
+          }
+        }
+      }
+    });
     return NextResponse.json(
       { expenseList: expenses },
       { status: 200 }
