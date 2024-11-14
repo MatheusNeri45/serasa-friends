@@ -7,8 +7,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import BasicModal from "../modal/modal";
-import SplitPayButton from "../payButton/expenseSplitPayButton/splitPayButton";
 import ExpensePayButton from "../payButton/expensePayButton/expensePayButton";
 import SplitExpensesList from "../splitExpenseList/splitExpensesList";
 
@@ -24,16 +22,6 @@ interface expenseListProps {
   userId:number;
   updateList:boolean;
   setUpdateList:Function;
-}
-interface expenseSplit{
-
-  id: number;
-  value: number;
-  expenseId: number;
-  participantId: number;
-  updatedAt: string;
-  paid: boolean;
-
 }
 
 export default function ExpensesList({ userId, updateList, setUpdateList}:expenseListProps) {
@@ -95,7 +83,7 @@ export default function ExpensesList({ userId, updateList, setUpdateList}:expens
               <TableCell align="center">{expenseItem.value}</TableCell>
               <TableCell align="center">{expenseItem.createdAt.slice(0,10)}</TableCell>
               <TableCell align="center">
-              <ExpensePayButton  paidExpense={expenseItem.paid} expenseId={expenseItem.id}></ExpensePayButton>
+              <ExpensePayButton  paidExpense={expenseItem.paid} expense={expenseItem}></ExpensePayButton>
               </TableCell>
             </TableRow>
           ))}

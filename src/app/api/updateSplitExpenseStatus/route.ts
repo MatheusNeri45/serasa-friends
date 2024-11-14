@@ -1,3 +1,4 @@
+import SplitExpensesList from "@/app/_components/splitExpenseList/splitExpensesList";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -7,6 +8,24 @@ const prisma = new PrismaClient();
 export async function PUT(request: NextRequest) {
   try {
     const req = await request.json();
+    let paidCounter = 0;
+    const splitExpenseList = await prisma.splitExpense.findMany({
+      where: {
+        expenseId: req.expenseId,
+      },
+    });
+    const splitExpenseListLength = splitExpenseList.length;
+    splitExpenseList.forEach((element) => {
+      if (element.paid) {
+        paidCounter++;
+      }
+    });
+    if(splitExpenseListLength-paidCounter===1){
+      const expenseList = await prisma.expense.update({
+        where:{id:req.expenseId},
+        data:{paid: true}
+      })
+    }
     const updatedSplitExpense = await prisma.splitExpense.update({
       where: { id: req.splitExpenseId },
       data: { paid: req.paid },

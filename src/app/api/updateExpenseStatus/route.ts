@@ -11,7 +11,11 @@ export async function PUT(request: NextRequest) {
       where: { id: req.expenseId },
       data: { paid: req.paid },
     });
-    if (!updatedExpense) {
+    const updatedSplitExpenses = await prisma.splitExpense.updateMany({
+      where: { expenseId: req.id },
+      data: { paid: req.paid },
+    });
+    if (!updatedExpense || !updatedSplitExpenses) {
       return NextResponse.json(
         {
           message:

@@ -68,31 +68,6 @@ export default function Home() {
 function FormDialog({ userId, debtors, setUpdateList }:formProps) {
   const [open, setOpen] = React.useState(false);
 
-  const handleAddExpense = async (expense:Expense, debtors:Debtor[]) => {
-    const numberDebtors = debtors.length;
-    const expenseValue = expense.value;
-    const debtorExpense = debtors.map((debtor) => ({
-      id: debtor.id,
-      splitNumber: expenseValue / numberDebtors,
-    }));
-    const data = {
-      ...expense,
-      debtors: debtorExpense,
-    };
-    const res = await fetch("api/createExpense", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    const response = await res.json();
-    const responseCode = response.status;
-    if (responseCode == 200) {
-      return true;
-    }
-    return false;
-    // adicionar parte de setar a lista de novo
-  };
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -105,13 +80,19 @@ function FormDialog({ userId, debtors, setUpdateList }:formProps) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const formJson = Object.fromEntries((formData as any).entries());
-    const expense = {
+    const data = {
+      expense:{
       userId: Number(userId),
       description: String(formJson.description),
-      value: Number(formJson.value),
+      value: Number(formJson.value)},
+      debtors: debtors,
     };
-    const expenseAdded = await handleAddExpense(expense, debtors);
-    if (expenseAdded) {
+    const res = await fetch("api/createExpense", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (res.ok) {
       setUpdateList((prev:boolean) => !prev);
     }
     handleClose();
