@@ -21,26 +21,31 @@ interface Expense {
 export async function POST(request: NextRequest) {
   const req = await request.json();
 
-  const fullValue = req.expense.value;
-
   try {
     const numberDebtors = req.debtors.length;
     const expenseValue = req.expense.value;
-    const debtorExpense = req.debtors.map((debtor: User) => ({
-      id: debtor.id,
-      splitNumber: expenseValue / numberDebtors,
-    }));
+    const debtorExpense = req.debtors.filter((debtor: User) => (
+      debtor.id!== req.expense.userId)).map((debtor:User)=>({
+        id: debtor.id,
+        splitNumber: expenseValue / numberDebtors,
+      })
+
+    )
     const data = {
       ...req.expense,
       debtors: debtorExpense,
     };
+    const valuePaid = req.debtors.some((debtor: User) => (
+      debtor.id === req.expense.userId))?expenseValue/numberDebtors:0;
 
     const expense = await prisma.expense.create({
       data: {
         description: data.description,
         value: data.value,
+        valuePaid:valuePaid,
         paidBy: {
           connect: { id: data.userId },
+
         },
         debtors: {
           createMany: {

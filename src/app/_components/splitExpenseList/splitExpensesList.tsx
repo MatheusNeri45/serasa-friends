@@ -10,37 +10,23 @@ import Paper from "@mui/material/Paper";
 import BasicModal from "../modal/modal";
 import SplitPayButton from "../payButton/expenseSplitPayButton/splitPayButton";
 import { Typography } from "@mui/material";
+import { User, Expense, SplitExpense } from "@prisma/client";
 
-interface expenseItem {
-  id: number;
-  value: number;
-  description: string;
-  createdAt: string;
-  paid: boolean;
-  userId: number;
-}
 interface expenseListProps {
-  selectedExpense: expenseItem;
+  selectedExpense: Expense;
   setUpdateList: Function;
   setSelectedExpense: Function;
 }
-interface expenseSplit {
-  id: number;
-  value: number;
-  expenseId: number;
-  participantId: number;
-  updatedAt: string;
-  paid: boolean;
-}
+
 
 export default function SplitExpensesList({
   selectedExpense,
   setUpdateList,
   setSelectedExpense,
 }: expenseListProps) {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [selectedExpenseSplits, setSelectedExpenseSplits] = useState<
-    expenseSplit[]
+    SplitExpense[]
   >([]);
 
   const fetchSplitExpenses = async (expenseId: number) => {
@@ -77,38 +63,37 @@ export default function SplitExpensesList({
     <BasicModal onClose={onClose} open={!!selectedExpense}>
       <Typography id="modal-modal-title" variant="h6" component="h2">
         Expense splits
-
       </Typography>
-        <TableContainer component={Paper} sx={{ maxWidth: 650 }}>
-          <Table sx={{ maxWidth: 600 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell align="center">Particpant</TableCell>
-                <TableCell align="center">Value</TableCell>
-                <TableCell align="center">Status</TableCell>
+      <TableContainer component={Paper} sx={{ maxWidth: 650 }}>
+        <Table sx={{ maxWidth: 600 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Debtor</TableCell>
+              <TableCell align="center">Value</TableCell>
+              <TableCell align="center">Status</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {selectedExpenseSplits.map((expenseSplit: SplitExpense) => (
+              <TableRow
+                key={expenseSplit.id}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell align="center" component="th" scope="row">
+                  {expenseSplit.participant.name}
+                </TableCell>
+                <TableCell align="center">{expenseSplit.value}</TableCell>
+                <TableCell align="center">
+                  <SplitPayButton
+                    splitExpense={expenseSplit}
+                    setUpdateList={setUpdateList}
+                  ></SplitPayButton>
+                </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {selectedExpenseSplits.map((expenseSplit: expenseSplit) => (
-                <TableRow
-                  key={expenseSplit.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell align="center" component="th" scope="row">
-                    {expenseSplit.participantId}
-                  </TableCell>
-                  <TableCell align="center">{expenseSplit.value}</TableCell>
-                  <TableCell align="center">
-                    <SplitPayButton
-                      splitExpense={expenseSplit}
-                      setUpdateList={setUpdateList}
-                    ></SplitPayButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </BasicModal>
   );
 }

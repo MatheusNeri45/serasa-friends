@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
+import { Expense } from "@prisma/client";
 
 interface ExpensePayButtonProps {
   paidExpense: boolean;
-  expense: expenseItem;
-}
-interface expenseItem {
-  id: number;
-  value: number;
-  description: string;
-  createdAt: string;
-  paid: boolean;
-  userId: number;
+  expense: Expense;
 }
 
 export default function ExpensePayButton({

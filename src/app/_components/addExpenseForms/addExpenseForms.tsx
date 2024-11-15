@@ -1,5 +1,5 @@
 "use client";
-import { useState, Fragment } from "react";
+import { useState, useEffect, Fragment } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
@@ -7,32 +7,25 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-
-interface Expense {
-  description: string;
-  value: number;
-  userId: number;
-}
-
-interface User {
-  id: number;
-  email: string;
-  name: string;
-  password: string;
-  paidExpenses: Expense[];
-}
+import UserSelect from "../selectUser/selectUser";
+import {User} from '@prisma/client';
+import DebtorsList from "../debtorsList/debtorsList";
 
 interface formProps {
-  userId: number;
   debtors: User[];
   setUpdateList: Function;
+  users: User[];
+  userId: Number
 }
 
-export default function AddExpenseForms({ userId, debtors, setUpdateList }: formProps) {
+export default function AddExpenseForms({debtors, setUpdateList, users, userId }: formProps) {
   const [open, setOpen] = useState(false);
+  const [payer, setPayer] = useState<Number>();
+  const [selectedDebtors, setSelectedDebtors] = useState<User[]>([]);
 
   const handleClickOpen = () => {
-    setOpen(true);
+    setSelectedDebtors(users)
+    setOpen(true);    
   };
 
   const handleClose = () => {
@@ -45,11 +38,11 @@ export default function AddExpenseForms({ userId, debtors, setUpdateList }: form
     const formJson = Object.fromEntries((formData as any).entries());
     const data = {
       expense: {
-        userId: Number(userId),
+        userId: payer,
         description: String(formJson.description),
         value: Number(formJson.value),
       },
-      debtors: debtors,
+      debtors: selectedDebtors,
     };
     const res = await fetch("api/createExpense", {
       method: "POST",
@@ -77,7 +70,6 @@ export default function AddExpenseForms({ userId, debtors, setUpdateList }: form
       >
         <DialogTitle>Add expense</DialogTitle>
         <DialogContent>
-          <DialogContentText>Adding expense</DialogContentText>
           <TextField
             autoFocus
             required
@@ -99,6 +91,8 @@ export default function AddExpenseForms({ userId, debtors, setUpdateList }: form
             fullWidth
             variant="standard"
           />
+          <UserSelect users = {users} payer={payer} setPayer={setPayer} userId={userId}/>
+          {payer&&(<DebtorsList debtors={debtors} setSelectedDebtors={setSelectedDebtors} selectedDebtors={selectedDebtors}/>)}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

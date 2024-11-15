@@ -12,13 +12,13 @@ import Button from "@mui/material/Button";
 
 export default function Home() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState<String>("");
+  const [email, setEmail] = useState<String>("");
+  const [password, setPassword] = useState<String>("");
 
   // Validar quando tiver os 3 apenas
   async function onSubmit() {
-    const request = {
+    const data = {
       email: email,
       name: name,
       password: password,
@@ -26,11 +26,13 @@ export default function Home() {
     const res = await fetch("api/createUser", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(request),
+      body: JSON.stringify(data),
     });
     const response = await res.json();
-    if (response.user && response.user.id) {
-      localStorage.setItem("id", response.user.id);
+    const userFound = response.userFound
+    console.log(userFound)
+    if (userFound && userFound.id) {
+      localStorage.setItem("id", userFound.id);
       router.push("/expenses");
     }
   }
@@ -48,13 +50,13 @@ export default function Home() {
       <Stack width={300} gap={1}>
         <TextField
           id="filled-basic"
-          label="Username"
+          label="Full name"
           variant="filled"
           value={name}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setName(event.target.value);
           }}
-          placeholder="Username"
+          placeholder="Full name"
         />
         <TextField
           id="filled-basic"

@@ -1,4 +1,4 @@
-import SplitExpensesList from "@/app/_components/splitExpenseList/splitExpensesList";
+import { Update } from "@mui/icons-material";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -9,9 +9,12 @@ export async function PUT(request: NextRequest) {
   try {
     const req = await request.json();
     let paidCounter = 0;
+    const splitExpenseId = req.splitExpense.id;
+    const expenseId = req.splitExpense.expenseId;
+    const splitExpenseValue = req.splitExpense.value;
     const splitExpenseList = await prisma.splitExpense.findMany({
       where: {
-        expenseId: req.expenseId,
+        expenseId: expenseId,
       },
     });
     const splitExpenseListLength = splitExpenseList.length;
@@ -20,15 +23,26 @@ export async function PUT(request: NextRequest) {
         paidCounter++;
       }
     });
-    if(splitExpenseListLength-paidCounter===1){
-      const expenseList = await prisma.expense.update({
-        where:{id:req.expenseId},
-        data:{paid: true}
-      })
+    if (splitExpenseListLength - paidCounter === 1) {
+      await prisma.expense.update({
+        where: { id: expenseId },
+        data: {
+          paid: true,
+        },
+      });
     }
     const updatedSplitExpense = await prisma.splitExpense.update({
-      where: { id: req.splitExpenseId },
-      data: { paid: req.paid },
+      where: { id: splitExpenseId },
+      data: {
+        paid: req.paid,
+        expense: {
+          update: {
+            valuePaid: {
+              increment: splitExpenseValue,
+            },
+          },
+        },
+      },
     });
     if (!updatedSplitExpense) {
       return NextResponse.json(

@@ -22,9 +22,8 @@ export default function SplitPayButton({splitExpense, setUpdateList}: splitPayBu
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        splitExpenseId: splitExpense.id,
+        splitExpense: splitExpense,
         paid: !paid,
-        expenseId: splitExpense.expenseId,
       }),
     });
     return splitExpenseUpdated;

@@ -10,11 +10,21 @@ export async function POST(request: NextRequest) {
     const req = await request.json();
     const splitExpenses = await prisma.splitExpense.findMany({
       where: { expenseId: req.expenseId },
+      include: {
+        participant: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
 
     if (!splitExpenses) {
       return NextResponse.json(
-        { message: "There is no expense registered with this ID in the database" },
+        {
+          message:
+            "There is no expense registered with this ID in the database",
+        },
         { status: 404 }
       );
     }

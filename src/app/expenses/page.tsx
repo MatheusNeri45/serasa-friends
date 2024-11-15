@@ -1,31 +1,37 @@
 "use client";
 import { useState, useEffect } from "react";
-import * as React from "react";
+import { useRouter } from "next/navigation";
 import ExpensesList from "../_components/expensesList/expensesList";
 import AddExpenseForms from "../_components/addExpenseForms/addExpenseForms";
 
-
 export default function Home() {
+  const router = useRouter();
   const [debtors, setDebtors] = useState<[]>([]);
   const [userId, setUserId] = useState(0);
   const [updateList, setUpdateList] = useState<boolean>(false);
+  const [users, setUsers] = useState([]);
 
-  const getUsers = async () => {
-    const fetchRes = await fetch("api/getUsers");
-    const res = await fetchRes.json();
-    setDebtors(res.users);
+  const fetchUsers = async () => {
+    const response = await fetch("/api/getUsers");
+    const res = await response.json();
+    const users = res.users;
+    return users;
   };
+  useEffect(() => {
+    fetchUsers().then((users) => {
+      setUsers(users);
+      setDebtors(users);
+    });
+  }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("id");
     const userId = storedUser ? JSON.parse(storedUser) : null;
     if (userId) {
       setUserId(userId);
+    } else {
+      router.push("/");
     }
-  }, []);
-
-  useEffect(() => {
-    getUsers();
   }, []);
 
   return (
@@ -36,9 +42,10 @@ export default function Home() {
         setUpdateList={setUpdateList}
       />
       <AddExpenseForms
-        userId={userId}
         debtors={debtors}
         setUpdateList={setUpdateList}
+        users={users}
+        userId={userId}
       />
     </div>
   );
