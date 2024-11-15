@@ -16,25 +16,41 @@ model User {
   password      String
   paidExpenses  Expense[]      @relation("PaidExpense")
   splitExpenses SplitExpense[]
+  groups Group[] @relation("GroupParticipants")
+  groupsCreated Group[]
+}
+model Group{
+  id Int @id @default(autoincrement())
+  name String
+  description String?
+  participants User[] @relation("GroupParticipants")
+  expenses Expense[]
+  createdBy User @relation(fields: [creatorId], references: [id])
+  creatorId Int
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
 
 model Expense {
   id          Int            @id @default(autoincrement())
   description String
   value       Float
+  valuePaid   Float
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   paidBy      User           @relation("PaidExpense", fields: [userId], references: [id])
   userId      Int
   paid        Boolean @default(false)
   debtors     SplitExpense[]
+  group Group @relation(fields: [groupId], references: [id])
+  groupId Int 
 }
 
 model SplitExpense {
   id            Int       @id @default(autoincrement())
   value         Float
   expenseId     Int
-  expense       Expense   @relation(fields: [expenseId], references: [id])
+  expense       Expense   @relation(fields: [expenseId], references: [id], onDelete: Cascade)
   participantId Int
   participant   User      @relation(fields: [participantId], references: [id])
   updatedAt     DateTime  @updatedAt
