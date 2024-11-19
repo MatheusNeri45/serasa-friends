@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
+import { SplitExpense } from "@prisma/client";
 
-interface splitExpense {
-  id: number;
-  value: number;
-  expenseId: number;
-  participantId: number;
-  updatedAt: string;
-  paid: boolean;
-}
 interface splitPayButtonProps {
-  splitExpense: splitExpense;
+  splitExpense: SplitExpense;
   setUpdateList: Function;
 }
 
@@ -18,7 +11,7 @@ export default function SplitPayButton({splitExpense, setUpdateList}: splitPayBu
   const [paid, setPaid] = useState(splitExpense.paid);
 
   const changePayStatus = async () => {
-    const splitExpenseUpdated = await fetch("/api/updateSplitExpenseStatus", {
+    const splitExpenseUpdated = await fetch("../api/updateSplitExpenseStatus", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

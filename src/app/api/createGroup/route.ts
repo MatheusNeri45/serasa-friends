@@ -1,38 +1,38 @@
-// import { PrismaClient } from "@prisma/client";
-// import { NextRequest } from "next/server";
-// import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { User } from "@prisma/client";
+const prisma = new PrismaClient();
 
-// const prisma = new PrismaClient();
-
-// export async function POST(request: NextRequest) {
-//   const req = await request.json();
-//   try {
-//     const group = await prisma.group.create({
-//       data: {
-//         name: req.name,
-//         description: req.description || null,
-//         owner: {
-//           connect: { id: req.userId },
-//         },
-//         members: {
-//           connect: [
-//             { id: req.userId },
-//             ...(req.membersIds || []).map((memberId: number) => ({
-//               id: memberId,
-//             })),
-//           ],
-//         },
-//       },
-//     });
-//     return NextResponse.json(
-//       { message: "Group created", groupCreated: group },
-//       { status: 200 }
-//     );
-//   } catch (error) {
-//     console.error(error);
-//     return NextResponse.json(
-//       { message: "Unable to create group" },
-//       { status: 500 }
-//     );
-//   }
-// }
+export async function POST(request: NextRequest) {
+  const req = await request.json();
+  console.log(req.groupInfo.userId)
+  try {
+    const group = await prisma.group.create({
+      data: {
+        name: req.groupInfo.name,
+        description: req.groupInfo.description || null,
+        createdBy: {
+          connect: { id: req.groupInfo.userId },
+        },
+        members: {
+          connect: [
+            ...(req.members||[]).map((member: User) => ({
+              id: member.id,
+            })),
+          ],
+        },
+      },
+    });
+    return NextResponse.json(
+      { message: "Group created", groupCreated: group },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Unable to create group" },
+      { status: 500 }
+    );
+  }
+}

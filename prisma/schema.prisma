@@ -16,14 +16,14 @@ model User {
   password      String
   paidExpenses  Expense[]      @relation("PaidExpense")
   splitExpenses SplitExpense[]
-  groups Group[] @relation("GroupParticipants")
+  groups Group[] @relation("GroupMembers")
   groupsCreated Group[]
 }
 model Group{
   id Int @id @default(autoincrement())
   name String
   description String?
-  participants User[] @relation("GroupParticipants")
+  members User[] @relation("GroupMembers")
   expenses Expense[]
   createdBy User @relation(fields: [creatorId], references: [id])
   creatorId Int

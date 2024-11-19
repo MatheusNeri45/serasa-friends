@@ -5,16 +5,12 @@ import { Stack } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
-// Fazer o post com todos os dados de login para criar usuario
-// Pegar ID retornado pelo post e guardar no local storage
-// Redirecionar o usuário à página principal
-// *usar effect -> verificar se tem id no local storage e redirecionar o user para pagina de logged in
-
 export default function Home() {
   const router = useRouter();
   const [name, setName] = useState<String>("");
   const [email, setEmail] = useState<String>("");
   const [password, setPassword] = useState<String>("");
+  const [userId, setUserId] = useState<number|null>(null)
 
   // Validar quando tiver os 3 apenas
   async function onSubmit() {
@@ -27,22 +23,22 @@ export default function Home() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
+
     });
     const response = await res.json();
     const userFound = response.userFound
-    console.log(userFound)
     if (userFound && userFound.id) {
-      localStorage.setItem("id", userFound.id);
-      router.push("/expenses");
+      setUserId(userFound.id)
+      router.push("/groups");
     }
   }
   useEffect(() => {
-    const storedUser = localStorage.getItem("id");
-    const user = storedUser ? JSON.parse(storedUser) : null;
-    if (user) {
-      router.push("/expenses");
+    const userId = Number(localStorage.getItem("id"))
+    if (userId) {
+      localStorage.setItem("id",String(userId));
+      router.push("/groups");
     }
-  }, []);
+  }, [userId, router]);
 
   return (
     <div>

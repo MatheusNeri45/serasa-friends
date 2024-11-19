@@ -5,27 +5,33 @@ import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import UserSelect from "../selectUser/selectUser";
-import {User} from '@prisma/client';
+import { User } from "@prisma/client";
 import DebtorsList from "../debtorsList/debtorsList";
-
+import PlaylistAddOutlinedIcon from "@mui/icons-material/PlaylistAddOutlined";
 interface formProps {
   debtors: User[];
   setUpdateList: Function;
   users: User[];
-  userId: Number
+  userId: Number;
+  groupId: Number;
 }
 
-export default function AddExpenseForms({debtors, setUpdateList, users, userId }: formProps) {
+export default function AddExpenseForms({
+  debtors,
+  setUpdateList,
+  users,
+  userId,
+  groupId,
+}: formProps) {
   const [open, setOpen] = useState(false);
-  const [payer, setPayer] = useState<Number>();
+  const [payer, setPayer] = useState<Number>(userId);
   const [selectedDebtors, setSelectedDebtors] = useState<User[]>([]);
 
   const handleClickOpen = () => {
-    setSelectedDebtors(users)
-    setOpen(true);    
+    setSelectedDebtors(users);
+    setOpen(true);
   };
 
   const handleClose = () => {
@@ -41,10 +47,11 @@ export default function AddExpenseForms({debtors, setUpdateList, users, userId }
         userId: payer,
         description: String(formJson.description),
         value: Number(formJson.value),
+        groupId: groupId,
       },
       debtors: selectedDebtors,
     };
-    const res = await fetch("api/createExpense", {
+    const res = await fetch("../api/createExpense", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -57,8 +64,8 @@ export default function AddExpenseForms({debtors, setUpdateList, users, userId }
 
   return (
     <Fragment>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Add expense
+      <Button variant="outlined" onClick={handleClickOpen} sx={{}}>
+        <PlaylistAddOutlinedIcon sx={{ width: 30 }} />
       </Button>
       <Dialog
         open={open}
@@ -91,8 +98,19 @@ export default function AddExpenseForms({debtors, setUpdateList, users, userId }
             fullWidth
             variant="standard"
           />
-          <UserSelect users = {users} payer={payer} setPayer={setPayer} userId={userId}/>
-          {payer&&(<DebtorsList debtors={debtors} setSelectedDebtors={setSelectedDebtors} selectedDebtors={selectedDebtors}/>)}
+          <UserSelect
+            users={users}
+            payer={payer}
+            setPayer={setPayer}
+            userId={userId}
+          />
+          {payer && (
+            <DebtorsList
+              debtors={debtors}
+              setSelectedDebtors={setSelectedDebtors}
+              selectedDebtors={selectedDebtors}
+            />
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

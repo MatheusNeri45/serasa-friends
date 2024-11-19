@@ -1,13 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { User, Expense } from "@prisma/client";
+import { User } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
-  const req = await request.json();
 
   try {
+    const req = await request.json();
     const numberDebtors = req.debtors.length;
     const expenseValue = req.expense.value;
     const debtorExpense = req.debtors.map((debtor: User) => ({

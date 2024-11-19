@@ -5,22 +5,26 @@ import { Expense } from "@prisma/client";
 interface ExpensePayButtonProps {
   paidExpense: boolean;
   expense: Expense;
+  setUpdateList: Function;
+  groupId: Number
 }
 
 export default function ExpensePayButton({
   paidExpense,
   expense,
+  setUpdateList,
+  groupId
 }: ExpensePayButtonProps) {
   const [paid, setPaid] = useState<boolean>();
   //colocar status de loading pro botão
   const changePayStatus = async (
-    expenseId: number,
+    expense: Expense,
     paid: boolean | undefined
   ) => {
-    const expenseUpdate = await fetch("/api/updateExpenseStatus", {
+    const expenseUpdate = await fetch("../api/updateExpenseStatus", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ expenseId: expenseId, paid: !paid }),
+      body: JSON.stringify({ expense: expense, paid: !paid , groupId:groupId}),
     });
     return expenseUpdate;
   };
@@ -30,10 +34,11 @@ export default function ExpensePayButton({
   }, [paidExpense]);
 
   const onPay = async () => {
-    const res = await changePayStatus(expense.id, paid);
+    const res = await changePayStatus(expense, paid);
 
     if (res.ok) {
       setPaid(true);
+      setUpdateList((prev:boolean)=>!prev)
     }
   };
   return paid ? (

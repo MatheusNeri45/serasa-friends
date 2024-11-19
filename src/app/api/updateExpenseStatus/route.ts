@@ -8,18 +8,27 @@ export async function PUT(request: NextRequest) {
   try {
     const req = await request.json();
     const updatedExpense = await prisma.expense.update({
-      where: { id: req.expenseId },
-      data: { paid: req.paid },
-    });
-    const updatedSplitExpenses = await prisma.splitExpense.updateMany({
-      where: { expenseId: req.id },
-      data: { paid: req.paid },
-    });
-    if (!updatedExpense || !updatedSplitExpenses) {
+      where: { id: req.expense.id },
+      data: {
+        paid: true,
+        valuePaid: {
+          set: req.expense.value,
+        },
+        debtors:{
+          updateMany:{
+            where:{},
+            data:{paid:{
+              set:true,
+            }}
+            }
+          }
+        },
+        }
+    );
+    if (!updatedExpense) {
       return NextResponse.json(
         {
-          message:
-            "There is no expense registered with this ID in the database",
+          expenseUpdated:[],
         },
         { status: 200 }
       );
@@ -30,8 +39,8 @@ export async function PUT(request: NextRequest) {
     );
   } catch (error) {
     return NextResponse.json(
-      { message: "Unable to find split expenses for this expense." },
-      { status: 500 }
+      {  expenseUpdated:[], },
+      { status: 200 }
     );
   }
 }
