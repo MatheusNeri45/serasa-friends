@@ -1,28 +1,34 @@
-import {useState, useEffect} from 'react';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { Expense,User } from '@prisma/client';
+import { useState, useEffect } from "react";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { Expense, User } from "@prisma/client";
 
-interface SelectUserProps{
-  usersSelection:User[];
-  setUserToAdd:Function;
-  userToAdd:number|null;
-
+interface SelectUserProps {
+  usersSelection: User[];
+  setUserToAdd: Function;
+  userToAdd: number | null;
 }
 
-export default function AddUserSelection({usersSelection, setUserToAdd, userToAdd}:SelectUserProps) {
-  
-
-
+// NOTE: usersSelection poderia ser carregado internamente tb
+export default function AddUserSelection({
+  usersSelection,
+  setUserToAdd,
+  userToAdd,
+}: SelectUserProps) {
   const handleChange = (event: SelectChangeEvent) => {
-    setUserToAdd(parseInt(event.target.value))
+    setUserToAdd(parseInt(event.target.value));
   };
 
   return (
     <div>
-      <FormControl margin='dense' variant="standard" sx={{minWidth: 120 }} fullWidth>
+      <FormControl
+        margin="dense"
+        variant="standard"
+        sx={{ minWidth: 120 }}
+        fullWidth
+      >
         <Select
           labelId="demo-simple-select-standard-label"
           id="demo-simple-select-standard"
@@ -32,11 +38,12 @@ export default function AddUserSelection({usersSelection, setUserToAdd, userToAd
           required
         >
           {usersSelection.map((user: User) => (
-            <MenuItem key={user.id} value={user.id}>{user.name}</MenuItem>
+            <MenuItem key={user.id} value={user.id}>
+              {user.name}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
     </div>
   );
 }
-

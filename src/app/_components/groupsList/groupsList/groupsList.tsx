@@ -1,25 +1,26 @@
 "use client";
-import { useState, useEffect, Fragment } from "react";
-import { useRouter } from "next/navigation";
-import { Group } from "@prisma/client";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
+import AccountCircleSharpIcon from "@mui/icons-material/AccountCircleSharp";
+import GroupsIcon from "@mui/icons-material/Groups";
+import HomeSharpIcon from "@mui/icons-material/HomeSharp";
+import PlaylistAddOutlinedIcon from "@mui/icons-material/PlaylistAddOutlined";
+import { Button } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
-import HomeSharpIcon from "@mui/icons-material/HomeSharp";
-import { Button } from "@mui/material";
-import AccountCircleSharpIcon from "@mui/icons-material/AccountCircleSharp";
-import GroupsIcon from "@mui/icons-material/Groups";
-import PlaylistAddOutlinedIcon from '@mui/icons-material/PlaylistAddOutlined';
+import { Group } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import { Fragment, useEffect, useState } from "react";
 interface GroupListProps {
   groups: Group[];
   setSelectedGroup: Function;
 }
 
+// NOTE: mesma coisa sobre a lista de groups
 export default function GroupsList({
   groups,
   setSelectedGroup,
@@ -86,7 +87,7 @@ export default function GroupsList({
         <GroupsIcon></GroupsIcon>
       </Button>
       <Button variant="outlined" sx={{}}>
-        <PlaylistAddOutlinedIcon sx={{width:30}}/>
+        <PlaylistAddOutlinedIcon sx={{ width: 30 }} />
       </Button>
       <Button variant="outlined">
         <AccountCircleSharpIcon />

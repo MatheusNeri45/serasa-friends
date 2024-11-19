@@ -1,26 +1,30 @@
 "use client";
-import { useState, useEffect, Fragment } from "react";
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { User } from "@prisma/client";
+import { Fragment, useEffect, useState } from "react";
 import AddUserSelection from "./addUserSelection/addUserSelection";
-import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 interface formProps {
   users: User[] | [];
   setUsers: Function;
   groupId: number;
 }
 
-export default function AddMemberForms({ users, setUsers, groupId }: formProps) {
+export default function AddMemberForms({
+  users,
+  setUsers,
+  groupId,
+}: formProps) {
   const [open, setOpen] = useState(false);
   const [usersSelection, setUsersSelection] = useState<User[]>([]);
   const [userToAdd, setUserToAdd] = useState<number | null>(null);
 
   const addMemberForms = async (userId: number | null) => {
+    // NOTE: isso aqui funciona??? ../api/updateGroupMembers
     const response = await fetch("../api/updateGroupMembers", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -43,11 +47,12 @@ export default function AddMemberForms({ users, setUsers, groupId }: formProps) 
     const res = await response.json();
     if (response.ok) {
       handleClose();
-      setUsers(res.groupMembers)
+      setUsers(res.groupMembers);
     }
   };
 
   const fetchAllUsers = async () => {
+    // NOTE: isso aqui funciona???
     const res = await fetch("../api/getUsers");
     const response = await res.json();
     if (res.ok) {
@@ -59,8 +64,9 @@ export default function AddMemberForms({ users, setUsers, groupId }: formProps) 
     const userIds: number[] = [];
     const notInGroupUsers: User[] = [];
     users.forEach((user) => userIds.push(user.id));
-    console.log(users)
-    console.log(userIds)
+    console.log(users);
+    console.log(userIds);
+    // NOTE: logica de negocio no front, mover pra o backend, uma query q retorna todos os usuarios que não estão no grupo
     fetchAllUsers().then((fetchedUsers: User[]) => {
       fetchedUsers.forEach((fetchedUser: User) => {
         if (!userIds.includes(fetchedUser.id)) {
@@ -68,10 +74,10 @@ export default function AddMemberForms({ users, setUsers, groupId }: formProps) 
         }
       });
     });
-    console.log(userIds)
-    console.log(notInGroupUsers)
+    console.log(userIds);
+    console.log(notInGroupUsers);
     setUsersSelection(notInGroupUsers);
-  },[]);
+  }, []);
 
   return (
     <Fragment>

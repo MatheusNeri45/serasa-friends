@@ -18,6 +18,10 @@ export default function MembersList({
   selectedMembers,
   userId,
 }: expenseListProps) {
+  // NOTE: a responsabilidade desse componente é de selecionar os membros, ele deveria ser responsavel por carregar os membros
+  // NOTE: e apenas chamar uma função "onMembersSelected" que passa a lista de members selecionados
+
+  // NOTE: Aposto q no futuro vc vai precisar selecionar os membros pra alguma coisa, vc já conseguiria reutilizar esse componente
   const onChange = (memberId: number) => {
     setSelectedMembers((prevSelectedMembers: User[]) => {
       if (prevSelectedMembers.some((member: User) => member.id === memberId)) {
@@ -34,24 +38,24 @@ export default function MembersList({
 
   return (
     <>
-    <FormGroup>
-      Members
-      {members.map((member: User) => (
-        <FormControlLabel
-          key={member.id}
-          label={member.name}
-          control={
-            <Checkbox
-            disabled={member.id === userId}
-              checked={selectedMembers.some(
-                (selectedMember) => selectedMember.id === member.id
-              )}
-              onChange={() => onChange(member.id)}
-            />
-          }
-        />
-      ))}
-    </FormGroup>
+      <FormGroup>
+        Members
+        {members.map((member: User) => (
+          <FormControlLabel
+            key={member.id}
+            label={member.name}
+            control={
+              <Checkbox
+                disabled={member.id === userId}
+                checked={selectedMembers.some(
+                  (selectedMember) => selectedMember.id === member.id
+                )}
+                onChange={() => onChange(member.id)}
+              />
+            }
+          />
+        ))}
+      </FormGroup>
     </>
   );
 }

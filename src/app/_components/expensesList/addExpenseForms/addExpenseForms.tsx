@@ -18,6 +18,7 @@ interface formProps {
   groupId: Number;
 }
 
+// NOTE: Props q n precisavam existir
 export default function AddExpenseForms({
   debtors,
   setUpdateList,
@@ -51,12 +52,14 @@ export default function AddExpenseForms({
       },
       debtors: selectedDebtors,
     };
+    // NOTE: rota estranha
     const res = await fetch("../api/createExpense", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
     if (res.ok) {
+      //NOTE: onExpenseCreated...
       setUpdateList((prev: boolean) => !prev);
     }
     handleClose();

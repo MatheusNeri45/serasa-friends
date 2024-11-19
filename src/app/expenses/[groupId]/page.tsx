@@ -1,22 +1,23 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import ExpensesList from "@/app/_components/expensesList/expensesList/expensesList";
+import AddMemberForms from "@/app/_components/addMemberForms/addMemberForms";
 import AddExpenseForms from "@/app/_components/expensesList/addExpenseForms/addExpenseForms";
-import HomeSharpIcon from "@mui/icons-material/HomeSharp";
-import { Button } from "@mui/material";
+import ExpensesList from "@/app/_components/expensesList/expensesList/expensesList";
 import AccountCircleSharpIcon from "@mui/icons-material/AccountCircleSharp";
 import GroupsIcon from "@mui/icons-material/Groups";
-import AddMemberForms from "@/app/_components/addMemberForms/addMemberForms";
-
+import HomeSharpIcon from "@mui/icons-material/HomeSharp";
+import { Button } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Home({ params }: { params: { groupId: number } }) {
   const router = useRouter();
   const [debtors, setDebtors] = useState<[]>([]);
+  // NOTE: remover userId do state
   const [userId, setUserId] = useState(0);
   const [updateList, setUpdateList] = useState<boolean>(false);
-  const [users, setUsers] = useState([]);//q
+  const [users, setUsers] = useState([]); //q
 
+  //NOTE setState já dentro do fetch
   const fetchUsers = async (groupId: Number) => {
     const response = await fetch("/api/getUsersGroup", {
       method: "POST",
@@ -26,9 +27,11 @@ export default function Home({ params }: { params: { groupId: number } }) {
     const res = await response.json();
     return res.groupInfo;
   };
+
   useEffect(() => {
+    // Fazer o parse do groupId no topo do componente, Dont repeat yourself DRY, vc reescreveu isso varias vezes nesse arquivo
     fetchUsers(Number(params.groupId)).then((groupInfo) => {
-      console.log(groupInfo)
+      console.log(groupInfo);
       setUsers(groupInfo.members);
       setDebtors(groupInfo.members);
     });
@@ -50,7 +53,13 @@ export default function Home({ params }: { params: { groupId: number } }) {
 
   return (
     <div>
-      {users.length>0&&<AddMemberForms users={users} setUsers={setUsers} groupId= {params.groupId}/>}
+      {users.length > 0 && (
+        <AddMemberForms
+          users={users}
+          setUsers={setUsers}
+          groupId={params.groupId}
+        />
+      )}
       <ExpensesList
         userId={userId}
         updateList={updateList}

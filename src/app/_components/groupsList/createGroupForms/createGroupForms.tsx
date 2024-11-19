@@ -1,15 +1,14 @@
 "use client";
-import { useState, useEffect, Fragment } from "react";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import MembersList from "../membersList/membersList";
+import TextField from "@mui/material/TextField";
 import { User } from "@prisma/client";
-import AddIcon from "@mui/icons-material/Add";
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import { Fragment, useState } from "react";
+import MembersList from "../membersList/membersList";
 
 interface formProps {
   setUpdateGroupList: Function;
@@ -26,6 +25,7 @@ export default function CreateGroupForms({
   const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
 
   const handleClickOpen = () => {
+    // NOTE: vc poderia ter setado na inicialização do state
     setSelectedMembers(users);
     setOpen(true);
   };
@@ -52,6 +52,7 @@ export default function CreateGroupForms({
       body: JSON.stringify(data),
     });
     if (res.ok) {
+      // NOTE: call onGroupCreated "props.onGroupCreated()"
       setUpdateGroupList((prev: boolean) => !prev);
     }
     handleClose();
@@ -59,7 +60,7 @@ export default function CreateGroupForms({
   return (
     <Fragment>
       <Button variant="outlined" onClick={handleClickOpen}>
-      <GroupAddIcon sx={{ width: 30 }} />
+        <GroupAddIcon sx={{ width: 30 }} />
       </Button>
       <Dialog
         open={open}
@@ -94,7 +95,7 @@ export default function CreateGroupForms({
             members={users}
             setSelectedMembers={setSelectedMembers}
             selectedMembers={selectedMembers}
-            userId = {userId}
+            userId={userId}
           />
         </DialogContent>
         <DialogActions>
