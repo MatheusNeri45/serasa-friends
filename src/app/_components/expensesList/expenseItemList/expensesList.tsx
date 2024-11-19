@@ -2,9 +2,9 @@
 import { useState, useEffect } from "react";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
-import ExpensePayButton from "../expensesList/payButton/expensePayButton/expensePayButton";
+import ExpensePayButton from "../payButton/expensePayButton/expensePayButton";
 import { Expense } from "@prisma/client";
-import ProgressBar from "../expensesList/paymentProgressBar/paymentProgressBar";
+import ProgressBar from "../paymentProgressBar/paymentProgressBar";
 
 interface extendedExpense extends Expense {
   paidBy: { name: String };

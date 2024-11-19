@@ -1,13 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
 import SplitExpensesList from "../splitExpenseList/splitExpensesList";
-import { Expense, User } from "@prisma/client";
-import ExpenseListItem from "../../expenseItemList/expensesList";
+import { Expense} from "@prisma/client";
+import ExpenseListItem from "../expenseItemList/expensesList";
 
 interface extendedExpense extends Expense {
   paidBy: { name: String; id: number };

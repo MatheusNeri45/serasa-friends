@@ -6,21 +6,23 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Expense,User } from '@prisma/client';
 
 interface SelectUserProps{
-  users:User[];
+  usersSelection:User[];
+  setUserToAdd:Function;
+  userToAdd:number|null;
 
 }
 
-export default function AddUserSelection({users}:SelectUserProps) {
-  const [userToAdd, setUserToAdd] = useState<number|null>(null)
+export default function AddUserSelection({usersSelection, setUserToAdd, userToAdd}:SelectUserProps) {
+  
+
 
   const handleChange = (event: SelectChangeEvent) => {
-    setUserToAdd(Number(event.target.value));
+    setUserToAdd(parseInt(event.target.value))
   };
 
   return (
     <div>
       <FormControl margin='dense' variant="standard" sx={{minWidth: 120 }} fullWidth>
-        <InputLabel id="demo-simple-select-standard-label">Payer</InputLabel>
         <Select
           labelId="demo-simple-select-standard-label"
           id="demo-simple-select-standard"
@@ -29,7 +31,7 @@ export default function AddUserSelection({users}:SelectUserProps) {
           label="Payer"
           required
         >
-          {users.map((user: User) => (
+          {usersSelection.map((user: User) => (
             <MenuItem key={user.id} value={user.id}>{user.name}</MenuItem>
           ))}
         </Select>

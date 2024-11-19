@@ -5,18 +5,17 @@ import ExpensesList from "@/app/_components/expensesList/expensesList/expensesLi
 import AddExpenseForms from "@/app/_components/expensesList/addExpenseForms/addExpenseForms";
 import HomeSharpIcon from "@mui/icons-material/HomeSharp";
 import { Button } from "@mui/material";
-import PeopleAltSharpIcon from "@mui/icons-material/PeopleAltSharp";
 import AccountCircleSharpIcon from "@mui/icons-material/AccountCircleSharp";
 import GroupsIcon from "@mui/icons-material/Groups";
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1'
+import AddMemberForms from "@/app/_components/addMemberForms/addMemberForms";
 
 
-export default function Home({ params }: { params: { groupId: Number } }) {
+export default function Home({ params }: { params: { groupId: number } }) {
   const router = useRouter();
   const [debtors, setDebtors] = useState<[]>([]);
   const [userId, setUserId] = useState(0);
   const [updateList, setUpdateList] = useState<boolean>(false);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]);//q
 
   const fetchUsers = async (groupId: Number) => {
     const response = await fetch("/api/getUsersGroup", {
@@ -29,6 +28,7 @@ export default function Home({ params }: { params: { groupId: Number } }) {
   };
   useEffect(() => {
     fetchUsers(Number(params.groupId)).then((groupInfo) => {
+      console.log(groupInfo)
       setUsers(groupInfo.members);
       setDebtors(groupInfo.members);
     });
@@ -43,9 +43,6 @@ export default function Home({ params }: { params: { groupId: Number } }) {
       router.push("/");
     }
   }, []);
-  const onAddMember = () => {
-    
-  }
 
   const onViewGroups = () => {
     router.push("/groups");
@@ -53,9 +50,7 @@ export default function Home({ params }: { params: { groupId: Number } }) {
 
   return (
     <div>
-      <Button variant="outlined" sx={{}} onClick={onAddMember}>
-        <PersonAddAlt1Icon sx={{ width: 30 }} />
-      </Button>
+      {users.length>0&&<AddMemberForms users={users} setUsers={setUsers} groupId= {params.groupId}/>}
       <ExpensesList
         userId={userId}
         updateList={updateList}
