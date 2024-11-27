@@ -11,7 +11,7 @@ model User {
   id            Int            @id @default(autoincrement())
   email         String         @unique
   chavePix      String?
-  name          String?
+  name          String
   phoneNumber   String?
   password      String
   paidExpenses  Expense[]      @relation("PaidExpense")
@@ -43,7 +43,8 @@ model Expense {
   paid        Boolean @default(false)
   debtors     SplitExpense[]
   group Group @relation(fields: [groupId], references: [id])
-  groupId Int 
+  groupId Int
+  category String 
 }
 
 model SplitExpense {

@@ -1,20 +1,19 @@
 import { PrismaClient } from "@prisma/client";
-import { error, group } from "console";
 import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
 interface Members{
-  id: Number,
-  name: String,
+  id: number,
+  name: string,
 }
 interface GroupInfo{
-  id: Number,
-  name: String,
-  description:String,
-  createdAt:String,
-  updatedAt:String,
-  creatorId:Number,
+  id: number,
+  name: string,
+  description:string,
+  createdAt:string,
+  updatedAt:string,
+  creatorId:number,
   members: Members[],
 
 }
@@ -35,7 +34,7 @@ export async function POST(request: NextRequest) {
       },
     });
     if(groupInfo){
-      return NextResponse.json({ groupInfo:groupInfo }, { status: 200 });
+      return NextResponse.json({ groupInfo:groupInfo.members }, { status: 200 });
     } 
   } catch {
     return NextResponse.json({ groupInfo: [] }, { status: 200 });

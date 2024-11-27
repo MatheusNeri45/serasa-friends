@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
         description: data.description,
         value: data.value,
         valuePaid: valuePaid,
+        category:data.category,
         paidBy: {
           connect: { id: data.userId },
         },

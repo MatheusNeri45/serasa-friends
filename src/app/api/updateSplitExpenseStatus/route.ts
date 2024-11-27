@@ -1,4 +1,3 @@
-import { Update } from "@mui/icons-material";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";

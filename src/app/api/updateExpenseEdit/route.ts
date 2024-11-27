@@ -1,63 +1,70 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, SplitExpense } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { SplitExpense, Expense, User } from "@prisma/client";
-
-interface extendedExpenseSplits extends SplitExpense {
-  participant: { name: string; id: number };
-}
 
 const prisma = new PrismaClient();
 
-export async function PUT(request: NextRequest) {
+export async function PATCH(request: NextRequest) {
   try {
     const req = await request.json();
-    console.log(req.selectedExpense);
-    const payerId = req.payerExpense.participantId;
-    const updatedExpense = await prisma.expense.update({
-      where: { id: req.selectedExpense.id },
-      data: {
-        paid: false,
-        paidBy: {
-          connect: { id: payerId },
-        },
-        valuePaid: req.payerExpense.value,
-      },
-    });
-    const countUpdatedSplitExpense = await prisma.splitExpense.updateMany({
-      where: { id: req.splitExpense.expenseId },
-      data: {
-        paid: req.splitExpense.participantId === payerId ? true : false,
-      },
-    });
-    if (!countUpdatedSplitExpense || !updatedExpense) {
+
+    if (!req.debtors || !req.expense) {
       return NextResponse.json(
-        {
-          message:
-            "There is no expense nor split expense registered with this ID in the database",
-        },
-        { status: 200 }
+        { message: "'debtors' and 'expense' are required." },
+        { status: 400 }
       );
     }
-    const updatedSplitExpenses = await prisma.splitExpense.findMany({
-      where: { id: req.splitExpense.expenseId },
+
+    const { expense, debtors } = req;
+    const numberDebtors = debtors.length;
+    const expenseValue = expense.value;
+
+    const debtorExpense = debtors.map((debtor: { id: number }) => ({
+      id: debtor.id,
+      value: expenseValue / numberDebtors,
+    }));
+
+    const valuePaid = debtors.some(
+      (debtor: { id: number }) => debtor.id === expense.userId
+    )
+      ? expenseValue / numberDebtors
+      : 0;
+
+    const updatedExpense = await prisma.expense.update({
+      where: { id: expense.id },
+      data: {
+        description: expense.description,
+        value: expense.value,
+        valuePaid: valuePaid,
+        paidBy: {
+          connect: { id: expense.userId },
+        },
+        debtors: {
+          deleteMany: { expenseId: expense.id },
+          create: debtorExpense.map((debtor: SplitExpense) => ({
+            participantId: debtor.id,
+            value: debtor.value,
+            paid: debtor.id === expense.userId,
+          })),
+        },
+      },
       include: {
-        participant: {
-          select: {
-            name: true,
-            id: true,
+        paidBy: true,
+        debtors: {
+          include: {
+            participant: true,
           },
         },
       },
     });
+
+    return NextResponse.json({ updatedExpense }, { status: 200 });
+  } catch {
     return NextResponse.json(
-      { splitExpense: updatedSplitExpenses, expense: updatedExpense },
-      { status: 200 }
-    );
-  } catch (error) {
-    return NextResponse.json(
-      { message: "Unable to find split expenses for this expense." },
-      { status: 200 }
+      {
+        message: "An error occurred while updating the expense.",
+      },
+      { status: 500 }
     );
   }
 }

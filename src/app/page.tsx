@@ -1,95 +1,145 @@
-"use client";
-import { Stack } from "@mui/material";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+'use client';
 
-export default function Home() {
+import { Box, Container, Paper, Typography, TextField, Button, Link } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { AccountBalanceWallet } from '@mui/icons-material';
+import { getUserId } from '@/utils/getUserIdLocalStorage';
+
+export default function LoginPage() {
   const router = useRouter();
-  // NOTE: warning de tipos aqui, o puglin do ts no vscode deveria estar funcionando
-  const [name, setName] = useState<String>("");
-  const [email, setEmail] = useState<String>("");
-  const [password, setPassword] = useState<String>("");
-  const [userId, setUserId] = useState<number | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  // Validar quando tiver os 3 apenas
-  async function onSubmit() {
-    const data = {
-      email: email,
-      name: name,
-      password: password,
-    };
-    const res = await fetch("api/createUser", {
+  const fetchUser = async () =>{
+    const res = await fetch('api/login',{
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    const response = await res.json();
-    const userFound = response.userFound;
-    if (userFound && userFound.id) {
-      // NOTE: vc deveria setar o userId no localStorage aqui
-      // NOTE: o userId não precisa estar no estado sendo q vc já consegue acessar do localStorage
-      // NOTE crie uma função utilitaria pra acessar o userId do localStorage "getUserId"
-      setUserId(userFound.id);
-      router.push("/groups");
+      body: JSON.stringify({email, password}),
+      
+    })
+    console.log(res)
+    const response = await res.json()
+    console.log(response)
+    if(response.userFound){
+      localStorage.setItem('id', String(response.id))
+      router.push('/dashboard')
     }
   }
 
-  // NOTE: o papel desse effect deveria ser só verificar se o userId está no localStorage e redirecionar, não precisa do set
-  useEffect(() => {
-    // NOTE: vc criou uma variavel local userId e uma variavel de estado userId isso pode dar conflito
-    const userId = Number(localStorage.getItem("id"));
-    if (userId) {
-      // NOTE: Pq setando o id no localStorage? se vc acabou de carregar ele de lá
-      // NOTE: agora entendi q vc quer setar o userId carregado no onSubmit
-      localStorage.setItem("id", String(userId));
-      router.push("/groups");
+  useEffect(()=>{
+    const userId = getUserId()
+    if(userId){
+      router.push("/dashboard")
     }
-    // NOTE: o use effect vai rodar toda vez q o userId ou o router mudar de valor vc n quer isso, vc quer rodar isso só uma vez
-  }, [userId, router]);
+  },[])
 
-  // NOTE: cade o feedback de erro ao fazer login com senha incorreta?
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    fetchUser()
+  };
 
   return (
-    <div>
-      <h1>Login</h1>
-      <Stack width={300} gap={1}>
-        <TextField
-          id="filled-basic"
-          label="Full name"
-          variant="filled"
-          value={name}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            setName(event.target.value);
+    <Box 
+      sx={{ 
+        minHeight: '100vh',
+        background: 'linear-gradient(145deg, #1B4332 0%, #081C15 100%)',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <Container maxWidth="sm">
+        <Box sx={{ textAlign: 'center', color: 'white', mb: 4 }}>
+          <AccountBalanceWallet sx={{ fontSize: 64, color: '#B7E4C7', mb: 2 }} />
+          <Typography 
+            variant="h3" 
+            component="h1" 
+            gutterBottom 
+            sx={{
+              fontWeight: 800,
+              letterSpacing: '-1px',
+              background: 'linear-gradient(45deg, #B7E4C7 30%, #FFFFFF 90%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              textShadow: '0 2px 10px rgba(0,0,0,0.2)',
+              mb: 2
+            }}
+          >
+            Welcome Back
+          </Typography>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              opacity: 0.9,
+              fontWeight: 500,
+              color: '#B7E4C7'
+            }}
+          >
+            Outro app para você dever seus amigos
+          </Typography>
+        </Box>
+
+        <Paper 
+          sx={{ 
+            borderRadius: 4,
+            overflow: 'hidden',
+            boxShadow: '0 12px 24px rgba(0,0,0,0.2)',
+            p: 4
           }}
-          placeholder="Full name"
-        />
-        <TextField
-          id="filled-basic"
-          label="E-mail"
-          variant="filled"
-          value={email}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            setEmail(event.target.value);
-          }}
-          placeholder="Email"
-        />
-        <TextField
-          id="filled-basic"
-          label="Password"
-          variant="filled"
-          type="password"
-          value={password}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            setPassword(event.target.value);
-          }}
-          placeholder="Password"
-        />
-        <Button variant="outlined" onClick={onSubmit}>
-          Criar conta
-        </Button>
-      </Stack>
-    </div>
+        >
+          <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Email"
+              margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              label="Password"
+              type="password"
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              sx={{ mb: 3 }}
+            />
+            <Button
+              fullWidth
+              variant="contained"
+              size="large"
+              type="submit"
+              sx={{ 
+                py: 2,
+                bgcolor: 'primary.main',
+                '&:hover': {
+                  bgcolor: 'primary.dark',
+                },
+                boxShadow: '0 4px 14px 0 rgba(27, 67, 50, 0.4)',
+              }}
+            >
+              Sign In
+            </Button>
+          </form>
+          <Box sx={{ mt: 3, textAlign: 'center' }}>
+            <Link 
+              href="/register" 
+              sx={{ 
+                color: 'primary.main',
+                textDecoration: 'none',
+                fontWeight: 500,
+                '&:hover': {
+                  textDecoration: 'underline'
+                }
+              }}
+            >
+              Don't have an account? Sign up
+            </Link>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 }
