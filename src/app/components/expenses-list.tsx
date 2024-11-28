@@ -11,7 +11,6 @@ import {
   Menu,
   MenuItem,
   LinearProgress,
-  ListItemButton,
   ListItem,
 } from "@mui/material";
 import {
@@ -254,7 +253,9 @@ export default function ExpensesList({
                       Math.ceil(
                         (100 *
                           expense.debtors.reduce(
-                            (total, splitExpense) => total + (splitExpense.paid?splitExpense.value:0),
+                            (total, splitExpense) =>
+                              total +
+                              (splitExpense.paid ? splitExpense.value : 0),
                             0
                           )) /
                           expense.debtors.reduce(

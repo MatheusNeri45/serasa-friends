@@ -29,13 +29,10 @@ export default function DashboardPage() {
   const router = useRouter();
   const [createGroupOpen, setCreateGroupOpen] = useState(false);
   const [groups, setGroups] = useState<ExtendedGroup[]>([]);
-  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const userId = getUserId();
-    if (userId) {
-      fetchUsers();
-    } else {
+    if (!userId) {
       router.push("/login");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -44,12 +41,6 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchGroupsList();
   }, []);
-
-  const fetchUsers = async () => {
-    const response = await fetch("/api/getUsers");
-    const res = await response.json();
-    setUsers(res.users);
-  };
 
   const fetchGroupsList = async () => {
     const userId = getUserId();
@@ -202,7 +193,10 @@ export default function DashboardPage() {
                         borderRadius: 0.5,
                         bgcolor: "rgba(183, 228, 199, 0.3)",
                         "& .MuiLinearProgress-bar": {
-                          bgcolor: "primary.main",
+                          bgcolor:
+                            group.expenses.length > 0
+                              ? "primary.main"
+                              : "grey.400",
                         },
                       }}
                     />
@@ -216,18 +210,19 @@ export default function DashboardPage() {
                     }}
                   >
                     Settlement:{" "}
-                    {Math.ceil(
-                      (100 *
-                        group.expenses.reduce(
-                          (total, expense) => total + expense.valuePaid,
-                          0
-                        )) /
-                        group.expenses.reduce(
-                          (total, expense) => total + expense.value,
-                          0
-                        )
-                    ) || 100}
-                    %
+                    {group.expenses.length > 0
+                      ? Math.ceil(
+                          (100 *
+                            group.expenses.reduce(
+                              (total, expense) => total + expense.valuePaid,
+                              0
+                            )) /
+                            group.expenses.reduce(
+                              (total, expense) => total + expense.value,
+                              0
+                            )
+                        ) + "%" || 100 + "%"
+                      : "No expenses yet"}
                   </Typography>
                   <Box
                     sx={{

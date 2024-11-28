@@ -32,6 +32,7 @@ export default function LoginPage() {
     if(userId){
       router.push("/dashboard")
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
 
@@ -135,7 +136,7 @@ export default function LoginPage() {
                 }
               }}
             >
-              Don't have an account? Sign up
+              {"Don't have an account? Sign up"}
             </Link>
           </Box>
         </Paper>
