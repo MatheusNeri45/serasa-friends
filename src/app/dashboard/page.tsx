@@ -77,7 +77,7 @@ export default function DashboardPage() {
           >
             Serasa-Friends
           </Typography>
-          <Avatar sx={{ bgcolor: "primary.main" }}>J</Avatar>
+          <Avatar sx={{ bgcolor: "primary.main" }}>MN</Avatar>
         </Toolbar>
       </AppBar>
 

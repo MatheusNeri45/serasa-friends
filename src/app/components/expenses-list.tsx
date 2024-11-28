@@ -1,4 +1,4 @@
-//criar balance pra memmber'use client';
+"use client";
 
 import {
   Box,
@@ -12,6 +12,7 @@ import {
   MenuItem,
   LinearProgress,
   ListItemButton,
+  ListItem,
 } from "@mui/material";
 import {
   MoreVert as MoreVertIcon,
@@ -99,6 +100,27 @@ export default function ExpensesList({
     handleMenuClose();
   };
 
+  const onPaySplitExpense = async (splitExpense: splitExpenseExtended) => {
+    const res = await fetch("/api/updateSplitExpenseStatus", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ splitExpense: splitExpense }),
+    });
+    if (res.ok) {
+      onEditExpense();
+    }
+  };
+  const onPayExpense = async (expense: extendedExpense) => {
+    const res = await fetch("/api/updateExpenseStatus", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ expense: expense }),
+    });
+    if (res.ok) {
+      onEditExpense();
+    }
+  };
+
   if (expenses?.length === 0) {
     return (
       <Box
@@ -148,7 +170,7 @@ export default function ExpensesList({
     <List sx={{ width: "100%", bgcolor: "background.paper", borderRadius: 1 }}>
       {expenses?.map((expense, index) => (
         <Box key={expense.id}>
-          <ListItemButton
+          <ListItem
             sx={{
               py: 2,
               px: 3,
@@ -157,7 +179,7 @@ export default function ExpensesList({
               borderRadius: "10px",
               transition: "all 0.2s ease",
               "&:hover": {
-                bgcolor: "rgba(45, 106, 79, 0.08)",
+                bgcolor: "rgba(45, 106, 79, 0.05)",
                 transform: "translateY(-2px)",
               },
             }}
@@ -231,12 +253,12 @@ export default function ExpensesList({
                     value={
                       Math.ceil(
                         (100 *
-                          expenses.reduce(
-                            (total, expense) => total + expense.valuePaid,
+                          expense.debtors.reduce(
+                            (total, splitExpense) => total + (splitExpense.paid?splitExpense.value:0),
                             0
                           )) /
-                          expenses.reduce(
-                            (total, expense) => total + expense.value,
+                          expense.debtors.reduce(
+                            (total, splitExpense) => total + splitExpense.value,
                             0
                           )
                       ) || 100
@@ -272,6 +294,12 @@ export default function ExpensesList({
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                   {expense.debtors.map((person) => (
                     <Chip
+                      clickable
+                      onClick={() => {
+                        if (person.participantId !== expense.paidBy.id) {
+                          onPaySplitExpense(person);
+                        }
+                      }}
                       key={person.id}
                       label={`${
                         person.participant.name
@@ -279,11 +307,32 @@ export default function ExpensesList({
                       size="small"
                       sx={{
                         bgcolor: person.paid
-                          ? "secondary.main"
-                          : "background.default",
+                          ? person.participantId !== expense.paidBy.id
+                            ? "secondary.main"
+                            : "primary.light"
+                          : "#FFA4A4",
                         fontWeight: 500,
+                        color:
+                          person.participantId !== expense.paidBy.id
+                            ? "text.primary"
+                            : "white",
+                        "&:hover": {
+                          color:
+                            person.participantId !== expense.paidBy.id
+                              ? "text.primary"
+                              : "white",
+                          bgcolor: person.paid
+                            ? person.participantId !== expense.paidBy.id
+                              ? "#FFA4A4"
+                              : "primary.main"
+                            : "secondary.main",
+                          transform: "scale(1.1)",
+                        },
+                        transition: "all 0.2s",
+                        alignSelf: "center",
+                        mr: "4px",
                       }}
-                    />
+                    ></Chip>
                   ))}
                 </Box>
                 <IconButton
@@ -298,7 +347,7 @@ export default function ExpensesList({
                 </IconButton>
               </Box>
             </Box>
-          </ListItemButton>
+          </ListItem>
           {index < expenses.length - 1 && (
             <Divider sx={{ mt: 1, mb: 1, ml: 9, mr: 3 }} />
           )}
@@ -324,6 +373,12 @@ export default function ExpensesList({
               sx={{ color: "error.main" }}
             >
               Delete expense
+            </MenuItem>
+            <MenuItem
+              onClick={() => onPayExpense(expense)}
+              sx={{ color: "primary.main" }}
+            >
+              Pay full expense
             </MenuItem>
           </Menu>
         </Box>

@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 export async function PUT(request: NextRequest) {
   try {
     const req = await request.json();
+    console.log(req)
     let paidCounter = 0;
     const splitExpenseId = req.splitExpense.id;
     const expenseId = req.splitExpense.expenseId;
@@ -22,27 +23,39 @@ export async function PUT(request: NextRequest) {
         paidCounter++;
       }
     });
-    if (splitExpenseListLength - paidCounter === 1) {
+    const splitLeft = splitExpenseListLength - paidCounter
+    if (splitLeft === 1) {
+      //aqui pdem ser duas situações
       await prisma.expense.update({
         where: { id: expenseId },
         data: {
-          paid: true,
+          paid: req.splitExpense.paid?false:true,
+        },
+      });
+    }else if(splitLeft === 0){
+      await prisma.expense.update({
+        where: { id: expenseId },
+        data: {
+          paid: false,
         },
       });
     }
     const updatedSplitExpense = await prisma.splitExpense.update({
       where: { id: splitExpenseId },
       data: {
-        paid: req.paid,
+        paid: {
+          set:!req.splitExpense.paid,
+        },
         expense: {
           update: {
             valuePaid: {
-              increment: splitExpenseValue,
+              increment: req.splitExpense.paid?-splitExpenseValue:splitExpenseValue,
             },
           },
         },
       },
     });
+    console.log(updatedSplitExpense)
     if (!updatedSplitExpense) {
       return NextResponse.json(
         {

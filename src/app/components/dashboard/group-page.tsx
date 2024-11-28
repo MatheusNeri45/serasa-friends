@@ -12,6 +12,8 @@ import {
   IconButton,
   AvatarGroup,
   ListItemButton,
+  AppBar,
+  Toolbar,
 } from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
@@ -96,6 +98,22 @@ export default function GroupPageClient() {
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh", pb: 4 }}>
+      <AppBar
+        position="fixed"
+        elevation={0}
+        sx={{ bgcolor: "white", color: "text.primary" }}
+      >
+        <Toolbar>
+          <Typography
+            variant="h6"
+            sx={{ flexGrow: 1, color: "primary.main", fontWeight: "bold" }}
+          >
+            Serasa-Friends
+          </Typography>
+          <Avatar sx={{ bgcolor: "primary.main" }}>MN</Avatar>
+        </Toolbar>
+      </AppBar>
+      <Toolbar />
       <Container maxWidth="xl">
         <Box sx={{ pt: 3, pb: 4 }}>
           <Box
@@ -123,13 +141,13 @@ export default function GroupPageClient() {
                     transform: "scale(1.1)",
                   },
                   transition: "all 0.2s",
-                  alignSelf:"center",
-                  mr:"4px"
+                  alignSelf: "center",
+                  mr: "4px",
                 }}
               >
                 <ArrowBackIcon />
               </IconButton>
-              <Box sx={{display:"flex", flexDirection:"column"}}>
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
                 <Typography
                   variant="h4"
                   sx={{
@@ -153,9 +171,8 @@ export default function GroupPageClient() {
                       fontSize: "0.875rem",
                       bgcolor: "primary.main",
                       border: "2px solid white",
-                      
                     },
-                    alignSelf:"flex-start",
+                    alignSelf: "flex-start",
                   }}
                 >
                   {group?.members.map((member) => (
@@ -274,20 +291,35 @@ export default function GroupPageClient() {
                   </Typography>
                   <List sx={{ px: 1 }}>
                     {group?.members.map((member: User) => {
-                      const totalPaid = group.expenses
-                        .filter((expense) => expense.paidBy.id === member.id)
-                        .reduce((total, expense) => total + expense.value, 0);
+                      const totalPaid =
+                        group.expenses
+                          .filter((expense) => expense.paidBy.id === member.id)
+                          .reduce(
+                            (total, expense) => total + expense.value,
+                            0
+                          ) -
+                        group.expenses
+                          .filter((expense) => expense.paidBy.id === member.id)
+                          .reduce(
+                            (total, expense) =>
+                              total + (expense.valuePaid || 0),
+                            0
+                          );
 
                       const totalDebt = group.expenses
                         .filter((expense) =>
                           expense.debtors.some(
-                            (debtor) => debtor.participantId === member.id
+                            (debtor) =>
+                              debtor.participantId === member.id &&
+                              debtor.paid === false
                           )
                         )
                         .map((expense) =>
                           expense.debtors
                             .filter(
-                              (debtor) => debtor.participantId === member.id
+                              (debtor) =>
+                                debtor.participantId === member.id &&
+                                debtor.paid === false
                             )
                             .map((debtor) => debtor.value)
                         )
@@ -297,6 +329,7 @@ export default function GroupPageClient() {
                             values.reduce((sum, value) => sum + value, 0),
                           0
                         );
+
                       const balance = Number(
                         (totalPaid - totalDebt).toFixed(2)
                       );
