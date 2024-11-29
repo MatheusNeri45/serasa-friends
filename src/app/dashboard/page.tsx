@@ -50,8 +50,8 @@ export default function DashboardPage() {
       body: JSON.stringify({ userId }),
     });
     const res = await response.json();
-    console.log(res.groups);
     setGroups(res.groups);
+    console.log(res.groups)
   };
 
   return (
@@ -94,10 +94,10 @@ export default function DashboardPage() {
                 mb: 1,
               }}
             >
-              Your Groups
+              Seus grupos
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
-              Manage and track your shared expenses
+              Fique de olho e cobre o seu amigo caloteiro!
             </Typography>
           </Box>
           <Button
@@ -111,7 +111,7 @@ export default function DashboardPage() {
               boxShadow: "0 4px 12px rgba(45, 106, 79, 0.2)",
             }}
           >
-            New Group
+            Novo grupo
           </Button>
         </Box>
 
@@ -209,7 +209,7 @@ export default function DashboardPage() {
                       fontWeight: 500,
                     }}
                   >
-                    Settlement:{" "}
+                    Dívidas pagas:{" "}
                     {group.expenses.length > 0
                       ? Math.ceil(
                           (100 *
@@ -260,7 +260,7 @@ export default function DashboardPage() {
                         fontWeight: 500,
                       }}
                     >
-                      {group.members.length} members
+                      {group.members.length} membros
                     </Typography>
                   </Box>
                 </CardContent>
@@ -273,6 +273,7 @@ export default function DashboardPage() {
       <CreateGroupModal
         open={createGroupOpen}
         onClose={() => setCreateGroupOpen(false)}
+        onGroupCreated={()=>fetchGroupsList()}
       />
     </Box>
   );

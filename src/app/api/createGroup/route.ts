@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   const req = await request.json();
-  console.log(req.groupInfo.userId)
+  console.log(req)
   try {
     const group = await prisma.group.create({
       data: {
@@ -17,13 +17,14 @@ export async function POST(request: NextRequest) {
         },
         members: {
           connect: [
-            ...(req.members||[]).map((member: User) => ({
+            ...(req.groupInfo.members||[]).map((member: User) => ({
               id: member.id,
             })),
           ],
         },
       },
     });
+    console.log(group)
     return NextResponse.json(
       { message: "Group created", groupCreated: group },
       { status: 200 }
