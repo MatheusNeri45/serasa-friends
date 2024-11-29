@@ -272,7 +272,7 @@ export default function DashboardPage() {
 
       <CreateGroupModal
         open={createGroupOpen}
-        onClose={() => setCreateGroupOpen(false)}
+        setCreatedGroupOpen={setCreateGroupOpen}
         onGroupCreated={()=>fetchGroupsList()}
       />
     </Box>

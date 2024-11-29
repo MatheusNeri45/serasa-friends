@@ -17,15 +17,16 @@ import { useEffect, useState } from "react";
 
 interface CreateGroupModalProps {
   open: boolean;
-  onClose: () => void;
+  setCreatedGroupOpen: (boolean: boolean) => void;
   onGroupCreated: () => void;
 }
 
 export default function CreateGroupModal({
   open,
-  onClose,
+  setCreatedGroupOpen,
   onGroupCreated,
 }: CreateGroupModalProps) {
+  const userId = getUserId();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [members, setMembers] = useState<User[]>([]);
@@ -37,7 +38,7 @@ export default function CreateGroupModal({
       name: groupName,
       description: description,
       members: selectedMembers,
-      userId: getUserId(),
+      userId: userId,
     };
     const res = await fetch("/api/createGroup", {
       method: "POST",
@@ -46,10 +47,25 @@ export default function CreateGroupModal({
     });
     if (res.ok) {
       onGroupCreated();
+      const loggedUser = members.filter(
+        (user: User) => user.id === Number(userId)
+      );
+      setSelectedMembers([...selectedMembers, loggedUser[0]]);
     }
-    onClose();
+    setCreatedGroupOpen(false);
   };
-
+  const onCloseModal = () => {
+    const loggedUser = members.filter(
+      (user: User) => user.id === Number(userId)
+    );
+    const loggedUserInSelectedMembers = selectedMembers.filter(
+      (user: User) => user.id === userId
+    )[0];
+    if (!loggedUserInSelectedMembers) {
+      setSelectedMembers([...selectedMembers, loggedUser[0]]);
+    }
+    setCreatedGroupOpen(false);
+  };
   useEffect(() => {
     fetchMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,11 +75,10 @@ export default function CreateGroupModal({
     const res = await fetch("/api/getUsers");
     const response = await res.json();
     if (res.ok) {
-      const userId = getUserId();
       const loggedUser = response.users.filter(
         (user: User) => user.id === Number(userId)
       );
-      console.log(loggedUser)
+      console.log(loggedUser);
       setSelectedMembers([...selectedMembers, loggedUser[0]]);
       setMembers(response.users);
     }
@@ -72,7 +87,7 @@ export default function CreateGroupModal({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={onCloseModal}
       maxWidth="sm"
       fullWidth
       PaperProps={{
@@ -146,7 +161,7 @@ export default function CreateGroupModal({
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={onClose} variant="outlined">
+          <Button onClick={onCloseModal} variant="outlined">
             Cancel
           </Button>
           <Button type="submit" variant="contained">
