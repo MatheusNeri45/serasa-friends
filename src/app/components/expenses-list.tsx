@@ -147,7 +147,7 @@ export default function ExpensesList({
             mb: 1,
           }}
         >
-          No expenses yet
+          Sem despesas adicionadas.
         </Typography>
         <Typography
           variant="body2"

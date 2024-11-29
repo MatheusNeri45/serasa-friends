@@ -18,11 +18,21 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import CreateGroupModal from "../components/dashboard/modals/create-group-modal";
 import { getUserId } from "@/utils/getUserIdLocalStorage";
-import { Expense, Group, User } from "@prisma/client";
+import { Expense, Group, SplitExpense, User } from "@prisma/client";
+import Summary from "../components/dashboard/summary";
+
+interface splitExpenseExtended extends SplitExpense {
+  participant: User;
+}
+
+interface ExtendedExpense extends Expense {
+  paidBy: User;
+  debtors: Array<splitExpenseExtended>;
+}
 
 interface ExtendedGroup extends Group {
   members: User[];
-  expenses: Expense[];
+  expenses: ExtendedExpense[];
 }
 
 export default function DashboardPage() {
@@ -51,7 +61,6 @@ export default function DashboardPage() {
     });
     const res = await response.json();
     setGroups(res.groups);
-    console.log(res.groups)
   };
 
   return (
@@ -268,12 +277,13 @@ export default function DashboardPage() {
             </Grid2>
           ))}
         </Grid2>
+        <Summary groups={groups} userId={getUserId()} />
       </Container>
 
       <CreateGroupModal
         open={createGroupOpen}
         setCreatedGroupOpen={setCreateGroupOpen}
-        onGroupCreated={()=>fetchGroupsList()}
+        onGroupCreated={() => fetchGroupsList()}
       />
     </Box>
   );

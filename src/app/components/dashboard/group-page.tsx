@@ -70,7 +70,6 @@ export default function GroupPageClient() {
       body: JSON.stringify({ expenseId: expenseId }),
     });
     const res = await response.json();
-    console.log(res);
     fetchGroupInfo();
   };
 

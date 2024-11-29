@@ -18,9 +18,7 @@ export default function LoginPage() {
       body: JSON.stringify({email, password}),
       
     })
-    console.log(res)
     const response = await res.json()
-    console.log(response)
     if(response.userFound){
       localStorage.setItem('id', String(response.id))
       router.push('/dashboard')

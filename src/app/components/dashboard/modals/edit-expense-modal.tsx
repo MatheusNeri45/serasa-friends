@@ -89,7 +89,7 @@ export default function EditExpenseModal({
     event.preventDefault();
     const data = {
       expense: {
-        id: selectedExpense.id,
+        id: selectedExpense?.id,
         userId: Number(paidBy),
         description: String(description),
         category: String(category),
@@ -102,8 +102,8 @@ export default function EditExpenseModal({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response = await res.json();
-    console.log(response);
     if (res.ok) {
       onExpenseEdited();
       onClose();
@@ -214,7 +214,6 @@ export default function EditExpenseModal({
               renderTags={(value, getTagProps) =>
                 value.map((user, index) => (
                   <Chip
-                    // Note pq???
                     label={user.name}
                     {...getTagProps({ index })}
                     sx={{

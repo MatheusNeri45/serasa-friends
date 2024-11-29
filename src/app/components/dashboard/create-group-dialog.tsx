@@ -42,8 +42,6 @@ export default function CreateGroupDialog({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      // Here you would typically make an API call to create the group
-      console.log(values);
       reset();
       onClose();
     } finally {

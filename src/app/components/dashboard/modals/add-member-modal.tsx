@@ -52,7 +52,7 @@ export default function AddMemberModal({ open, onClose, onAddMember }: AddMember
       body: JSON.stringify({ email: email, groupId:Number(groupId) }),
     });
     const response = await res.json();
-    console.log(response)
+
     if (res.ok) {
       onAddMember()
       onClose();

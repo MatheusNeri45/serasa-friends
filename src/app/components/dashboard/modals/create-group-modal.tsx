@@ -78,7 +78,6 @@ export default function CreateGroupModal({
       const loggedUser = response.users.filter(
         (user: User) => user.id === Number(userId)
       );
-      console.log(loggedUser);
       setSelectedMembers([...selectedMembers, loggedUser[0]]);
       setMembers(response.users);
     }

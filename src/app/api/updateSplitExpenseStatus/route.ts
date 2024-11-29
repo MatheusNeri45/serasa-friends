@@ -7,7 +7,6 @@ const prisma = new PrismaClient();
 export async function PUT(request: NextRequest) {
   try {
     const req = await request.json();
-    console.log(req)
     let paidCounter = 0;
     const splitExpenseId = req.splitExpense.id;
     const expenseId = req.splitExpense.expenseId;
@@ -55,7 +54,6 @@ export async function PUT(request: NextRequest) {
         },
       },
     });
-    console.log(updatedSplitExpense)
     if (!updatedSplitExpense) {
       return NextResponse.json(
         {

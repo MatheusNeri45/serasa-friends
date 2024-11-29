@@ -8,13 +8,11 @@ const prisma = new PrismaClient();
 export async function POST(request: NextRequest) {
   try{
   const req = await request.json();
-  console.log(req)
   const userFound = await prisma.user.findFirst({
     where: {
       email: req.email,
     },
   });
-  console.log(userFound)
   if (userFound) {
     const passwordMatch = await bcrypt.compare(
       req.password,
