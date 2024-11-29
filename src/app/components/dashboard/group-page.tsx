@@ -69,6 +69,7 @@ export default function GroupPageClient() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ expenseId: expenseId }),
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const res = await response.json();
     fetchGroupInfo();
   };
@@ -181,7 +182,7 @@ export default function GroupPageClient() {
                   },
                 }}
               >
-                Add Member
+                Adicionar Caloteiro
               </Button>
               <Button
                 variant="contained"
@@ -194,7 +195,7 @@ export default function GroupPageClient() {
                   boxShadow: "0 4px 14px rgba(45, 106, 79, 0.25)",
                 }}
               >
-                Add Expense
+                Adicionar Despesa
               </Button>
             </Box>
           </Box>
@@ -225,7 +226,7 @@ export default function GroupPageClient() {
                       textAlign: "center",
                     }}
                   >
-                    Recent Expenses
+                    Despesas do Grupo
                   </Typography>
 
                   {group?.expenses && (
@@ -264,7 +265,7 @@ export default function GroupPageClient() {
                       textAlign: "center",
                     }}
                   >
-                    Balances
+                    Saldos
                   </Typography>
                   <BalanceList group={group} />
                 </CardContent>

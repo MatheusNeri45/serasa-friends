@@ -186,7 +186,7 @@ export default function BalanceList({ group }: BalanceListProps) {
                       letterSpacing: "0.5px",
                     }}
                   >
-                    ${Math.abs(balance)}
+                    R$ {Math.abs(balance)}
                   </Typography>
                 </Box>
               </Box>
@@ -238,7 +238,7 @@ export default function BalanceList({ group }: BalanceListProps) {
                                   variant="body2"
                                   sx={{ color: "text.secondary", pl: 1 }}
                                 >
-                                  {debtor.participant.name}: $
+                                  {debtor.participant.name}: R$ 
                                   {debtor.value.toFixed(2)}
                                 </Typography>
                               ))}
@@ -265,7 +265,7 @@ export default function BalanceList({ group }: BalanceListProps) {
                             <Box key={expense.id} sx={{ mb: 1, pl: 2 }}>
                               <Typography variant="body2">
                                 {expense.description} (para{" "}
-                                {expense.paidBy.name}): ${debtAmount.toFixed(2)}
+                                {expense.paidBy.name}): R$ {debtAmount.toFixed(2)}
                               </Typography>
                             </Box>
                           );

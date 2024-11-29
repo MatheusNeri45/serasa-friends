@@ -161,10 +161,10 @@ export default function CreateGroupModal({
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button onClick={onCloseModal} variant="outlined">
-            Cancel
+            Cancelar
           </Button>
           <Button type="submit" variant="contained">
-            Create Group
+            Criar Grupo
           </Button>
         </DialogActions>
       </form>

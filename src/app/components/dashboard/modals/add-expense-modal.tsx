@@ -52,7 +52,7 @@ export default function AddExpenseModal({
 
   useEffect(() => {
     fetchUsers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUsers = async () => {
@@ -85,10 +85,10 @@ export default function AddExpenseModal({
     });
     if (res.ok) {
       onExpenseCreated();
-      setValue("")
-      setDescription("")
-      setPaidBy("")
-      setCategory("")
+      setValue("");
+      setDescription("");
+      setPaidBy("");
+      setCategory("");
       onClose();
     }
   };
@@ -196,10 +196,9 @@ export default function AddExpenseModal({
               renderTags={(value, getTagProps) =>
                 value.map((user, index) => (
                   <Chip
-                    key={user.id}
-                    // Note pq???
                     label={user.name}
                     {...getTagProps({ index })}
+                    key={user.id}
                     sx={{
                       bgcolor: "primary.light",
                       color: "white",
@@ -251,13 +250,17 @@ export default function AddExpenseModal({
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={()=>{
-            onClose()
-            setValue("")
-            setDescription("")
-            setPaidBy("")
-            setCategory("")}} variant="outlined">
-            Cancel
+          <Button
+            onClick={() => {
+              onClose();
+              setValue("");
+              setDescription("");
+              setPaidBy("");
+              setCategory("");
+            }}
+            variant="outlined"
+          >
+            Cancelar
           </Button>
           <Button
             type="submit"
@@ -269,7 +272,7 @@ export default function AddExpenseModal({
               selectedParticipants.length === 0
             }
           >
-            Add Expense
+            Adicionar Despesa
           </Button>
         </DialogActions>
       </form>

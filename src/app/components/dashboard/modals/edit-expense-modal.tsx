@@ -258,7 +258,7 @@ export default function EditExpenseModal({
                         {participant.name}
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        ${splitAmount.toFixed(2)}
+                        R$ {splitAmount.toFixed(2)}
                       </Typography>
                     </Box>
                   ))}
@@ -278,7 +278,7 @@ export default function EditExpenseModal({
             }}
             variant="outlined"
           >
-            Cancel
+            Cancelar
           </Button>
           <Button
             type="submit"

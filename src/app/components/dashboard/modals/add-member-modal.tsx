@@ -51,6 +51,7 @@ export default function AddMemberModal({ open, onClose, onAddMember }: AddMember
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: email, groupId:Number(groupId) }),
     });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response = await res.json();
 
     if (res.ok) {
@@ -105,10 +106,10 @@ export default function AddMemberModal({ open, onClose, onAddMember }: AddMember
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button onClick={onClose} variant="outlined">
-            Cancel
+            Cancelar
           </Button>
           <Button type="submit" variant="contained">
-            Add Member
+            Adicionar Caloteiro
           </Button>
         </DialogActions>
       </form>

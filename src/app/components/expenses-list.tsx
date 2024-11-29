@@ -237,7 +237,7 @@ export default function ExpensesList({
                       fontWeight: 700,
                     }}
                   >
-                    R${" "}
+                    R$ {" "}
                     {expense.debtors
                       .reduce(
                         (total, expense) =>
@@ -304,7 +304,7 @@ export default function ExpensesList({
                       key={person.id}
                       label={`${
                         person.participant.name
-                      }: $${person.value.toFixed(2)}`}
+                      }: R$ ${person.value.toFixed(2)}`}
                       size="small"
                       sx={{
                         bgcolor: person.paid

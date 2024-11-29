@@ -165,7 +165,7 @@ export default function DashboardPage() {
                       gap: 0.5,
                     }}
                   >
-                    R$
+                    R$ 
                     {group.expenses.reduce(
                       (total, expense) => total + expense.value,
                       0
@@ -218,9 +218,8 @@ export default function DashboardPage() {
                       fontWeight: 500,
                     }}
                   >
-                    Dívidas pagas:{" "}
                     {group.expenses.length > 0
-                      ? Math.ceil(
+                      ? "Dívidas pagas:" + Math.ceil(
                           (100 *
                             group.expenses.reduce(
                               (total, expense) => total + expense.valuePaid,
@@ -231,7 +230,7 @@ export default function DashboardPage() {
                               0
                             )
                         ) + "%" || 100 + "%"
-                      : "No expenses yet"}
+                      : "Sem dívidas por enquanto."}
                   </Typography>
                   <Box
                     sx={{

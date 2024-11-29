@@ -142,7 +142,7 @@ export default function Summary({ groups, userId }: SummaryGroupsProps) {
                             sx={{ color: "success.main", fontSize: "1rem" }}
                           />
                           <Typography variant="body2" color="success.main">
-                            Owed: R${balance.owed}
+                            Owed: R$ {balance.owed}
                           </Typography>
                         </Box>
                       )}
@@ -158,7 +158,7 @@ export default function Summary({ groups, userId }: SummaryGroupsProps) {
                             sx={{ color: "error.main", fontSize: "1rem" }}
                           />
                           <Typography variant="body2" color="error.main">
-                            Owing: R${balance.owing}
+                            Devendo: R$ {balance.owing}
                           </Typography>
                         </Box>
                       )}
@@ -188,7 +188,7 @@ export default function Summary({ groups, userId }: SummaryGroupsProps) {
                         <ArrowDownwardIcon />
                       ))}
                     <Typography sx={{ fontWeight: 600 }}>
-                      R${Math.abs(netBalance)}
+                      R$ {Math.abs(netBalance)}
                     </Typography>
                   </Box>
                 </ListItemButton>
@@ -245,7 +245,7 @@ export default function Summary({ groups, userId }: SummaryGroupsProps) {
                                       variant="body2"
                                       sx={{ color: "text.secondary", pl: 1 }}
                                     >
-                                      {debtor.participant.name}: $
+                                      {debtor.participant.name}: R$ 
                                       {debtor.value.toFixed(2)}
                                     </Typography>
                                   ))}
@@ -278,7 +278,7 @@ export default function Summary({ groups, userId }: SummaryGroupsProps) {
                                 <Box key={expense.id} sx={{ mb: 1, pl: 2 }}>
                                   <Typography variant="body2">
                                     {expense.description} (para{" "}
-                                    {expense.paidBy.name}): $
+                                    {expense.paidBy.name}): R${" "}
                                     {debtAmount.toFixed(2)}
                                   </Typography>
                                 </Box>
