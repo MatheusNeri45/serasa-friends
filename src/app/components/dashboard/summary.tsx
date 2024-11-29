@@ -48,11 +48,9 @@ export default function Summary({ groups, userId }: SummaryGroupsProps) {
     let totalOwing = 0;
     group.expenses.forEach((expense: ExtendedExpense) => {
       if (expense.paidBy.id === userId) {
-        // Amount others owe you
         totalOwed = totalOwed + expense.value - (expense.valuePaid || 0);
       }
 
-      // Amount you owe others
       const userDebt = expense.debtors.find(
         (debtor: splitExpenseExtended) =>
           debtor.participantId === userId && !debtor.paid
@@ -120,8 +118,8 @@ export default function Summary({ groups, userId }: SummaryGroupsProps) {
                   >
                     {group.name
                       .split(" ")
-                      .slice(0, 2) // Seleciona apenas as duas primeiras palavras
-                      .map((n) => n[0]) // Pega a inicial de cada palavra
+                      .slice(0, 2) 
+                      .map((n) => n[0])
                       .join("")
                       .toUpperCase()}
                   </Avatar>

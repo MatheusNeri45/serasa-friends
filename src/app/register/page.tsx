@@ -12,7 +12,7 @@ export default function RegisterPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add registration logic here
+    //criar lógica de register
     router.push('/dashboard');
   };
 
