@@ -237,7 +237,7 @@ export default function ExpensesList({
                       fontWeight: 700,
                     }}
                   >
-                    R$ {" "}
+                    R${" "}
                     {expense.debtors
                       .reduce(
                         (total, expense) =>
@@ -308,10 +308,14 @@ export default function ExpensesList({
                       size="small"
                       sx={{
                         bgcolor: person.paid
-                          ? person.participantId !== expense.paidBy.id
+                          ? person.value == 0
+                            ? "grey[200]"
+                            : person.participantId !== expense.paidBy.id
                             ? "secondary.main"
                             : "primary.light"
-                          : "#FFA4A4",
+                          : person.value == 0
+                          ? "grey[200]"
+                          : "error.light",
                         fontWeight: 500,
                         color:
                           person.participantId !== expense.paidBy.id
@@ -323,9 +327,13 @@ export default function ExpensesList({
                               ? "text.primary"
                               : "white",
                           bgcolor: person.paid
-                            ? person.participantId !== expense.paidBy.id
-                              ? "#FFA4A4"
+                            ? person.value == 0
+                              ? "grey[200]"
+                              : person.participantId !== expense.paidBy.id
+                              ? "error.light"
                               : "primary.main"
+                            : person.value == 0
+                            ? "grey[200]"
                             : "secondary.main",
                           transform: "scale(1.1)",
                         },

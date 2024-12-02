@@ -20,6 +20,10 @@ import { User } from "@prisma/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+interface splitAmountUser extends User {
+  splitAmount: number;
+}
+
 interface AddExpenseModalProps {
   open: boolean;
   onClose: () => void;
@@ -37,6 +41,12 @@ const categories = [
   { value: "outros", label: "Outros" },
 ];
 
+const splitTypes = [
+  { value: "equally", label: "Igualmente" },
+  { value: "parts", label: "Partes do todo" },
+  { value: "value", label: "Valores" },
+];
+
 export default function AddExpenseModal({
   open,
   onClose,
@@ -49,6 +59,8 @@ export default function AddExpenseModal({
   const [users, setUsers] = useState<User[]>([]);
   const [selectedParticipants, setSelectedParticipants] = useState<User[]>([]);
   const [category, setCategory] = useState("");
+  const [splitType, setSplitType] = useState("");
+  const [splitValues, setSplitValues] = useState<splitAmountUser[]>([]);
 
   useEffect(() => {
     fetchUsers();
@@ -64,32 +76,53 @@ export default function AddExpenseModal({
     const res = await response.json();
     setUsers(res.groupInfo);
     setSelectedParticipants(res.groupInfo);
+    const splitValues = res.groupInfo.map((user: User) => ({
+      ...user,
+      splitAmount: 0,
+    }));
+    setSplitValues(splitValues);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = {
-      expense: {
-        userId: paidBy,
-        description: String(description),
-        category: String(category),
-        value: Number(value),
-        groupId: Number(groupId),
-      },
-      debtors: selectedParticipants,
-    };
-    const res = await fetch("/api/createExpense", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+    let sumSplits = 0;
+
+    const filteredDebtors = splitValues.filter((user: splitAmountUser) =>
+      selectedParticipants.some((selected) => selected.id === user.id)
+    );
+
+    splitValues.forEach((user: splitAmountUser) => {
+      sumSplits += user.splitAmount;
     });
-    if (res.ok) {
-      onExpenseCreated();
-      setValue("");
-      setDescription("");
-      setPaidBy("");
-      setCategory("");
-      onClose();
+
+    if (
+      (splitType === "value" && sumSplits === Number(value)) ||
+      splitType === "parts"
+    ) {
+      const data = {
+        expense: {
+          userId: paidBy,
+          description: String(description),
+          category: String(category),
+          value: Number(value),
+          groupId: Number(groupId),
+          splitType: splitType,
+        },
+        debtors: filteredDebtors,
+      };
+      const res = await fetch("/api/createExpense", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        onExpenseCreated();
+        setValue("");
+        setDescription("");
+        setPaidBy("");
+        setCategory("");
+        setSplitType("");
+      }
     }
   };
   const splitAmount =
@@ -99,7 +132,10 @@ export default function AddExpenseModal({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={(_, reason) => {
+        if (reason === "backdropClick") return;
+        onClose();
+      }}
       maxWidth="sm"
       fullWidth
       PaperProps={{
@@ -118,7 +154,7 @@ export default function AddExpenseModal({
           WebkitTextFillColor: "transparent",
         }}
       >
-        Add New Expense
+        Adicionar despesa
       </DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>
@@ -178,6 +214,22 @@ export default function AddExpenseModal({
               </Select>
             </FormControl>
 
+            <FormControl fullWidth>
+              <InputLabel>Modo de divisão</InputLabel>
+              <Select
+                value={splitType}
+                label="Modo de divisão"
+                onChange={(e) => setSplitType(e.target.value)}
+                required
+              >
+                {splitTypes.map((splitType) => (
+                  <MenuItem key={splitType.label} value={splitType.value}>
+                    {splitType.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <Autocomplete
               multiple
               options={users}
@@ -210,43 +262,187 @@ export default function AddExpenseModal({
                 ))
               }
             />
+           {splitType !== "equally" && splitType && value && selectedParticipants.length > 0 && (
+  <Box
+    sx={{
+      mt: 3,
+      p: 3,
+      bgcolor: 'background.paper',
+      borderRadius: 2,
+      border: '1px solid',
+      borderColor: 'primary.light',
+      boxShadow: '0 4px 12px rgba(45, 106, 79, 0.08)',
+    }}
+  >
+    <Typography
+      variant="subtitle1"
+      sx={{
+        mb: 2,
+        fontWeight: 700,
+        color: 'primary.main',
+        borderBottom: '2px solid',
+        borderColor: 'primary.light',
+        pb: 1,
+      }}
+    >
+      Divisão Personalizada
+    </Typography>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      {selectedParticipants.map((participant) => (
+        <Box
+          key={participant.id}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            p: 2,
+            bgcolor: 'grey.50',
+            borderRadius: 1,
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              bgcolor: 'grey.100',
+              transform: 'translateY(-2px)',
+            },
+          }}
+        >
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              fontWeight: 500,
+              color: 'text.primary',
+              flex: 1,
+            }}
+          >
+            {participant.name}
+          </Typography>
+          <TextField
+            size="small"
+            label={splitType === "parts" ? "Partes" : "Valor"}
+            type="number"
+            value={
+              splitValues.find(
+                (item: splitAmountUser) => item.id === participant.id
+              )?.splitAmount || ""
+            }
+            onChange={(e) =>
+              setSplitValues((prevSplitValues) =>
+                prevSplitValues.map((user) =>
+                  user.id === participant.id
+                    ? {
+                        ...user,
+                        splitAmount: parseFloat(e.target.value),
+                      }
+                    : user
+                )
+              )
+            }
+            required
+            sx={{
+              width: '150px',
+              '& .MuiOutlinedInput-root': {
+                bgcolor: 'background.paper',
+                '&:hover': {
+                  '& > fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                },
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: 'text.secondary',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {splitType === "parts" ? "#" : "R$"}
+                  </Typography>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Box>
+      ))}
+    </Box>
+  </Box>
+)}
 
-            {selectedParticipants.length > 0 && value && (
-              <Box
-                sx={{
-                  mt: 1,
-                  p: 2,
-                  bgcolor: "primary.light",
-                  borderRadius: 2,
-                  color: "white",
-                }}
-              >
-                <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                  Divisão
-                </Typography>
-                <Box
-                  sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
-                >
-                  {selectedParticipants.map((participant) => (
-                    <Box
-                      key={participant.id}
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography variant="body2">
-                        {participant.name}
-                      </Typography>
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        R$ {splitAmount.toFixed(2)}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-              </Box>
-            )}
+{selectedParticipants.length > 0 && value && splitType === "equally" && (
+  <Box
+    sx={{
+      mt: 3,
+      p: 3,
+      bgcolor: 'background.paper',
+      borderRadius: 2,
+      border: '1px solid',
+      borderColor: 'primary.light',
+      boxShadow: '0 4px 12px rgba(45, 106, 79, 0.08)',
+    }}
+  >
+    <Typography
+      variant="subtitle1"
+      sx={{
+        mb: 2,
+        fontWeight: 700,
+        color: 'primary.main',
+        borderBottom: '2px solid',
+        borderColor: 'primary.light',
+        pb: 1,
+      }}
+    >
+      Divisão Igual
+    </Typography>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      {selectedParticipants.map((participant) => (
+        <Box
+          key={participant.id}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            p: 2,
+            bgcolor: 'grey.50',
+            borderRadius: 1,
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              bgcolor: 'grey.100',
+              transform: 'translateY(-2px)',
+            },
+          }}
+        >
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              fontWeight: 500,
+              color: 'text.primary',
+            }}
+          >
+            {participant.name}
+          </Typography>
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              fontWeight: 600,
+              color: 'secondary.light',
+              bgcolor: 'primary.light',
+              px: 2,
+              py: 1,
+              borderRadius: 1,
+              minWidth: '120px',
+              textAlign: 'center',
+            }}
+          >
+            R$ {splitAmount.toFixed(2)}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  </Box>
+)}
+
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
@@ -257,6 +453,7 @@ export default function AddExpenseModal({
               setDescription("");
               setPaidBy("");
               setCategory("");
+              setSplitType("");
             }}
             variant="outlined"
           >
@@ -269,6 +466,7 @@ export default function AddExpenseModal({
               !description ||
               !value ||
               !paidBy ||
+              !splitType ||
               selectedParticipants.length === 0
             }
           >

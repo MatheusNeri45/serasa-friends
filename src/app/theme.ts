@@ -5,12 +5,12 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#1B4332', // Darker forest green
+      main: '#1B4332', 
       light: '#2D6A4F',
       dark: '#081C15',
     },
     secondary: {
-      main: '#B7E4C7', // Soft mint green
+      main: '#B7E4C7', 
       light: '#D8F3DC',
       dark: '#95D5B2',
     },
@@ -23,6 +23,8 @@ export const theme = createTheme({
     },
     error: {
       main: '#D62828',
+      light: '#FFA4A4',
+      dark: '#B22222',
     },
   },
   shape: {
