@@ -238,7 +238,7 @@ export default function BalanceList({ group }: BalanceListProps) {
                                   variant="body2"
                                   sx={{ color: "text.secondary", pl: 1 }}
                                 >
-                                  {debtor.participant.name}: R$ 
+                                  {debtor.participant.name}: R$ {" "} 
                                   {debtor.value.toFixed(2)}
                                 </Typography>
                               ))}

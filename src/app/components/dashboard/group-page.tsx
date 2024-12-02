@@ -86,7 +86,7 @@ export default function GroupPageClient() {
             variant="h6"
             sx={{ flexGrow: 1, color: "primary.main", fontWeight: "bold" }}
           >
-            Serasa-Friends
+            Serasa Friends
           </Typography>
           <Avatar sx={{ bgcolor: "primary.main" }}>MN</Avatar>
         </Toolbar>
@@ -182,7 +182,7 @@ export default function GroupPageClient() {
                   },
                 }}
               >
-                Adicionar Caloteiro
+                Adicionar membro
               </Button>
               <Button
                 variant="contained"
@@ -195,7 +195,7 @@ export default function GroupPageClient() {
                   boxShadow: "0 4px 14px rgba(45, 106, 79, 0.25)",
                 }}
               >
-                Adicionar Despesa
+                Adicionar despesa
               </Button>
             </Box>
           </Box>

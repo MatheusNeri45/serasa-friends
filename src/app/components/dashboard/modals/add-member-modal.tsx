@@ -109,7 +109,7 @@ export default function AddMemberModal({ open, onClose, onAddMember }: AddMember
             Cancelar
           </Button>
           <Button type="submit" variant="contained">
-            Adicionar Caloteiro
+            Adicionar membro
           </Button>
         </DialogActions>
       </form>

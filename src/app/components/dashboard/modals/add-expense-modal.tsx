@@ -27,14 +27,14 @@ interface AddExpenseModalProps {
 }
 
 const categories = [
-  { value: "shopping", label: "Shopping" },
-  { value: "dining", label: "Dining" },
-  { value: "housing", label: "Housing" },
-  { value: "transport", label: "Transport" },
-  { value: "health", label: "Health" },
-  { value: "entertainment", label: "Entertainment" },
-  { value: "education", label: "Education" },
-  { value: "other", label: "Other" },
+  { value: "compras", label: "Compras" },
+  { value: "alimentação", label: "Alimentação" },
+  { value: "hospedagem", label: "Hospedagem" },
+  { value: "transporte", label: "Transporte" },
+  { value: "saúde", label: "Saúde" },
+  { value: "diversão", label: "Diversão" },
+  { value: "educação", label: "Educação" },
+  { value: "outros", label: "Outros" },
 ];
 
 export default function AddExpenseModal({
@@ -56,7 +56,7 @@ export default function AddExpenseModal({
   }, []);
 
   const fetchUsers = async () => {
-    const response = await fetch("/api/getUsersGroup", {
+    const response = await fetch("/api/getUsersInGroup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ groupId: Number(groupId) }),
@@ -125,7 +125,7 @@ export default function AddExpenseModal({
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
             <TextField
               autoFocus
-              label="Description"
+              label="Descrição"
               fullWidth
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -133,7 +133,7 @@ export default function AddExpenseModal({
             />
 
             <TextField
-              label="Value"
+              label="Valor"
               type="number"
               fullWidth
               value={value}
@@ -141,16 +141,16 @@ export default function AddExpenseModal({
               required
               InputProps={{
                 startAdornment: (
-                  <InputAdornment position="start">$</InputAdornment>
+                  <InputAdornment position="start">R$</InputAdornment>
                 ),
               }}
             />
 
             <FormControl fullWidth>
-              <InputLabel>Category</InputLabel>
+              <InputLabel>Categoria</InputLabel>
               <Select
                 value={category}
-                label="Category"
+                label="Categoria"
                 onChange={(e) => setCategory(e.target.value)}
                 required
               >
@@ -163,10 +163,10 @@ export default function AddExpenseModal({
             </FormControl>
 
             <FormControl fullWidth>
-              <InputLabel>Paid by</InputLabel>
+              <InputLabel>Pago por</InputLabel>
               <Select
                 value={paidBy}
-                label="Paid by"
+                label="Pago por"
                 onChange={(e) => setPaidBy(e.target.value)}
                 required
               >
@@ -189,8 +189,8 @@ export default function AddExpenseModal({
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Split with"
-                  placeholder="Select members"
+                  label="Dividir com"
+                  placeholder="Selecione os caloteiros"
                 />
               )}
               renderTags={(value, getTagProps) =>
@@ -222,7 +222,7 @@ export default function AddExpenseModal({
                 }}
               >
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-                  Split Preview
+                  Divisão
                 </Typography>
                 <Box
                   sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}
@@ -240,7 +240,7 @@ export default function AddExpenseModal({
                         {participant.name}
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        ${splitAmount.toFixed(2)}
+                        R$ {splitAmount.toFixed(2)}
                       </Typography>
                     </Box>
                   ))}
@@ -272,7 +272,7 @@ export default function AddExpenseModal({
               selectedParticipants.length === 0
             }
           >
-            Adicionar Despesa
+            Adicionar despesa
           </Button>
         </DialogActions>
       </form>

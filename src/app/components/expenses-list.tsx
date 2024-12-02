@@ -38,14 +38,14 @@ interface extendedExpense extends Expense {
 }
 
 const categoryIcons: { [key: string]: React.ReactElement } = {
-  shopping: <ShoppingBagIcon />,
-  dining: <DiningIcon />,
-  housing: <HomeIcon />,
-  transport: <TransportIcon />,
-  health: <HealthIcon />,
-  entertainment: <EntertainmentIcon />,
-  education: <EducationIcon />,
-  other: <OtherIcon />,
+  compras: <ShoppingBagIcon />,
+  alimentação: <DiningIcon />,
+  hospedagem: <HomeIcon />,
+  transporte: <TransportIcon />,
+  saúde: <HealthIcon />,
+  diversão: <EntertainmentIcon />,
+  educação: <EducationIcon />,
+  outros: <OtherIcon />,
 };
 
 const categoryColors: { [key: string]: string } = {
@@ -158,7 +158,7 @@ export default function ExpensesList({
           }}
         >
           {
-            "Start adding expenses to track your group's spending and split bills easily."
+            "Adicione despesas e evite que seus amigos caloteiros passem a perna em você, ou não."
           }
         </Typography>
       </Box>
@@ -217,7 +217,7 @@ export default function ExpensesList({
                       gap: 1,
                     }}
                   >
-                    Paid by {expense.paidBy.name}
+                    Pago por {expense.paidBy.name}
                     <Chip
                       label={expense.category}
                       size="small"
@@ -367,19 +367,19 @@ export default function ExpensesList({
             transformOrigin={{ horizontal: "right", vertical: "top" }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
-            <MenuItem onClick={() => handleEdit()}>Edit expense</MenuItem>
+            <MenuItem onClick={() => handleEdit()}>Editar despesa</MenuItem>
 
             <MenuItem
               onClick={() => handleDelete()}
               sx={{ color: "error.main" }}
             >
-              Delete expense
+              Deletar despesa
             </MenuItem>
             <MenuItem
               onClick={() => onPayExpense(expense)}
               sx={{ color: "primary.main" }}
             >
-              Pay full expense
+              Marcar pago
             </MenuItem>
           </Menu>
         </Box>

@@ -75,7 +75,7 @@ export default function DashboardPage() {
             variant="h6"
             sx={{ flexGrow: 1, color: "primary.main", fontWeight: "bold" }}
           >
-            Serasa-Friends
+            Serasa Friends
           </Typography>
           <Avatar sx={{ bgcolor: "primary.main" }}>MN</Avatar>
         </Toolbar>
