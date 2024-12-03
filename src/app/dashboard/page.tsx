@@ -17,7 +17,7 @@ import { Add as AddIcon, Group as GroupIcon } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import CreateGroupModal from "../components/dashboard/modals/create-group-modal";
-import { getUserId } from "@/utils/getUserIdLocalStorage";
+import { getUserId } from "@/utils/getJwtFromCookie";
 import { Expense, Group, SplitExpense, User } from "@prisma/client";
 import Summary from "../components/dashboard/summary";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { getUserId } from "@/utils/getUserIdLocalStorage";
+import { getUserId } from "@/utils/getJwtFromCookie";
 import {
   Dialog,
   DialogTitle,
