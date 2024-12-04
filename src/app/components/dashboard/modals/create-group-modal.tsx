@@ -25,7 +25,6 @@ export default function CreateGroupModal({
   setCreatedGroupOpen,
   onGroupCreated,
 }: CreateGroupModalProps) {
-  //NOTE ADICIONAR USERID AQUI
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [members, setMembers] = useState<User[]>([]);

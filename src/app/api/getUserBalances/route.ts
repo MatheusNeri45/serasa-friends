@@ -21,7 +21,6 @@ interface ExtendedGroup extends Group {
 
 export async function GET(request: NextRequest) {
   const userId = getUserIdFromCookie(request);
-  console.log(userId)
   if (!userId) {
     return NextResponse.json({ message: "User not authenticated" });
   }

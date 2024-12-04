@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
-  //NOTE ADICIONAR USERID AQUI
   const userId = getUserIdFromCookie(request);
   try {
     const groups = await prisma.group.findMany({

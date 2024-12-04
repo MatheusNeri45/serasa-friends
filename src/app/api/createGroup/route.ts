@@ -7,10 +7,8 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   const req = await request.json();
-  //NOTE ADICIONAR USERID AQUI
   const userId = getUserIdFromCookie(request);
   try {
-    console.log(userId);
     const group = await prisma.group.create({
       data: {
         name: req.groupInfo.name,

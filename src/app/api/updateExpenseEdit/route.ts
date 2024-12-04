@@ -22,13 +22,11 @@ export async function PATCH(request: NextRequest) {
       debtorId: share.id,
       amount: expenseAmount / numberShares,
     }));
-    console.log(shareExpense);
     const paidAmount = shares.some(
       (share: User) => share.id === expense.payerId
     )
       ? expenseAmount / numberShares
       : 0;
-    console.log(paidAmount);
 
     const updatedExpense = await prisma.expense.update({
       where: { id: expense.id },
@@ -62,7 +60,6 @@ export async function PATCH(request: NextRequest) {
         },
       },
     });
-    console.log(updatedExpense);
 
     return NextResponse.json({ updatedExpense }, { status: 200 });
   } catch {

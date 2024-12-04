@@ -84,7 +84,6 @@ export default function EditExpenseModal({
     setValue(selectedExpense?.amount || null);
     setCategory(selectedExpense?.category || "");
   };
-  //NOTE AJUSTAR VALOR DO BALANCE, EDIT EXPENSE E UPDATE SHARE EXPENSE PAID
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = {
