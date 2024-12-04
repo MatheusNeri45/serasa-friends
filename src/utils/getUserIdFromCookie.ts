@@ -5,7 +5,7 @@ interface DecodedToken {
 }
 
 export function getUserIdFromCookie(request: NextRequest) {
-  const JWT_SECRET = process.env.JWT_SECRET;
+  const JWT_SECRET = process.env.JWT_SECRET_KEY;
   const cookie = request.cookies.get("token"); // 'token' é o nome do cookie
   if (cookie) {
     const decoded = jwt.verify(cookie.value, JWT_SECRET) as DecodedToken;

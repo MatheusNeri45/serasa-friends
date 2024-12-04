@@ -8,7 +8,7 @@ import { serialize } from "cookie";
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
-  const JWT_SECRET =process.env.JWT_SECRET;
+  const JWT_SECRET =process.env.JWT_SECRET_KEY;
   const req = await request.json();
   const userFound = await prisma.user.findFirst({
     where: {
