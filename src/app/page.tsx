@@ -10,9 +10,8 @@ import {
   Link,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AccountBalanceWallet } from "@mui/icons-material";
-import { getJwtFromCookie } from "@/utils/getJwtFromCookie";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,24 +23,14 @@ export default function LoginPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
-      credentials: "include",
+        credentials: "include",
     });
-    const response = await res.json();
-    if (response.token) {
-      localStorage.setItem("id", String(response.id));
+    if (res.ok) {
       router.push("/dashboard");
     } else {
       console.error("Authentication failed");
     }
   };
-
-  useEffect(() => {
-    const token = getJwtFromCookie();
-    if (token) {
-      router.push("/dashboard");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

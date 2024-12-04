@@ -17,22 +17,31 @@ import { Add as AddIcon, Group as GroupIcon } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import CreateGroupModal from "../components/dashboard/modals/create-group-modal";
-import { getUserId } from "@/utils/getJwtFromCookie";
-import { Expense, Group, SplitExpense, User } from "@prisma/client";
+import {
+  Expense,
+  Group,
+  ExpenseShare,
+  User,
+  GroupMember,
+} from "@prisma/client";
 import Summary from "../components/dashboard/summary";
 
-interface splitExpenseExtended extends SplitExpense {
-  participant: User;
+interface ExtendedExpenseShare extends ExpenseShare {
+  debtor: User;
 }
 
 interface ExtendedExpense extends Expense {
-  paidBy: User;
-  debtors: Array<splitExpenseExtended>;
+  payer: User;
+  shares: Array<ExtendedExpenseShare>;
 }
 
 interface ExtendedGroup extends Group {
-  members: User[];
+  members: ExtendedGroupMember[];
   expenses: ExtendedExpense[];
+}
+
+interface ExtendedGroupMember extends GroupMember {
+  user: { id: number; name: string; email: string };
 }
 
 export default function DashboardPage() {
@@ -41,24 +50,11 @@ export default function DashboardPage() {
   const [groups, setGroups] = useState<ExtendedGroup[]>([]);
 
   useEffect(() => {
-    const userId = getUserId();
-    if (!userId) {
-      router.push("/login");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     fetchGroupsList();
   }, []);
 
   const fetchGroupsList = async () => {
-    const userId = getUserId();
-    const response = await fetch("/api/getAllGroupsUser", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
-    });
+    const response = await fetch("/api/getAllGroupsUser");
     const res = await response.json();
     setGroups(res.groups);
   };
@@ -165,9 +161,9 @@ export default function DashboardPage() {
                       gap: 0.5,
                     }}
                   >
-                    R$ 
+                    R$
                     {group.expenses.reduce(
-                      (total, expense) => total + expense.value,
+                      (total, expense) => total + expense.amount,
                       0
                     )}
                     <Typography
@@ -188,11 +184,11 @@ export default function DashboardPage() {
                         Math.ceil(
                           (100 *
                             group.expenses.reduce(
-                              (total, expense) => total + expense.valuePaid,
+                              (total, expense) => total + expense.paidAmount,
                               0
                             )) /
                             group.expenses.reduce(
-                              (total, expense) => total + expense.value,
+                              (total, expense) => total + expense.amount,
                               0
                             )
                         ) || 100
@@ -219,17 +215,19 @@ export default function DashboardPage() {
                     }}
                   >
                     {group.expenses.length > 0
-                      ? "Dívidas pagas:" + Math.ceil(
-                          (100 *
-                            group.expenses.reduce(
-                              (total, expense) => total + expense.valuePaid,
-                              0
-                            )) /
-                            group.expenses.reduce(
-                              (total, expense) => total + expense.value,
-                              0
-                            )
-                        ) + "%" || 100 + "%"
+                      ? "Dívidas pagas:" +
+                          Math.ceil(
+                            (100 *
+                              group.expenses.reduce(
+                                (total, expense) => total + expense.paidAmount,
+                                0
+                              )) /
+                              group.expenses.reduce(
+                                (total, expense) => total + expense.amount,
+                                0
+                              )
+                          ) +
+                          "%" || 100 + "%"
                       : "Sem dívidas por enquanto."}
                   </Typography>
                   <Box
@@ -252,9 +250,12 @@ export default function DashboardPage() {
                         },
                       }}
                     >
-                      {group.members.map((member) => (
-                        <Avatar key={member.id} alt={member.name}>
-                          {member.name
+                      {group.members.map((groupMember:ExtendedGroupMember) => (
+                        <Avatar
+                          key={groupMember.user.id}
+                          alt={groupMember.user.name}
+                        >
+                          {groupMember.user.name
                             .split(" ")
                             .map((n) => n[0])
                             .join("")}
@@ -276,7 +277,7 @@ export default function DashboardPage() {
             </Grid2>
           ))}
         </Grid2>
-        <Summary groups={groups} userId={getUserId()} />
+        <Summary groups={groups} />
       </Container>
 
       <CreateGroupModal

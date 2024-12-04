@@ -2,24 +2,30 @@ import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { User } from "@prisma/client";
+import { getUserIdFromCookie } from "@/utils/getUserIdFromCookie";
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   const req = await request.json();
+  //NOTE ADICIONAR USERID AQUI
+  const userId = getUserIdFromCookie(request);
   try {
+    console.log(userId);
     const group = await prisma.group.create({
       data: {
         name: req.groupInfo.name,
         description: req.groupInfo.description || null,
-        createdBy: {
-          connect: { id: req.groupInfo.userId },
+        owner: {
+          connect: { id: Number(userId) },
         },
         members: {
-          connect: [
-            ...(req.groupInfo.members||[]).map((member: User) => ({
-              id: member.id,
-            })),
-          ],
+          createMany: {
+            data: [
+              ...(req.groupInfo.members || []).map((member: User) => ({
+                userId: member.id,
+              })),
+            ],
+          },
         },
       },
     });

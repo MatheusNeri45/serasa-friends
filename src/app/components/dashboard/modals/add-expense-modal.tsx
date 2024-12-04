@@ -54,18 +54,21 @@ export default function AddExpenseModal({
 }: AddExpenseModalProps) {
   const { groupId } = useParams();
   const [description, setDescription] = useState("");
-  const [value, setValue] = useState("");
+  const [amount, setAmount] = useState("");
   const [paidBy, setPaidBy] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [selectedParticipants, setSelectedParticipants] = useState<User[]>([]);
   const [category, setCategory] = useState("");
   const [splitType, setSplitType] = useState("");
-  const [splitValues, setSplitValues] = useState<splitAmountUser[]>([]);
+  const [shareSplitAmounts, setShareSplitAmounts] = useState<splitAmountUser[]>(
+    []
+  );
 
   useEffect(() => {
     fetchUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [onClose]);
+
 
   const fetchUsers = async () => {
     const response = await fetch("/api/getUsersInGroup", {
@@ -74,37 +77,36 @@ export default function AddExpenseModal({
       body: JSON.stringify({ groupId: Number(groupId) }),
     });
     const res = await response.json();
-    setUsers(res.groupInfo);
-    setSelectedParticipants(res.groupInfo);
-    const splitValues = res.groupInfo.map((user: User) => ({
+    setUsers(res.members);
+    setSelectedParticipants(res.members);
+    const shareSplitAmounts = res.members.map((user: User) => ({
       ...user,
       splitAmount: 0,
     }));
-    setSplitValues(splitValues);
+    setShareSplitAmounts(shareSplitAmounts);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     let sumSplits = 0;
 
-    const filteredDebtors = splitValues.filter((user: splitAmountUser) =>
+    const filteredDebtors = shareSplitAmounts.filter((user: splitAmountUser) =>
       selectedParticipants.some((selected) => selected.id === user.id)
     );
-
-    splitValues.forEach((user: splitAmountUser) => {
+    shareSplitAmounts.forEach((user: splitAmountUser) => {
       sumSplits += user.splitAmount;
     });
-
     if (
-      (splitType === "value" && sumSplits === Number(value)) ||
-      splitType === "parts"
+      (splitType === "value" && sumSplits === Number(amount)) ||
+      splitType === "parts" ||
+      splitType === "equally"
     ) {
       const data = {
         expense: {
           userId: paidBy,
           description: String(description),
           category: String(category),
-          value: Number(value),
+          value: Number(amount),
           groupId: Number(groupId),
           splitType: splitType,
         },
@@ -117,17 +119,18 @@ export default function AddExpenseModal({
       });
       if (res.ok) {
         onExpenseCreated();
-        setValue("");
+        setAmount("");
         setDescription("");
         setPaidBy("");
         setCategory("");
         setSplitType("");
+        onClose()
       }
-    }
+    } 
   };
   const splitAmount =
     selectedParticipants.length > 0
-      ? Number(value) / selectedParticipants.length
+      ? Number(amount) / selectedParticipants.length
       : 0;
   return (
     <Dialog
@@ -172,8 +175,8 @@ export default function AddExpenseModal({
               label="Valor"
               type="number"
               fullWidth
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
               required
               InputProps={{
                 startAdornment: (
@@ -262,194 +265,203 @@ export default function AddExpenseModal({
                 ))
               }
             />
-           {splitType !== "equally" && splitType && value && selectedParticipants.length > 0 && (
-  <Box
-    sx={{
-      mt: 3,
-      p: 3,
-      bgcolor: 'background.paper',
-      borderRadius: 2,
-      border: '1px solid',
-      borderColor: 'primary.light',
-      boxShadow: '0 4px 12px rgba(45, 106, 79, 0.08)',
-    }}
-  >
-    <Typography
-      variant="subtitle1"
-      sx={{
-        mb: 2,
-        fontWeight: 700,
-        color: 'primary.main',
-        borderBottom: '2px solid',
-        borderColor: 'primary.light',
-        pb: 1,
-      }}
-    >
-      Divisão Personalizada
-    </Typography>
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      {selectedParticipants.map((participant) => (
-        <Box
-          key={participant.id}
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            p: 2,
-            bgcolor: 'grey.50',
-            borderRadius: 1,
-            transition: 'all 0.2s ease',
-            '&:hover': {
-              bgcolor: 'grey.100',
-              transform: 'translateY(-2px)',
-            },
-          }}
-        >
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              fontWeight: 500,
-              color: 'text.primary',
-              flex: 1,
-            }}
-          >
-            {participant.name}
-          </Typography>
-          <TextField
-            size="small"
-            label={splitType === "parts" ? "Partes" : "Valor"}
-            type="number"
-            value={
-              splitValues.find(
-                (item: splitAmountUser) => item.id === participant.id
-              )?.splitAmount || ""
-            }
-            onChange={(e) =>
-              setSplitValues((prevSplitValues) =>
-                prevSplitValues.map((user) =>
-                  user.id === participant.id
-                    ? {
-                        ...user,
-                        splitAmount: parseFloat(e.target.value),
-                      }
-                    : user
-                )
-              )
-            }
-            required
-            sx={{
-              width: '150px',
-              '& .MuiOutlinedInput-root': {
-                bgcolor: 'background.paper',
-                '&:hover': {
-                  '& > fieldset': {
-                    borderColor: 'primary.main',
-                  },
-                },
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      color: 'text.secondary',
-                      fontWeight: 500,
+            {splitType !== "equally" &&
+              splitType &&
+              amount &&
+              selectedParticipants.length > 0 && (
+                <Box
+                  sx={{
+                    mt: 3,
+                    p: 3,
+                    bgcolor: "background.paper",
+                    borderRadius: 2,
+                    border: "1px solid",
+                    borderColor: "primary.light",
+                    boxShadow: "0 4px 12px rgba(45, 106, 79, 0.08)",
+                  }}
+                >
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      mb: 2,
+                      fontWeight: 700,
+                      color: "primary.main",
+                      borderBottom: "2px solid",
+                      borderColor: "primary.light",
+                      pb: 1,
                     }}
                   >
-                    {splitType === "parts" ? "#" : "R$"}
+                    Divisão Personalizada
                   </Typography>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Box>
-      ))}
-    </Box>
-  </Box>
-)}
+                  <Box
+                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                  >
+                    {selectedParticipants.map((participant) => (
+                      <Box
+                        key={participant.id}
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          p: 2,
+                          bgcolor: "grey.50",
+                          borderRadius: 1,
+                          transition: "all 0.2s ease",
+                          "&:hover": {
+                            bgcolor: "grey.100",
+                            transform: "translateY(-2px)",
+                          },
+                        }}
+                      >
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontWeight: 500,
+                            color: "text.primary",
+                            flex: 1,
+                          }}
+                        >
+                          {participant.name}
+                        </Typography>
+                        <TextField
+                          size="small"
+                          label={splitType === "parts" ? "Partes" : "Valor"}
+                          type="number"
+                          value={
+                            shareSplitAmounts.find(
+                              (item: splitAmountUser) =>
+                                item.id === participant.id
+                            )?.splitAmount || ""
+                          }
+                          onChange={(e) =>
+                            setShareSplitAmounts((prevshareSplitAmounts) =>
+                              prevshareSplitAmounts.map((user) =>
+                                user.id === participant.id
+                                  ? {
+                                      ...user,
+                                      splitAmount: parseFloat(e.target.value),
+                                    }
+                                  : user
+                              )
+                            )
+                          }
+                          required
+                          sx={{
+                            width: "150px",
+                            "& .MuiOutlinedInput-root": {
+                              bgcolor: "background.paper",
+                              "&:hover": {
+                                "& > fieldset": {
+                                  borderColor: "primary.main",
+                                },
+                              },
+                            },
+                          }}
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: "text.secondary",
+                                    fontWeight: 500,
+                                  }}
+                                >
+                                  {splitType === "parts" ? "#" : "R$"}
+                                </Typography>
+                              </InputAdornment>
+                            ),
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              )}
 
-{selectedParticipants.length > 0 && value && splitType === "equally" && (
-  <Box
-    sx={{
-      mt: 3,
-      p: 3,
-      bgcolor: 'background.paper',
-      borderRadius: 2,
-      border: '1px solid',
-      borderColor: 'primary.light',
-      boxShadow: '0 4px 12px rgba(45, 106, 79, 0.08)',
-    }}
-  >
-    <Typography
-      variant="subtitle1"
-      sx={{
-        mb: 2,
-        fontWeight: 700,
-        color: 'primary.main',
-        borderBottom: '2px solid',
-        borderColor: 'primary.light',
-        pb: 1,
-      }}
-    >
-      Divisão Igual
-    </Typography>
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      {selectedParticipants.map((participant) => (
-        <Box
-          key={participant.id}
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            p: 2,
-            bgcolor: 'grey.50',
-            borderRadius: 1,
-            transition: 'all 0.2s ease',
-            '&:hover': {
-              bgcolor: 'grey.100',
-              transform: 'translateY(-2px)',
-            },
-          }}
-        >
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              fontWeight: 500,
-              color: 'text.primary',
-            }}
-          >
-            {participant.name}
-          </Typography>
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              fontWeight: 600,
-              color: 'secondary.light',
-              bgcolor: 'primary.light',
-              px: 2,
-              py: 1,
-              borderRadius: 1,
-              minWidth: '120px',
-              textAlign: 'center',
-            }}
-          >
-            R$ {splitAmount.toFixed(2)}
-          </Typography>
-        </Box>
-      ))}
-    </Box>
-  </Box>
-)}
-
+            {selectedParticipants.length > 0 &&
+              amount &&
+              splitType === "equally" && (
+                <Box
+                  sx={{
+                    mt: 3,
+                    p: 3,
+                    bgcolor: "background.paper",
+                    borderRadius: 2,
+                    border: "1px solid",
+                    borderColor: "primary.light",
+                    boxShadow: "0 4px 12px rgba(45, 106, 79, 0.08)",
+                  }}
+                >
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      mb: 2,
+                      fontWeight: 700,
+                      color: "primary.main",
+                      borderBottom: "2px solid",
+                      borderColor: "primary.light",
+                      pb: 1,
+                    }}
+                  >
+                    Divisão Igual
+                  </Typography>
+                  <Box
+                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                  >
+                    {selectedParticipants.map((participant) => (
+                      <Box
+                        key={participant.id}
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          p: 2,
+                          bgcolor: "grey.50",
+                          borderRadius: 1,
+                          transition: "all 0.2s ease",
+                          "&:hover": {
+                            bgcolor: "grey.100",
+                            transform: "translateY(-2px)",
+                          },
+                        }}
+                      >
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontWeight: 500,
+                            color: "text.primary",
+                          }}
+                        >
+                          {participant.name}
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontWeight: 600,
+                            color: "secondary.light",
+                            bgcolor: "primary.light",
+                            px: 2,
+                            py: 1,
+                            borderRadius: 1,
+                            minWidth: "120px",
+                            textAlign: "center",
+                          }}
+                        >
+                          R$ {splitAmount.toFixed(2)}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              )}
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button
             onClick={() => {
               onClose();
-              setValue("");
+              setAmount("");
               setDescription("");
               setPaidBy("");
               setCategory("");
@@ -464,7 +476,7 @@ export default function AddExpenseModal({
             variant="contained"
             disabled={
               !description ||
-              !value ||
+              !amount ||
               !paidBy ||
               !splitType ||
               selectedParticipants.length === 0

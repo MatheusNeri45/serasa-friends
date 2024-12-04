@@ -9,9 +9,8 @@ interface splitAmountUser extends User {
 }
 
 export async function POST(request: NextRequest) {
-  const req = await request.json();
-
   try {
+    const req = await request.json();
     let sumSplitParts = 0;
     req.debtors.forEach((user: splitAmountUser) => {
       sumSplitParts += user.splitAmount;
@@ -28,37 +27,35 @@ export async function POST(request: NextRequest) {
         ? req.debtors
         : req.debtors.map((debtor: splitAmountUser) => ({
             id: debtor.id,
-            splitAmount:
-              (debtor.splitAmount * expenseValue) / sumSplitParts,
+            splitAmount: (debtor.splitAmount * expenseValue) / sumSplitParts,
           }));
     const data = {
       ...req.expense,
       debtors: debtorExpense,
     };
-    console.log(data)
     const payerInDebtor = data.debtors.filter(
       (debtor: User) => debtor.id === req.expense.userId
-    )
-    const valuePaid = payerInDebtor?payerInDebtor[0].splitAmount:0;
+    );
+    const valuePaid = payerInDebtor ? payerInDebtor[0].splitAmount : 0;
 
     const expense = await prisma.expense.create({
       data: {
         description: data.description,
-        value: data.value,
-        valuePaid: valuePaid,
+        amount: data.value,
+        paidAmount: valuePaid,
         category: data.category,
-        paidBy: {
+        payer: {
           connect: { id: data.userId },
         },
         group: {
           connect: { id: data.groupId },
         },
-        debtors: {
+        shares: {
           createMany: {
             data: data.debtors.map(
               (debtor: { id: number; splitAmount: number }) => ({
-                participantId: debtor.id,
-                value: debtor.splitAmount,
+                debtorId: debtor.id,
+                amount: debtor.splitAmount,
                 paid: debtor.id === data.userId ? true : false,
               })
             ),

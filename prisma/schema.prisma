@@ -1,60 +1,116 @@
-datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
-}
-
 generator client {
   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
   id            Int            @id @default(autoincrement())
   email         String         @unique
-  chavePix      String?
   name          String
-  phoneNumber   String?
   password      String
-  paidExpenses  Expense[]      @relation("PaidExpense")
-  splitExpenses SplitExpense[]
-  groups Group[] @relation("GroupMembers")
-  groupsCreated Group[]
+  pixKey        String?       // Changed from chavePix for consistency
+  phoneNumber   String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relations
+  expenses      Expense[]      @relation("UserExpenses")
+  ownedGroups   Group[]        @relation("GroupOwner")
+  memberships   GroupMember[]  // Through table for group memberships
+  debtorIn      ExpenseShare[] // Through table for expense shares
+
+  @@index([email])
 }
-model Group{
-  id Int @id @default(autoincrement())
-  name String
+
+model Group {
+  id          Int           @id @default(autoincrement())
+  name        String
   description String?
-  members User[] @relation("GroupMembers")
-  expenses Expense[]
-  createdBy User @relation(fields: [creatorId], references: [id])
-  creatorId Int
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  ownerId     Int
+
+  // Relations
+  owner       User          @relation("GroupOwner", fields: [ownerId], references: [id])
+  expenses    Expense[]
+  members     GroupMember[] // Through table for members
+  status      GroupStatus @default(ACTIVE)
+
+  @@index([ownerId])
+}
+
+model GroupMember {
+  id        Int      @id @default(autoincrement())
+  groupId   Int
+  userId    Int
+  joinedAt  DateTime @default(now())
+
+  // Relations
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@index([groupId])
 }
 
 model Expense {
   id          Int            @id @default(autoincrement())
   description String
-  value       Float
-  valuePaid   Float
+  amount      Float          // Changed from value for clarity
+  paidAmount  Float          @default(0) // Changed from valuePaid
+  category    String
+  status      ExpenseStatus  @default(PENDING)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
-  paidBy      User           @relation("PaidExpense", fields: [userId], references: [id])
-  userId      Int
-  paid        Boolean @default(false)
-  debtors     SplitExpense[]
-  group Group @relation(fields: [groupId], references: [id])
-  groupId Int
-  category String 
+  
+  // Foreign keys
+  payerId     Int           // Changed from userId
+  groupId     Int
+
+  // Relations
+  payer       User          @relation("UserExpenses", fields: [payerId], references: [id])
+  group       Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  shares      ExpenseShare[] 
+
+  @@index([payerId])
+  @@index([groupId])
+  @@index([status])
 }
 
-model SplitExpense {
-  id            Int       @id @default(autoincrement())
-  value         Float
-  expenseId     Int
-  expense       Expense   @relation(fields: [expenseId], references: [id], onDelete: Cascade)
-  participantId Int
-  participant   User      @relation(fields: [participantId], references: [id])
-  updatedAt     DateTime  @updatedAt
-  paid          Boolean   @default(false)
-  @@unique([expenseId, participantId])
+model ExpenseShare {
+  id        Int      @id @default(autoincrement())
+  amount    Float    // Changed from value
+  paid      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Foreign keys
+  expenseId Int
+  debtorId  Int     // Changed from participantId
+
+  // Relations
+  expense   Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  debtor    User    @relation(fields: [debtorId], references: [id])
+
+  @@unique([expenseId, debtorId])
+  @@index([debtorId])
+  @@index([expenseId])
+  @@index([paid])
+}
+
+enum ExpenseStatus {
+  PENDING
+  PARTIALLY_PAID
+  PAID
+  CANCELLED
+}
+
+enum GroupStatus {
+  ACTIVE
+  INACTIVE
 }

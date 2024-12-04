@@ -1,17 +1,19 @@
+import { getUserIdFromCookie } from "@/utils/getUserIdFromCookie";
 import { PrismaClient } from "@prisma/client";
-import { NextRequest } from "next/server";
+import { NextRequest } from "next/dist/server/web/spec-extension/request";
 import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
+  //NOTE ADICIONAR USERID AQUI
+  const userId = getUserIdFromCookie(request);
   try {
-    const req = await request.json();
     const groups = await prisma.group.findMany({
       where: {
         members: {
           some: {
-            id: req.userId,
+            userId: Number(userId),
           },
         },
       },
@@ -19,20 +21,30 @@ export async function POST(request: NextRequest) {
         createdAt: "asc",
       },
       include: {
-        members: true,
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
         expenses: {
           select: {
             id: true,
             description: true,
-            value: true,
-            valuePaid: true,
+            amount: true,
+            paidAmount: true,
             createdAt: true,
-            debtors: {
+            shares: {
               include: {
-                participant: true,
+                debtor: true,
               },
             },
-            paidBy: {
+            payer: {
               select: {
                 id: true,
                 name: true,

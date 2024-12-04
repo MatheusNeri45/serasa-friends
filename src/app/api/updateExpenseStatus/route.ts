@@ -10,11 +10,11 @@ export async function PUT(request: NextRequest) {
     const updatedExpense = await prisma.expense.update({
       where: { id: req.expense.id },
       data: {
-        paid: true,
-        valuePaid: {
-          set: req.expense.value,
+        status: "PAID",
+        paidAmount: {
+          set: req.expense.amount,
         },
-        debtors:{
+        shares:{
           updateMany:{
             where:{},
             data:{paid:{

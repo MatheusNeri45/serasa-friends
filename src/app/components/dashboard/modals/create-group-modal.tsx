@@ -1,6 +1,5 @@
 "use client";
 
-import { getUserId } from "@/utils/getJwtFromCookie";
 import {
   Dialog,
   DialogTitle,
@@ -26,7 +25,7 @@ export default function CreateGroupModal({
   setCreatedGroupOpen,
   onGroupCreated,
 }: CreateGroupModalProps) {
-  const userId = getUserId();
+  //NOTE ADICIONAR USERID AQUI
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [members, setMembers] = useState<User[]>([]);
@@ -38,28 +37,30 @@ export default function CreateGroupModal({
       name: groupName,
       description: description,
       members: selectedMembers,
-      userId: userId,
     };
     const res = await fetch("/api/createGroup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ groupInfo }),
     });
+    const resUser = await fetch("/api/getLoggedUser");
+    const responseUser = await resUser.json();
+    const loggedUser = responseUser.user;
     if (res.ok) {
       onGroupCreated();
-      const loggedUser = members.filter(
-        (user: User) => user.id === Number(userId)
-      );
-      setSelectedMembers([...selectedMembers, loggedUser[0]]);
+      //NOTE REVER ISSO AQUI
+
+      setSelectedMembers([...selectedMembers, loggedUser]);
     }
     setCreatedGroupOpen(false);
   };
-  const onCloseModal = () => {
-    const loggedUser = members.filter(
-      (user: User) => user.id === Number(userId)
-    );
+  const onCloseModal = async () => {
+    const resUser = await fetch("/api/getLoggedUser");
+    const responseUser = await resUser.json();
+    const loggedUser = responseUser.user;
+
     const loggedUserInSelectedMembers = selectedMembers.filter(
-      (user: User) => user.id === userId
+      (user: User) => user.id === loggedUser.id
     )[0];
     if (!loggedUserInSelectedMembers) {
       setSelectedMembers([...selectedMembers, loggedUser[0]]);
@@ -75,10 +76,10 @@ export default function CreateGroupModal({
     const res = await fetch("/api/getUsers");
     const response = await res.json();
     if (res.ok) {
-      const loggedUser = response.users.filter(
-        (user: User) => user.id === Number(userId)
-      );
-      setSelectedMembers([...selectedMembers, loggedUser[0]]);
+      const resUser = await fetch("/api/getLoggedUser");
+      const responseUser = await resUser.json();
+      const loggedUser = responseUser.user;
+      setSelectedMembers([...selectedMembers, loggedUser]);
       setMembers(response.users);
     }
   };

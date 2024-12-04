@@ -25,16 +25,16 @@ import {
   Category as OtherIcon,
 } from "@mui/icons-material";
 import { useState } from "react";
-import { Expense, SplitExpense, User } from "@prisma/client";
+import { Expense, ExpenseShare, User } from "@prisma/client";
 import EditExpenseModal from "./dashboard/modals/edit-expense-modal";
 
-interface splitExpenseExtended extends SplitExpense {
-  participant: User;
+interface ExtendedExpenseShare extends ExpenseShare {
+  debtor: User;
 }
 
 interface extendedExpense extends Expense {
-  paidBy: User;
-  debtors: splitExpenseExtended[];
+  payer: User;
+  shares: ExtendedExpenseShare[];
 }
 
 const categoryIcons: { [key: string]: React.ReactElement } = {
@@ -99,11 +99,11 @@ export default function ExpensesList({
     handleMenuClose();
   };
 
-  const onPaySplitExpense = async (splitExpense: splitExpenseExtended) => {
-    const res = await fetch("/api/updateSplitExpenseStatus", {
+  const onPayExpenseShare = async (ExpenseShare: ExtendedExpenseShare) => {
+    const res = await fetch("/api/updateExpenseShareStatus", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ splitExpense: splitExpense }),
+      body: JSON.stringify({ ExpenseShare: ExpenseShare }),
     });
     if (res.ok) {
       onEditExpense();
@@ -217,7 +217,7 @@ export default function ExpensesList({
                       gap: 1,
                     }}
                   >
-                    Pago por {expense.paidBy.name}
+                    Pago por {expense.payer.name}
                     <Chip
                       label={expense.category}
                       size="small"
@@ -238,28 +238,28 @@ export default function ExpensesList({
                     }}
                   >
                     R${" "}
-                    {expense.debtors
+                    {expense.shares
                       .reduce(
-                        (total, expense) =>
-                          total + (expense.paid ? expense.value : 0),
+                        (total, ExpenseShare) =>
+                          total + (ExpenseShare.paid ? ExpenseShare.amount : 0),
                         0
                       )
                       .toFixed(0)}
-                    /{expense.value.toFixed(0)}
+                    /{expense.amount.toFixed(0)}
                   </Typography>
                   <LinearProgress
                     variant="determinate"
                     value={
                       Math.ceil(
                         (100 *
-                          expense.debtors.reduce(
-                            (total, splitExpense) =>
+                          expense.shares.reduce(
+                            (total, ExpenseShare) =>
                               total +
-                              (splitExpense.paid ? splitExpense.value : 0),
+                              (ExpenseShare.paid ? ExpenseShare.amount : 0),
                             0
                           )) /
-                          expense.debtors.reduce(
-                            (total, splitExpense) => total + splitExpense.value,
+                          expense.shares.reduce(
+                            (total, ExpenseShare) => total + ExpenseShare.amount,
                             0
                           )
                       ) || 100
@@ -293,46 +293,46 @@ export default function ExpensesList({
                 }}
               >
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                  {expense.debtors.map((person) => (
+                  {expense.shares.map((ExpenseShare: ExtendedExpenseShare) => (
                     <Chip
                       clickable
                       onClick={() => {
-                        if (person.participantId !== expense.paidBy.id) {
-                          onPaySplitExpense(person);
+                        if (ExpenseShare.debtor.id !== expense.payer.id) {
+                          onPayExpenseShare(ExpenseShare);
                         }
                       }}
-                      key={person.id}
+                      key={ExpenseShare.id}
                       label={`${
-                        person.participant.name
-                      }: R$ ${person.value.toFixed(2)}`}
+                        ExpenseShare.debtor.name
+                      }: R$ ${ExpenseShare.amount.toFixed(2)}`}
                       size="small"
                       sx={{
-                        bgcolor: person.paid
-                          ? person.value == 0
+                        bgcolor: ExpenseShare.paid
+                          ? ExpenseShare.amount == 0
                             ? "grey[200]"
-                            : person.participantId !== expense.paidBy.id
+                            : ExpenseShare.debtorId !== expense.payer.id
                             ? "secondary.main"
                             : "primary.light"
-                          : person.value == 0
+                          : ExpenseShare.amount == 0
                           ? "grey[200]"
                           : "error.light",
                         fontWeight: 500,
                         color:
-                          person.participantId !== expense.paidBy.id
+                        ExpenseShare.debtorId !== expense.payer.id
                             ? "text.primary"
                             : "white",
                         "&:hover": {
                           color:
-                            person.participantId !== expense.paidBy.id
+                          ExpenseShare.debtorId !== expense.payer.id
                               ? "text.primary"
                               : "white",
-                          bgcolor: person.paid
-                            ? person.value == 0
+                          bgcolor: ExpenseShare.paid
+                            ? ExpenseShare.amount == 0
                               ? "grey[200]"
-                              : person.participantId !== expense.paidBy.id
+                              : ExpenseShare.debtor.id !== expense.payer.id
                               ? "error.light"
                               : "primary.main"
-                            : person.value == 0
+                            : ExpenseShare.amount == 0
                             ? "grey[200]"
                             : "secondary.main",
                           transform: "scale(1.1)",

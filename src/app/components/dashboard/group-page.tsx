@@ -23,21 +23,31 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AddMemberModal from "./modals/add-member-modal";
 import AddExpenseModal from "./modals/add-expense-modal";
-import { Expense, Group, SplitExpense, User } from "@prisma/client";
+import {
+  Expense,
+  Group,
+  ExpenseShare,
+  User,
+  GroupMember,
+} from "@prisma/client";
 import ExpensesList from "../expenses-list";
 import BalanceList from "./balance-list";
 
-interface splitExpenseExtended extends SplitExpense {
-  participant: User;
+interface ExtendedGroupMember extends GroupMember {
+  user: { id: number; name: string; email: string };
+}
+
+interface ExtendedExpenseShare extends ExpenseShare {
+  debtor: User;
 }
 
 interface extendedExpense extends Expense {
-  paidBy: User;
-  debtors: Array<splitExpenseExtended>;
+  payer: User;
+  shares: ExtendedExpenseShare[];
 }
 
 interface ExtendedGroup extends Group {
-  members: User[];
+  members: ExtendedGroupMember[];
   expenses: extendedExpense[];
 }
 
@@ -153,9 +163,12 @@ export default function GroupPageClient() {
                     alignSelf: "flex-start",
                   }}
                 >
-                  {group?.members.map((member) => (
-                    <Avatar key={member.id} alt={member.name}>
-                      {member.name
+                  {group?.members.map((groupMember: ExtendedGroupMember) => (
+                    <Avatar
+                      key={groupMember.user.id}
+                      alt={groupMember.user.name}
+                    >
+                      {groupMember.user.name
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}

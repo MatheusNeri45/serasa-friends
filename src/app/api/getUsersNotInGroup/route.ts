@@ -8,17 +8,19 @@ export async function POST(request: NextRequest) {
     const req = await request.json();
     const members = await prisma.user.findMany({
       where: {
-        groups: {
+        memberships: {
           none: {
-            id: req.groupId,
+            groupId: req.groupId,
           },
         },
       },
     });
-    if (members) {
-      return NextResponse.json({ members }, { status: 200 });
+    if (members.length>0) {
+      return NextResponse.json({ members:members }, { status: 200 });
+    }else{
+      return NextResponse.json({members:[]},{status: 200})
     }
   } catch {
-    return NextResponse.json({}, { status: 200 });
+    return NextResponse.json({members:[]}, { status: 200 });
   }
 }

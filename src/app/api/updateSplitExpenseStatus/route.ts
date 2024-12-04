@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { ExpenseShare, PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -8,53 +8,53 @@ export async function PUT(request: NextRequest) {
   try {
     const req = await request.json();
     let paidCounter = 0;
-    const splitExpenseId = req.splitExpense.id;
-    const expenseId = req.splitExpense.expenseId;
-    const splitExpenseValue = req.splitExpense.value;
-    const splitExpenseList = await prisma.splitExpense.findMany({
+    const expenseShareId = req.expenseShare.id;
+    const expenseId = req.expenseShare.expenseId;
+    const expenseShareAmount = req.expenseShare.amount;
+    const expensesShareList = await prisma.expenseShare.findMany({
       where: {
         expenseId: expenseId,
       },
     });
-    const splitExpenseListLength = splitExpenseList.length;
-    splitExpenseList.forEach((element) => {
-      if (element.paid) {
+    const expensesShareListLength = expensesShareList.length;
+    expensesShareList.forEach((expenseShare: ExpenseShare) => {
+      if (expenseShare.paid) {
         paidCounter++;
       }
     });
-    const splitLeft = splitExpenseListLength - paidCounter
+    const splitLeft = expensesShareListLength - paidCounter
     if (splitLeft === 1) {
       //aqui pdem ser duas situações
       await prisma.expense.update({
         where: { id: expenseId },
         data: {
-          paid: req.splitExpense.paid?false:true,
+          status: req.expenseShare.paid?"PARTIALLY_PAID":"PAID",
         },
       });
     }else if(splitLeft === 0){
       await prisma.expense.update({
         where: { id: expenseId },
         data: {
-          paid: false,
+          status: "PARTIALLY_PAID",
         },
       });
     }
-    const updatedSplitExpense = await prisma.splitExpense.update({
-      where: { id: splitExpenseId },
+    const updatedExpenseShare = await prisma.expenseShare.update({
+      where: { id: expenseShareId },
       data: {
         paid: {
-          set:!req.splitExpense.paid,
+          set:!req.expenseShare.paid,
         },
         expense: {
           update: {
-            valuePaid: {
-              increment: req.splitExpense.paid?-splitExpenseValue:splitExpenseValue,
+            paidAmount: {
+              increment: req.splitExpense.paid?-expenseShareAmount:expenseShareAmount,
             },
           },
         },
       },
     });
-    if (!updatedSplitExpense) {
+    if (!updatedExpenseShare) {
       return NextResponse.json(
         {
           message:
@@ -64,7 +64,7 @@ export async function PUT(request: NextRequest) {
       );
     }
     return NextResponse.json(
-      { updatedSplitExpense: updatedSplitExpense },
+      { updatedExpenseShare: updatedExpenseShare },
       { status: 200 }
     );
   } catch (error) {

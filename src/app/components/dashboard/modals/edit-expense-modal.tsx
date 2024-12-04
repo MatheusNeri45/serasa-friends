@@ -16,17 +16,17 @@ import {
   Autocomplete,
   Chip,
 } from "@mui/material";
-import { Expense, SplitExpense, User } from "@prisma/client";
+import { Expense, ExpenseShare, User } from "@prisma/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-interface splitExpenseExtended extends SplitExpense {
-  participant: User;
+interface ExtendedExpenseShare extends ExpenseShare {
+  debtor: User;
 }
 
 interface extendedExpense extends Expense {
-  paidBy: User;
-  debtors: splitExpenseExtended[];
+  payer: User;
+  shares: ExtendedExpenseShare[];
 }
 
 interface AddExpenseModalProps {
@@ -75,16 +75,16 @@ export default function EditExpenseModal({
       body: JSON.stringify({ groupId: Number(groupId) }),
     });
     const res = await response.json();
-    setUsers(res.groupInfo);
+    setUsers(res.members);
     setSelectedParticipants(
-      selectedExpense?.debtors.map((debtor) => debtor.participant) || []
+      selectedExpense?.shares.map((share:ExtendedExpenseShare) => share.debtor) || []
     );
     setDescription(selectedExpense?.description || "");
-    setPaidBy(selectedExpense?.paidBy.id || null);
-    setValue(selectedExpense?.value || null);
+    setPaidBy(selectedExpense?.payer.id || null);
+    setValue(selectedExpense?.amount || null);
     setCategory(selectedExpense?.category || "");
   };
-
+  //NOTE AJUSTAR VALOR DO BALANCE, EDIT EXPENSE E UPDATE SHARE EXPENSE PAID
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = {

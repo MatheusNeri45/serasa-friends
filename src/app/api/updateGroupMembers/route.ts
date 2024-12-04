@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { User } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function PUT(request: NextRequest) {
   try {
+    //NOTE ADICIONAR USERID AQUI
     const req = await request.json();
 
     const userAdded = await prisma.group.update({
@@ -17,7 +17,7 @@ export async function PUT(request: NextRequest) {
       },
     });
     if (userAdded) {
-      let users = await prisma.group.findMany({
+      const users = await prisma.group.findMany({
         where: { id: req.groupId },
         include: {
           members: true,

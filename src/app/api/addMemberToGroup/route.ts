@@ -12,9 +12,7 @@ export async function POST(request: NextRequest) {
     },
     data: {
       members: {
-        connect: {
-          email: req.email,
-        },
+        create: { user: { connect: { email: req.email } } },
       },
     },
   });

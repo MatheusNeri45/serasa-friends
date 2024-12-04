@@ -30,7 +30,7 @@ export default function AddMemberModal({ open, onClose, onAddMember }: AddMember
   useEffect(() => {
     fetchMembers();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [onAddMember]);
 
   const fetchMembers = async () => {
     const res = await fetch("/api/getUsersNotInGroup", {

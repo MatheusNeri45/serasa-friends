@@ -1,9 +1,14 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt  from "bcrypt";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { serialize } from "cookie";
 
 const prisma = new PrismaClient();
+
+const JWT_SECRET =
+  "053fb9e759de82f77ddaa8cf4c4bd051bd5775a32ea87bc62363623e571870416e3def3ae9e6bfef249096536abec6897b3a2fb79785a92901715a57f43cc2f5";
 
 export async function POST(request: NextRequest) {
   const req = await request.json();
@@ -17,8 +22,21 @@ export async function POST(request: NextRequest) {
       req.password,
       userFound.password
     );
+    const userId = userFound.id;
     if (passwordMatch) {
-      return NextResponse.json({ userFound }, { status: 200 });
+      const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1h" });
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 3600,
+        path: "/",
+      };
+      const cookieHeader = serialize("token", token, cookieOptions);
+
+      return NextResponse.json(
+        { message: "Login Successfull" },
+        { status: 200, headers: { "Set-Cookie": cookieHeader } }
+      );
     }
   }
   try {
@@ -31,7 +49,19 @@ export async function POST(request: NextRequest) {
       },
     });
     if (newUser) {
-      return NextResponse.json({ newUser }, { status: 200 });
+      const userId = newUser.id;
+      const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1h" });
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 3600,
+        path: "/",
+      };
+      const cookieHeader = serialize("token", token, cookieOptions);
+      return NextResponse.json(
+        { message: "Login Successfull" },
+        { status: 200, headers: { "Set-Cookie": cookieHeader } }
+      );
     }
   } catch (error) {
     return NextResponse.json(

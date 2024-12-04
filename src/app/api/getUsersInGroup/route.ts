@@ -3,20 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-interface Members{
-  id: number,
-  name: string,
-}
-interface GroupInfo{
-  id: number,
-  name: string,
-  description:string,
-  createdAt:string,
-  updatedAt:string,
-  creatorId:number,
-  members: Members[],
-
-}
 export async function POST(request: NextRequest) {
   try {
     const req = await request.json();
@@ -26,17 +12,28 @@ export async function POST(request: NextRequest) {
       },
       include: {
         members: {
-          select:{
-            id:true,
-            name:true,
-          }
-        }
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
-    if(groupInfo){
-      return NextResponse.json({ groupInfo:groupInfo.members }, { status: 200 });
-    } 
+    const members = groupInfo?.members.map((member) => ({
+      id: member.user.id,
+      name: member.user.name,
+    }));
+    if (groupInfo) {
+      return NextResponse.json(
+        { members: members },
+        { status: 200 }
+      );
+    }
   } catch {
-    return NextResponse.json({ groupInfo: [] }, { status: 200 });
+    return NextResponse.json({ members: [] }, { status: 200 });
   }
 }

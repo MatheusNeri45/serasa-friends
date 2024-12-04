@@ -1,4 +1,4 @@
-import { PrismaClient, SplitExpense } from "@prisma/client";
+import { ExpenseShare, PrismaClient } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -15,17 +15,17 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const { expense, debtors } = req;
-    const numberDebtors = debtors.length;
+    const { expense, shares } = req;
+    const numberDebtors = shares.length;
     const expenseValue = expense.value;
 
-    const debtorExpense = debtors.map((debtor: { id: number }) => ({
-      id: debtor.id,
+    const debtorExpense = shares.map((share: ExpenseShare) => ({
+      id: share.id,
       value: expenseValue / numberDebtors,
     }));
 
-    const valuePaid = debtors.some(
-      (debtor: { id: number }) => debtor.id === expense.userId
+    const valuePaid = shares.some(
+      (share: ExpenseShare) => share.debtorId === expense.userId
     )
       ? expenseValue / numberDebtors
       : 0;
@@ -34,25 +34,25 @@ export async function PATCH(request: NextRequest) {
       where: { id: expense.id },
       data: {
         description: expense.description,
-        value: expense.value,
-        valuePaid: valuePaid,
-        paidBy: {
+        amount: expense.value,
+        paidAmount: valuePaid,
+        payer: {
           connect: { id: expense.userId },
         },
-        debtors: {
+        shares: {
           deleteMany: { expenseId: expense.id },
-          create: debtorExpense.map((debtor: SplitExpense) => ({
-            participantId: debtor.id,
-            value: debtor.value,
-            paid: debtor.id === expense.userId,
+          create: debtorExpense.map((share: ExpenseShare) => ({
+            debtorId: share.debtorId,
+            amount: share.amount,
+            paid: share.debtorId === expense.userId,
           })),
         },
       },
       include: {
-        paidBy: true,
-        debtors: {
+        payer: true,
+        shares: {
           include: {
-            participant: true,
+            debtor: true,
           },
         },
       },

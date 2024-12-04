@@ -10,13 +10,23 @@ export async function POST(request: NextRequest) {
     const group = await prisma.group.findFirst({
       where: { id: req.groupId },
       include: {
-        members: true,
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
         expenses: {
           include: {
-            paidBy: true,
-            debtors: {
+            payer: true,
+            shares: {
               include: {
-                participant: true,
+                debtor: true,
               },
             },
           },
