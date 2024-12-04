@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
     }
     try {
     const req = await request.json();
-    console.log(process.env.JWT_SECRET);
     const userFound = await prisma.user.findFirst({
       where: {
         email: req.email,

@@ -31,7 +31,7 @@ export default function UserMenu() {
 
   const fetchLoggedUser = async () => {
     const response = await fetch("/api/getLoggedUser", {
-      headers: { Authorization: `Bearer ${process.env.API_KEY}` },
+      headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}` },
     });
     const res = await response.json();
     setUser(res.user);
@@ -52,7 +52,7 @@ export default function UserMenu() {
 
   const handleLogout = async () => {
     const res = await fetch("/api/logout", {
-      headers: { Authorization: `Bearer ${process.env.API_KEY}` },
+      headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}` },
     });
     if (res.ok) {
       router.push("/");
