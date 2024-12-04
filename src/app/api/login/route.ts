@@ -10,12 +10,11 @@ const prisma = new PrismaClient();
 
 dotenv.config();
 
-const JWT_SECRET =
-  "053fb9e759de82f77ddaa8cf4c4bd051bd5775a32ea87bc62363623e571870416e3def3ae9e6bfef249096536abec6897b3a2fb79785a92901715a57f43cc2f5";
-
 export async function POST(request: NextRequest) {
   try {
+    const JWT_SECRET = process.env.JWT_SECRET;
     const req = await request.json();
+    console.log(process.env.JWT_SECRET);
     const userFound = await prisma.user.findFirst({
       where: {
         email: req.email,

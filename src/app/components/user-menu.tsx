@@ -49,11 +49,7 @@ export default function UserMenu() {
   };
 
   const handleLogout = async () => {
-    const res = await fetch("/api/logout", {
-      // method: "POST",
-      // headers: { "Content-Type": "application/json" },
-      // credentials: "include",
-    });
+    const res = await fetch("/api/logout");
     if (res.ok) {
       router.push("/");
       handleClose();
