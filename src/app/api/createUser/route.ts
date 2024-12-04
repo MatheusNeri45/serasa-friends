@@ -10,6 +10,7 @@ const prisma = globalThis.prisma || new PrismaClient();
 if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 
 export async function POST(request: NextRequest) {
+  try{
   const JWT_SECRET = process.env.JWT_SECRET_KEY;
   if (!JWT_SECRET) {
     throw new Error("JWT_SECRET is not defined");
@@ -42,7 +43,6 @@ export async function POST(request: NextRequest) {
       );
     }
   }
-  try {
     const hashedPassword = await bcrypt.hash(req.password, 10);
     const newUser = await prisma.user.create({
       data: {
@@ -71,5 +71,7 @@ export async function POST(request: NextRequest) {
       { message: "Unable to register or find user" },
       { status: 200 }
     );
+  }finally{
+    await prisma.$disconnect
   }
 }

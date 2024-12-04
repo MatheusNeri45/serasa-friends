@@ -24,6 +24,7 @@ interface ExtendedGroup extends Group {
 }
 
 export async function GET(request: NextRequest) {
+  try{
   const userId = getUserIdFromCookie(request);
   if (!userId) {
     return NextResponse.json({ message: "User not authenticated" });
@@ -59,6 +60,14 @@ export async function GET(request: NextRequest) {
   });
 
   return NextResponse.json({ balances: groupsBalance });
+}catch (error) {
+  return NextResponse.json(
+    { message: "Unable to get user group balances" },
+    { status: 200 }
+  );
+}finally{
+  await prisma.$disconnect
+}
 }
 const calculateGroupBalance = (group: ExtendedGroup, userId: number) => {
   let totalOwed = 0;

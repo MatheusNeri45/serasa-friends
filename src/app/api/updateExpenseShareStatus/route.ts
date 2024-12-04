@@ -1,11 +1,11 @@
-import { ExpenseShare} from "@prisma/client";
+import { ExpenseShare } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = globalThis.prisma || new PrismaClient();
 
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 
 export async function PUT(request: NextRequest) {
   try {
@@ -76,5 +76,7 @@ export async function PUT(request: NextRequest) {
       { message: "Unable to find split expenses for this expense." },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect;
   }
 }

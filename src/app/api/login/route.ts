@@ -51,5 +51,7 @@ export async function POST(request: NextRequest) {
       { message: "Unable to register or find user" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect;
   }
 }

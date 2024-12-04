@@ -20,5 +20,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ user: user }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ user: null }, { status: 200 });
+  } finally {
+    await prisma.$disconnect;
   }
 }

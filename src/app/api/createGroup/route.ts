@@ -2,16 +2,16 @@ import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { User } from "@prisma/client";
 import { getUserIdFromCookie } from "@/utils/getUserIdFromCookie";
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = globalThis.prisma || new PrismaClient();
 
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 
 export async function POST(request: NextRequest) {
-  const req = await request.json();
-  const userId = getUserIdFromCookie(request);
   try {
+    const req = await request.json();
+    const userId = getUserIdFromCookie(request);
     const group = await prisma.group.create({
       data: {
         name: req.groupInfo.name,
@@ -40,5 +40,7 @@ export async function POST(request: NextRequest) {
       { message: "Unable to create group" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect;
   }
 }

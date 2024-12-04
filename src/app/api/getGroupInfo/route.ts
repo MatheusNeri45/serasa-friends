@@ -1,10 +1,10 @@
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = globalThis.prisma || new PrismaClient();
 
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 
 export async function POST(request: NextRequest) {
   try {
@@ -50,5 +50,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ group: formattedGroup }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ group: [] }, { status: 200 });
+  } finally {
+    await prisma.$disconnect;
   }
 }

@@ -78,5 +78,7 @@ export async function POST(request: NextRequest) {
       message: "Unable to create expense",
       status: 500,
     });
+  }finally{
+    await prisma.$disconnect
   }
 }
