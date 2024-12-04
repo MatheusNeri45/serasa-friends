@@ -81,7 +81,7 @@ export default function RegisterPage() {
             </Button>
           </form>
           <Box sx={{ mt: 2, textAlign: "center" }}>
-            <Link href="/login" underline="hover">
+            <Link href="/" underline="hover">
               Já tem uma conta? Faça o login clicando aqui!
             </Link>
           </Box>
