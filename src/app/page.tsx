@@ -68,7 +68,7 @@ export default function LoginPage() {
               mb: 2,
             }}
           >
-            Welcome Back
+            Serasa Friends
           </Typography>
           <Typography
             variant="h6"
