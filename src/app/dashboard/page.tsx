@@ -26,6 +26,7 @@ import {
   GroupMember,
 } from "@prisma/client";
 import Summary from "../components/dashboard/summary";
+import UserMenu from "../components/user-menu";
 
 interface ExtendedExpenseShare extends ExpenseShare {
   debtor: User;
@@ -60,51 +61,6 @@ export default function DashboardPage() {
     setGroups(res.groups);
   };
 
-  if (groups?.length === 0) {
-    return (
-      <Box
-        sx={{
-          textAlign: "center",
-          py: 8,
-          px: 3,
-          bgcolor: "background.paper",
-          borderRadius: 4,
-        }}
-      >
-        <OtherIcon
-          sx={{
-            fontSize: 48,
-            color: "primary.main",
-            opacity: 0.5,
-            mb: 2,
-          }}
-        />
-        <Typography
-          variant="h6"
-          sx={{
-            color: "text.primary",
-            fontWeight: 600,
-            mb: 1,
-          }}
-        >
-          Você não está em nenhum grupo.
-        </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            color: "text.secondary",
-            maxWidth: 400,
-            mx: "auto",
-          }}
-        >
-          {
-            "Seus amigos gostam tanto de você que você ainda não tem grupos, ou amigos."
-          }
-        </Typography>
-      </Box>
-    );
-  }
-
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
       <AppBar
@@ -119,7 +75,7 @@ export default function DashboardPage() {
           >
             Serasa Friends
           </Typography>
-          <Avatar sx={{ bgcolor: "primary.main" }}>MN</Avatar>
+          <UserMenu />
         </Toolbar>
       </AppBar>
 
@@ -167,6 +123,55 @@ export default function DashboardPage() {
         </Box>
 
         <Grid2 container spacing={3}>
+          {groups?.length === 0 && (
+            <Box
+              sx={{
+                textAlign: "center",
+                py: 8,
+                px: 3,
+                bgcolor: "background.paper",
+                borderRadius: 4,
+                width: "100%",
+                height: "100%",
+                flexGrow: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <OtherIcon
+                sx={{
+                  fontSize: 48,
+                  color: "primary.main",
+                  opacity: 0.5,
+                  mb: 2,
+                }}
+              />
+              <Typography
+                variant="h6"
+                sx={{
+                  color: "text.primary",
+                  fontWeight: 600,
+                  mb: 1,
+                }}
+              >
+                Você não está em nenhum grupo.
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  maxWidth: 400,
+                  mx: "auto",
+                }}
+              >
+                {
+                  "Seus amigos gostam tanto de você que você ainda não tem grupos, ou amigos."
+                }
+              </Typography>
+            </Box>
+          )}
           {groups.map((group) => (
             <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={group.id}>
               <Card
@@ -323,7 +328,7 @@ export default function DashboardPage() {
             </Grid2>
           ))}
         </Grid2>
-        <Summary groups={groups} />
+        {groups.length > 0 && <Summary groups={groups} />}
       </Container>
 
       <CreateGroupModal

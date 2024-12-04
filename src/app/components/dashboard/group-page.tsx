@@ -32,6 +32,7 @@ import {
 } from "@prisma/client";
 import ExpensesList from "../expenses-list";
 import BalanceList from "./balance-list";
+import UserMenu from "../user-menu";
 
 interface ExtendedGroupMember extends GroupMember {
   user: { id: number; name: string; email: string };
@@ -98,7 +99,7 @@ export default function GroupPageClient() {
           >
             Serasa Friends
           </Typography>
-          <Avatar sx={{ bgcolor: "primary.main" }}>MN</Avatar>
+          <UserMenu />
         </Toolbar>
       </AppBar>
       <Toolbar />
