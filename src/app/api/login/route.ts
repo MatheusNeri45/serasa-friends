@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1h" });
         const cookieOptions = {
           httpOnly: true,
-          // secure: process.env.NODE_ENV === "production",
+          secure: process.env.NODE_ENV === "production",
           maxAge: 3600,
           path: "/",
         };
