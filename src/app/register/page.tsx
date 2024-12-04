@@ -45,26 +45,26 @@ export default function RegisterPage() {
       <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center" }}>
         <Paper sx={{ width: "100%", p: 4 }}>
           <Typography variant="h5" component="h1" gutterBottom align="center">
-            Create your account
+            Crie sua conta
           </Typography>
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label="Full Name"
+              label="Nome e Sobrenome"
               margin="normal"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
             <TextField
               fullWidth
-              label="Email"
+              label="E-mail"
               margin="normal"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <TextField
               fullWidth
-              label="Password"
+              label="Palavra-chave"
               type="password"
               margin="normal"
               value={password}
@@ -77,12 +77,12 @@ export default function RegisterPage() {
               type="submit"
               sx={{ mt: 3 }}
             >
-              Create Account
+              Criar Conta
             </Button>
           </form>
           <Box sx={{ mt: 2, textAlign: "center" }}>
             <Link href="/login" underline="hover">
-              Already have an account? Sign in
+              Já tem uma conta? Faça o login clicando aqui!
             </Link>
           </Box>
         </Paper>

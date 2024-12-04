@@ -93,7 +93,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label="Email"
+              label="E-mail"
               margin="normal"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -101,7 +101,7 @@ export default function LoginPage() {
             />
             <TextField
               fullWidth
-              label="Password"
+              label="Palavra-chave"
               type="password"
               margin="normal"
               value={password}
@@ -137,7 +137,7 @@ export default function LoginPage() {
                 },
               }}
             >
-              {"Don't have an account? Sign up"}
+              {"Ainda não tem uma conta? Cadastre-se clicando aqui."}
             </Link>
           </Box>
         </Paper>
