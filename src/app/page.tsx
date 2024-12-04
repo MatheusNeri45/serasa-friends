@@ -122,7 +122,7 @@ export default function LoginPage() {
                 boxShadow: "0 4px 14px 0 rgba(27, 67, 50, 0.4)",
               }}
             >
-              Sign In
+              Entrar
             </Button>
           </form>
           <Box sx={{ mt: 3, textAlign: "center" }}>

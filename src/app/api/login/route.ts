@@ -8,7 +8,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = globalThis.prisma || new PrismaClient();
 
-if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
+// if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 
 dotenv.config();
 
@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
       }
     }
   } catch (error) {
+    console.log(error)
     return NextResponse.json(
       { message: "Unable to register or find user" },
       { status: 500 }
