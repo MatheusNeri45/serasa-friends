@@ -42,7 +42,5 @@ export async function PUT(request: NextRequest) {
     );
   } catch (error) {
     return NextResponse.json({ expenseUpdated: [] }, { status: 200 });
-  } finally {
-    await prisma.$disconnect;
   }
 }

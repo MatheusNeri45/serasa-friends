@@ -26,7 +26,5 @@ export async function DELETE(request: NextRequest) {
       message: "Unable to delete expense",
       status: 500,
     });
-  } finally {
-    await prisma.$disconnect;
   }
 }

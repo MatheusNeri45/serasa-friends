@@ -40,7 +40,5 @@ export async function POST(request: NextRequest) {
       { message: "Unable to create group" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect;
   }
 }

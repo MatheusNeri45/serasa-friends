@@ -33,7 +33,5 @@ export async function POST(request: NextRequest) {
     message: "Unable to add member",
     status: 500,
   });
-}finally{
-  await prisma.$disconnect
 }
 }

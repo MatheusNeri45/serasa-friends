@@ -74,27 +74,21 @@ export default function BalanceList({ group }: BalanceListProps) {
             .filter((expense) => expense.payer.id === groupMember.user.id)
             .reduce((total, expense) => total + (expense.paidAmount || 0), 0);
 
-        const totalDebt = group.expenses
-          .filter((expense) =>
-            expense.shares.some(
-              (share: ExtendedExpenseShare) =>
-                share.debtor.id === groupMember.user.id && share.paid === false
-            )
-          )
-          .map((expense: ExtendedExpense) =>
-            expense.shares
-              .filter(
-                (share: ExtendedExpenseShare) =>
-                  share.debtor.id === groupMember.user.id &&
-                  share.paid === false
-              )
-              .map((share: ExtendedExpenseShare) => share.amount)
-          )
-          .reduce(
-            (total, amounts) =>
-              total + amounts.reduce((sum, amount) => sum + amount, 0),
+        const totalDebt = group.expenses.reduce((total, expense) => {
+          // Filtra apenas as shares que pertencem ao usuário e ainda não foram pagas
+          const unpaidShares = expense.shares.filter(
+            (share: ExtendedExpenseShare) =>
+              share.debtor.id === groupMember.user.id && !share.paid
+          );
+
+          // Soma os valores não pagos dessa despesa e acumula no total geral
+          const unpaidAmount = unpaidShares.reduce(
+            (sum, share) => sum + share.amount,
             0
           );
+
+          return total + unpaidAmount;
+        }, 0);
 
         const balance = Number((totalPaid - totalDebt).toFixed(2));
         const isExpanded = expandedMember === String(groupMember.user.id);
@@ -276,7 +270,6 @@ export default function BalanceList({ group }: BalanceListProps) {
                         {owedExpenses.length > 0 && <Divider sx={{ my: 2 }} />}
                       </>
                     )}
-
                     {owedExpenses.length > 0 && (
                       <>
                         <Typography
@@ -285,21 +278,32 @@ export default function BalanceList({ group }: BalanceListProps) {
                         >
                           Você deve:
                         </Typography>
-                        {owedExpenses.map((expense) => {
-                          const debtAmount =
-                            expense.shares.find(
-                              (share: ExtendedExpenseShare) =>
-                                share.debtor.id === groupMember.user.id
-                            )?.amount || 0;
-                          return (
-                            <Box key={expense.id} sx={{ mb: 1, pl: 2 }}>
-                              <Typography variant="body2">
-                                {expense.description} (para {expense.payer.name}
-                                ): R$ {debtAmount.toFixed(2)}
+                        {owedExpenses.map((expense) => (
+                          <Box key={expense.id} sx={{ mb: 2, pl: 2 }}>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 600,
+                                mb: 0.5,
+                              }}
+                            >
+                              {expense.description}
+                            </Typography>
+                            {owedExpenses.map((expense) => (
+                              <Typography
+                                key={expense.id}
+                                variant="body2"
+                                sx={{ color: "text.secondary", pl: 1 }}
+                              >
+                                {expense.payer.name}: R${" "}
+                                {(expense.amount - expense.paidAmount).toFixed(
+                                  2
+                                )}
                               </Typography>
-                            </Box>
-                          );
-                        })}
+                            ))}
+                          </Box>
+                        ))}
+                        {owedExpenses.length > 0 && <Divider sx={{ my: 2 }} />}
                       </>
                     )}
                   </>

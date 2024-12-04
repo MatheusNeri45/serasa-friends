@@ -76,7 +76,5 @@ export async function PUT(request: NextRequest) {
       { message: "Unable to find split expenses for this expense." },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect;
   }
 }

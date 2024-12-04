@@ -37,7 +37,5 @@ export async function PUT(request: NextRequest) {
       message: "Unable get users",
       status: 500,
     });
-  } finally {
-    await prisma.$disconnect;
   }
 }

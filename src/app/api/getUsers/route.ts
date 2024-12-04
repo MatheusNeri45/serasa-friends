@@ -14,7 +14,5 @@ export async function GET() {
     { message: "Unable to get users" },
     { status: 200 }
   );
-}finally{
-  await prisma.$disconnect
 }
 }

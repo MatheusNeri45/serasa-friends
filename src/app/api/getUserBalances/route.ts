@@ -24,114 +24,110 @@ interface ExtendedGroup extends Group {
 }
 
 export async function GET(request: NextRequest) {
-  try{
-  const userId = getUserIdFromCookie(request);
-  if (!userId) {
-    return NextResponse.json({ message: "User not authenticated" });
-  }
-  const groups: ExtendedGroup[] = await prisma.group.findMany({
-    where: {
-      members: {
-        some: { id: userId },
+  const calculateGroupBalance = (group: ExtendedGroup, userId: number) => {
+    let totalOwed = 0;
+    let totalOwing = 0;
+    group.expenses.forEach((expense: ExtendedExpense) => {
+      if (expense.payer.id === userId) {
+        totalOwed = totalOwed + expense.amount - (expense.paidAmount || 0);
+      }
+
+      const userDebt = expense.shares.find(
+        (ExpenseShare: ExtendedExpenseShare) =>
+          ExpenseShare.debtorId === userId && !ExpenseShare.paid
+      );
+      if (userDebt) {
+        totalOwing = totalOwing + userDebt.amount;
+      }
+    });
+
+    const balance = {
+      owed: totalOwed.toFixed(2),
+      owing: totalOwing.toFixed(2),
+      net: (totalOwed - totalOwing).toFixed(2),
+    };
+
+    const netBalance = parseFloat(balance.net);
+
+    const unpaidExpenses = group.expenses.filter(
+      (expense: ExtendedExpense) =>
+        expense.payer.id === userId &&
+        expense.shares.some(
+          (expenseShare: ExtendedExpenseShare) => !expenseShare.paid
+        )
+    );
+
+    const owedExpenses = group.expenses
+      .filter(
+        (expense: ExtendedExpense) =>
+          expense.payer.id !== userId &&
+          expense.shares.some(
+            (expenseShare: ExtendedExpenseShare) =>
+              expenseShare.debtorId === userId && !expenseShare.paid
+          )
+      )
+      .map((expense: ExtendedExpense) => {
+        const debtAmount =
+          expense.shares.find(
+            (expenseShare: ExtendedExpenseShare) =>
+              expenseShare.debtorId === userId
+          )?.amount || 0;
+
+        return {
+          id: expense.id,
+          description: expense.description,
+          payer: expense.payer,
+          debtAmount: debtAmount,
+        };
+      });
+    return {
+      owed: balance.owed,
+      owing: balance.owing,
+      netBalance: netBalance,
+      unpaidExpenses: unpaidExpenses,
+      owedExpenses: owedExpenses,
+    };
+  };
+
+  try {
+    const userId = getUserIdFromCookie(request);
+    if (!userId) {
+      return NextResponse.json({ message: "User not authenticated" });
+    }
+    const groups = await prisma.group.findMany({
+      where: {
+        members: {
+          some: { userId: userId },
+        },
       },
-    },
-    include: {
-      members: true,
-      expenses: {
-        include: {
-          payer: {
-            select: {
-              id: true,
-              email: true,
-              name: true,
+      include: {
+        members: true,
+        expenses: {
+          include: {
+            payer: {
+              select: {
+                id: true,
+                email: true,
+                name: true,
+              },
             },
-          },
-          shares: {
-            include: {
-              debtor: true,
+            shares: {
+              include: {
+                debtor: true,
+              },
             },
           },
         },
       },
-    },
-  });
-  const groupsBalance = groups.map((group: ExtendedGroup) => {
-    return { id: group.id, balance: calculateGroupBalance(group, userId) };
-  });
-
-  return NextResponse.json({ balances: groupsBalance });
-}catch (error) {
-  return NextResponse.json(
-    { message: "Unable to get user group balances" },
-    { status: 200 }
-  );
-}finally{
-  await prisma.$disconnect
-}
-}
-const calculateGroupBalance = (group: ExtendedGroup, userId: number) => {
-  let totalOwed = 0;
-  let totalOwing = 0;
-
-  group.expenses.forEach((expense: ExtendedExpense) => {
-    if (expense.payer.id === userId) {
-      totalOwed = totalOwed + expense.amount - (expense.paidAmount || 0);
-    }
-
-    const userDebt = expense.shares.find(
-      (ExpenseShare: ExtendedExpenseShare) =>
-        ExpenseShare.debtorId === userId && !ExpenseShare.paid
-    );
-    if (userDebt) {
-      totalOwing = totalOwing + userDebt.amount;
-    }
-  });
-
-  const balance = {
-    owed: totalOwed.toFixed(2),
-    owing: totalOwing.toFixed(2),
-    net: (totalOwed - totalOwing).toFixed(2),
-  };
-
-  const netBalance = parseFloat(balance.net);
-
-  const unpaidExpenses = group.expenses.filter(
-    (expense: ExtendedExpense) =>
-      expense.payer.id === userId &&
-      expense.shares.some(
-        (expenseShare: ExtendedExpenseShare) => !expenseShare.paid
-      )
-  );
-
-  const owedExpenses = group.expenses
-    .filter(
-      (expense: ExtendedExpense) =>
-        expense.payer.id !== userId &&
-        expense.shares.some(
-          (expenseShare: ExtendedExpenseShare) =>
-            expenseShare.debtorId === userId && !expenseShare.paid
-        )
-    )
-    .map((expense: ExtendedExpense) => {
-      const debtAmount =
-        expense.shares.find(
-          (expenseShare: ExtendedExpenseShare) =>
-            expenseShare.debtorId === userId
-        )?.amount || 0;
-
-      return {
-        id: expense.id,
-        description: expense.description,
-        paidBy: expense.payer.id,
-        debtAmount: debtAmount,
-      };
     });
-
-  return {
-    owed: balance.owed,
-    owing: balance.owing,
-    netBalance: netBalance,
-    unpaidExpenses: unpaidExpenses,
-    owedExpenses: owedExpenses,
-  };
-};
+    const groupsBalance = groups.map((group: ExtendedGroup) => {
+      return { id: group.id, balance: calculateGroupBalance(group, userId) };
+    });
+    return NextResponse.json({ balances: groupsBalance });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Unable to get user group balances" },
+      { status: 500 }
+    );
+  }
+}

@@ -24,7 +24,5 @@ export async function POST(request: NextRequest) {
     }
   } catch {
     return NextResponse.json({ members: [] }, { status: 200 });
-  } finally {
-    await prisma.$disconnect;
   }
 }

@@ -76,6 +76,7 @@ export default function Summary({ groups }: SummaryGroupsProps) {
     if (res.ok) {
       const response = await res.json();
       setGroupBalances(response.balances);
+      console.log(response.balances);
     }
   };
 
@@ -146,7 +147,7 @@ export default function Summary({ groups }: SummaryGroupsProps) {
                             sx={{ color: "success.main", fontSize: "1rem" }}
                           />
                           <Typography variant="body2" color="success.main">
-                            Owed: R$ {owed}
+                            Te devem: R$ {owed}
                           </Typography>
                         </Box>
                       )}
@@ -273,17 +274,30 @@ export default function Summary({ groups }: SummaryGroupsProps) {
                             >
                               Você deve:
                             </Typography>
-                            {owedExpenses.map((expense: owedExpenses) => {
-                              return (
-                                <Box key={expense.id} sx={{ mb: 1, pl: 2 }}>
-                                  <Typography variant="body2">
-                                    {expense.description} (para{" "}
-                                    {expense.payer.name}): R${" "}
-                                    {expense.debtAmount.toFixed(2)}
-                                  </Typography>
-                                </Box>
-                              );
-                            })}
+                            {owedExpenses.map((expense) => (
+                              <Box key={expense.id} sx={{ mb: 2, pl: 2 }}>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ fontWeight: 600, mb: 0.5 }}
+                                >
+                                  {expense.description}
+                                </Typography>
+                                {owedExpenses
+                                  .map((expense) => (
+                                    <Typography
+                                      key={expense.id}
+                                      variant="body2"
+                                      sx={{ color: "text.secondary", pl: 1 }}
+                                    >
+                                      {expense.payer.name}: R${" "}
+                                      {expense.debtAmount.toFixed(2)}
+                                    </Typography>
+                                  ))}
+                              </Box>
+                            ))}
+                            {owedExpenses.length > 0 && (
+                              <Divider sx={{ my: 2 }} />
+                            )}
                           </>
                         )}
                       </>

@@ -50,7 +50,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ group: formattedGroup }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ group: [] }, { status: 200 });
-  } finally {
-    await prisma.$disconnect;
   }
 }
