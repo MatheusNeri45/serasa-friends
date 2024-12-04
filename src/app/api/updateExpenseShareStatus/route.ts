@@ -22,16 +22,15 @@ export async function PUT(request: NextRequest) {
         paidCounter++;
       }
     });
-    const splitLeft = expensesShareListLength - paidCounter
+    const splitLeft = expensesShareListLength - paidCounter;
     if (splitLeft === 1) {
-      //aqui pdem ser duas situações
       await prisma.expense.update({
         where: { id: expenseId },
         data: {
-          status: req.expenseShare.paid?"PARTIALLY_PAID":"PAID",
+          status: req.expenseShare.paid ? "PARTIALLY_PAID" : "PAID",
         },
       });
-    }else if(splitLeft === 0){
+    } else if (splitLeft === 0) {
       await prisma.expense.update({
         where: { id: expenseId },
         data: {
@@ -43,12 +42,14 @@ export async function PUT(request: NextRequest) {
       where: { id: expenseShareId },
       data: {
         paid: {
-          set:!req.expenseShare.paid,
+          set: !req.expenseShare.paid,
         },
         expense: {
           update: {
             paidAmount: {
-              increment: req.splitExpense.paid?-expenseShareAmount:expenseShareAmount,
+              increment: req.expenseShare.paid
+                ? -expenseShareAmount
+                : expenseShareAmount,
             },
           },
         },

@@ -106,21 +106,21 @@ export default function CreateGroupModal({
           WebkitTextFillColor: "transparent",
         }}
       >
-        Create New Group
+        Criar novo grupo
       </DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <TextField
               autoFocus
-              label="Group Name"
+              label="Nome do grupo"
               fullWidth
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               required
             />
             <TextField
-              label="Description"
+              label="Descrição"
               fullWidth
               multiline
               rows={3}
@@ -137,8 +137,8 @@ export default function CreateGroupModal({
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Members"
-                  placeholder="Select members"
+                  label="Membros"
+                  placeholder="Selecione os membros"
                 />
               )}
               renderTags={(value, getTagProps) =>

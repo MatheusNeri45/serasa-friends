@@ -82,13 +82,13 @@ export default function AddMemberModal({ open, onClose, onAddMember }: AddMember
           WebkitTextFillColor: "transparent",
         }}
       >
-        Add New Member
+        Adicionar membro
       </DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <FormControl fullWidth>
-              <InputLabel>Member</InputLabel>
+              <InputLabel>Membro</InputLabel>
               <Select
                 value={email}
                 label="Email"

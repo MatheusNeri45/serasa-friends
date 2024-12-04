@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       debtors: debtorExpense,
     };
     const payerInDebtor = data.debtors.filter(
-      (debtor: User) => debtor.id === req.expense.userId
+      (debtor: User) => debtor.id === req.expense.payerId
     );
     const valuePaid = payerInDebtor ? payerInDebtor[0].splitAmount : 0;
 
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         paidAmount: valuePaid,
         category: data.category,
         payer: {
-          connect: { id: data.userId },
+          connect: { id: data.payerId },
         },
         group: {
           connect: { id: data.groupId },
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
               (debtor: { id: number; splitAmount: number }) => ({
                 debtorId: debtor.id,
                 amount: debtor.splitAmount,
-                paid: debtor.id === data.userId ? true : false,
+                paid: debtor.id === data.payerId ? true : false,
               })
             ),
           },

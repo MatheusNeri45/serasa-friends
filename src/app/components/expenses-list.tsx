@@ -99,11 +99,11 @@ export default function ExpensesList({
     handleMenuClose();
   };
 
-  const onPayExpenseShare = async (ExpenseShare: ExtendedExpenseShare) => {
+  const onPayExpenseShare = async (expenseShare: ExtendedExpenseShare) => {
     const res = await fetch("/api/updateExpenseShareStatus", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ExpenseShare: ExpenseShare }),
+      body: JSON.stringify({ expenseShare: expenseShare }),
     });
     if (res.ok) {
       onEditExpense();
@@ -259,7 +259,8 @@ export default function ExpensesList({
                             0
                           )) /
                           expense.shares.reduce(
-                            (total, ExpenseShare) => total + ExpenseShare.amount,
+                            (total, ExpenseShare) =>
+                              total + ExpenseShare.amount,
                             0
                           )
                       ) || 100
@@ -293,56 +294,58 @@ export default function ExpensesList({
                 }}
               >
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                  {expense.shares.map((ExpenseShare: ExtendedExpenseShare) => (
-                    <Chip
-                      clickable
-                      onClick={() => {
-                        if (ExpenseShare.debtor.id !== expense.payer.id) {
-                          onPayExpenseShare(ExpenseShare);
-                        }
-                      }}
-                      key={ExpenseShare.id}
-                      label={`${
-                        ExpenseShare.debtor.name
-                      }: R$ ${ExpenseShare.amount.toFixed(2)}`}
-                      size="small"
-                      sx={{
-                        bgcolor: ExpenseShare.paid
-                          ? ExpenseShare.amount == 0
-                            ? "grey[200]"
-                            : ExpenseShare.debtorId !== expense.payer.id
-                            ? "secondary.main"
-                            : "primary.light"
-                          : ExpenseShare.amount == 0
-                          ? "grey[200]"
-                          : "error.light",
-                        fontWeight: 500,
-                        color:
-                        ExpenseShare.debtorId !== expense.payer.id
-                            ? "text.primary"
-                            : "white",
-                        "&:hover": {
-                          color:
-                          ExpenseShare.debtorId !== expense.payer.id
-                              ? "text.primary"
-                              : "white",
+                  {expense.shares
+                    .sort((a, b) => a.debtor.name.localeCompare(b.debtor.name))
+                    .map((ExpenseShare: ExtendedExpenseShare) => (
+                      <Chip
+                        clickable
+                        onClick={() => {
+                          if (ExpenseShare.debtor.id !== expense.payer.id) {
+                            onPayExpenseShare(ExpenseShare);
+                          }
+                        }}
+                        key={ExpenseShare.id}
+                        label={`${
+                          ExpenseShare.debtor.name
+                        }: R$ ${ExpenseShare.amount.toFixed(2)}`}
+                        size="small"
+                        sx={{
                           bgcolor: ExpenseShare.paid
                             ? ExpenseShare.amount == 0
                               ? "grey[200]"
-                              : ExpenseShare.debtor.id !== expense.payer.id
-                              ? "error.light"
-                              : "primary.main"
+                              : ExpenseShare.debtorId !== expense.payer.id
+                              ? "secondary.main"
+                              : "primary.light"
                             : ExpenseShare.amount == 0
                             ? "grey[200]"
-                            : "secondary.main",
-                          transform: "scale(1.1)",
-                        },
-                        transition: "all 0.2s",
-                        alignSelf: "center",
-                        mr: "4px",
-                      }}
-                    ></Chip>
-                  ))}
+                            : "error.light",
+                          fontWeight: 500,
+                          color:
+                            ExpenseShare.debtorId !== expense.payer.id
+                              ? "text.primary"
+                              : "white",
+                          "&:hover": {
+                            color:
+                              ExpenseShare.debtorId !== expense.payer.id
+                                ? "text.primary"
+                                : "white",
+                            bgcolor: ExpenseShare.paid
+                              ? ExpenseShare.amount == 0
+                                ? "grey[200]"
+                                : ExpenseShare.debtor.id !== expense.payer.id
+                                ? "error.light"
+                                : "primary.main"
+                              : ExpenseShare.amount == 0
+                              ? "grey[200]"
+                              : "secondary.main",
+                            transform: "scale(1.1)",
+                          },
+                          transition: "all 0.2s",
+                          alignSelf: "center",
+                          mr: "4px",
+                        }}
+                      ></Chip>
+                    ))}
                 </Box>
                 <IconButton
                   size="small"

@@ -103,7 +103,7 @@ export default function AddExpenseModal({
     ) {
       const data = {
         expense: {
-          userId: paidBy,
+          payerId: paidBy,
           description: String(description),
           category: String(category),
           value: Number(amount),

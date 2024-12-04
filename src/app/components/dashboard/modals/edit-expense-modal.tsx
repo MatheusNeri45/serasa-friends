@@ -90,12 +90,12 @@ export default function EditExpenseModal({
     const data = {
       expense: {
         id: selectedExpense?.id,
-        userId: Number(paidBy),
+        payerId: Number(paidBy),
         description: String(description),
         category: String(category),
-        value: Number(value),
+        amount: Number(value),
       },
-      debtors: selectedParticipants,
+      shares: selectedParticipants,
     };
     const res = await fetch("/api/updateExpenseEdit", {
       method: "PATCH",
@@ -271,10 +271,6 @@ export default function EditExpenseModal({
           <Button
             onClick={() => {
               onClose();
-              setDescription("");
-              setPaidBy(null);
-              setValue(null);
-              setCategory("");
             }}
             variant="outlined"
           >

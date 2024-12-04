@@ -1,4 +1,4 @@
-import { ExpenseShare, PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -8,44 +8,49 @@ export async function PATCH(request: NextRequest) {
   try {
     const req = await request.json();
 
-    if (!req.debtors || !req.expense) {
+    if (!req.shares || !req.expense) {
       return NextResponse.json(
         { message: "'debtors' and 'expense' are required." },
         { status: 400 }
       );
     }
-
+    //NOTE ADICIONAR AQUI  LÓGICA PARA QUANDO ELE MUDAR O TIPO DE SPLIT
     const { expense, shares } = req;
-    const numberDebtors = shares.length;
-    const expenseValue = expense.value;
-
-    const debtorExpense = shares.map((share: ExpenseShare) => ({
-      id: share.id,
-      value: expenseValue / numberDebtors,
+    const numberShares = shares.length;
+    const expenseAmount = expense.amount;
+    const shareExpense = shares.map((share: User) => ({
+      debtorId: share.id,
+      amount: expenseAmount / numberShares,
     }));
-
-    const valuePaid = shares.some(
-      (share: ExpenseShare) => share.debtorId === expense.userId
+    console.log(shareExpense);
+    const paidAmount = shares.some(
+      (share: User) => share.id === expense.payerId
     )
-      ? expenseValue / numberDebtors
+      ? expenseAmount / numberShares
       : 0;
+    console.log(paidAmount);
 
     const updatedExpense = await prisma.expense.update({
       where: { id: expense.id },
       data: {
         description: expense.description,
-        amount: expense.value,
-        paidAmount: valuePaid,
+        amount: expense.amount,
+        paidAmount: paidAmount,
         payer: {
-          connect: { id: expense.userId },
+          connect: { id: expense.payerId },
         },
         shares: {
-          deleteMany: { expenseId: expense.id },
-          create: debtorExpense.map((share: ExpenseShare) => ({
-            debtorId: share.debtorId,
-            amount: share.amount,
-            paid: share.debtorId === expense.userId,
-          })),
+          deleteMany: {},
+          //NOTE ADICIONAR TIPO AQUI
+          createMany: {
+            data: shareExpense.map(
+              (share: { debtorId: number; amount: number }) => ({
+                debtorId: share.debtorId,
+                amount: share.amount,
+                paid: share.debtorId === expense.payerId,
+              })
+            ),
+          },
         },
       },
       include: {
@@ -57,6 +62,7 @@ export async function PATCH(request: NextRequest) {
         },
       },
     });
+    console.log(updatedExpense);
 
     return NextResponse.json({ updatedExpense }, { status: 200 });
   } catch {

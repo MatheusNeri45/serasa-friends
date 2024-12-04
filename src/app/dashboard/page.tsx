@@ -12,6 +12,7 @@ import {
   LinearProgress,
   AvatarGroup,
 } from "@mui/material";
+import { Category as OtherIcon } from "@mui/icons-material";
 import { Grid2 } from "@mui/material";
 import { Add as AddIcon, Group as GroupIcon } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
@@ -58,6 +59,51 @@ export default function DashboardPage() {
     const res = await response.json();
     setGroups(res.groups);
   };
+
+  if (groups?.length === 0) {
+    return (
+      <Box
+        sx={{
+          textAlign: "center",
+          py: 8,
+          px: 3,
+          bgcolor: "background.paper",
+          borderRadius: 4,
+        }}
+      >
+        <OtherIcon
+          sx={{
+            fontSize: 48,
+            color: "primary.main",
+            opacity: 0.5,
+            mb: 2,
+          }}
+        />
+        <Typography
+          variant="h6"
+          sx={{
+            color: "text.primary",
+            fontWeight: 600,
+            mb: 1,
+          }}
+        >
+          Você não está em nenhum grupo.
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            maxWidth: 400,
+            mx: "auto",
+          }}
+        >
+          {
+            "Seus amigos gostam tanto de você que você ainda não tem grupos, ou amigos."
+          }
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
@@ -250,7 +296,7 @@ export default function DashboardPage() {
                         },
                       }}
                     >
-                      {group.members.map((groupMember:ExtendedGroupMember) => (
+                      {group.members.map((groupMember: ExtendedGroupMember) => (
                         <Avatar
                           key={groupMember.user.id}
                           alt={groupMember.user.name}

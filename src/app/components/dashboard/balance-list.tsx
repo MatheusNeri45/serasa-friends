@@ -9,7 +9,13 @@ import {
   Collapse,
   Divider,
 } from "@mui/material";
-import { Expense, Group, ExpenseShare, User, GroupMember } from "@prisma/client";
+import {
+  Expense,
+  Group,
+  ExpenseShare,
+  User,
+  GroupMember,
+} from "@prisma/client";
 import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
@@ -75,13 +81,14 @@ export default function BalanceList({ group }: BalanceListProps) {
                 share.debtor.id === groupMember.user.id && share.paid === false
             )
           )
-          .map((expense:ExtendedExpense) =>
+          .map((expense: ExtendedExpense) =>
             expense.shares
               .filter(
                 (share: ExtendedExpenseShare) =>
-                  share.debtor.id === groupMember.user.id && share.paid === false
+                  share.debtor.id === groupMember.user.id &&
+                  share.paid === false
               )
-              .map((share:ExtendedExpenseShare) => share.amount)
+              .map((share: ExtendedExpenseShare) => share.amount)
           )
           .reduce(
             (total, amounts) =>
@@ -93,13 +100,13 @@ export default function BalanceList({ group }: BalanceListProps) {
         const isExpanded = expandedMember === String(groupMember.user.id);
 
         const unpaidExpenses = group.expenses.filter(
-          (expense:ExtendedExpense) =>
+          (expense: ExtendedExpense) =>
             expense.payer.id === groupMember.user.id &&
-            expense.shares.some((share:ExtendedExpenseShare) => !share.paid)
+            expense.shares.some((share: ExtendedExpenseShare) => !share.paid)
         );
 
         const owedExpenses = group.expenses.filter(
-          (expense:ExtendedExpense) =>
+          (expense: ExtendedExpense) =>
             expense.payer.id !== groupMember.user.id &&
             expense.shares.some(
               (share) => share.debtor.id === groupMember.user.id && !share.paid
@@ -109,7 +116,9 @@ export default function BalanceList({ group }: BalanceListProps) {
         return (
           <Box key={groupMember.user.id}>
             <ListItemButton
-              onClick={() => handleShowBalanceDetails(String(groupMember.user.id))}
+              onClick={() =>
+                handleShowBalanceDetails(String(groupMember.user.id))
+              }
               sx={{
                 px: 2,
                 py: 1.5,
@@ -160,7 +169,10 @@ export default function BalanceList({ group }: BalanceListProps) {
                       maxWidth: "60px",
                     }}
                   >
-                    {groupMember.user.name}
+                    {groupMember.user.name.split(" ")[0] +
+                      " " +
+                      groupMember.user.name.split(" ")[1][0] +
+                      "."}
                   </Typography>
                 </Box>
                 <Box
@@ -177,20 +189,28 @@ export default function BalanceList({ group }: BalanceListProps) {
                     minWidth: "120px",
                     justifyContent: "center",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                    textAlign: "center",
                   }}
                 >
                   {balance > 0 ? (
-                    <ArrowUpwardIcon sx={{verticalAlign:"middle", mr:0.5}} fontSize="small" />
+                    <ArrowUpwardIcon
+                      sx={{ verticalAlign: "middle", mr: 0.5 }}
+                      fontSize="small"
+                    />
                   ) : balance < 0 ? (
-                    <ArrowDownwardIcon sx={{verticalAlign:"middle", mr:0.5}} fontSize="small" />
+                    <ArrowDownwardIcon
+                      sx={{ verticalAlign: "middle", mr: 0.5 }}
+                      fontSize="small"
+                    />
                   ) : null}
                   <Typography
                     sx={{
                       fontWeight: 700,
                       fontSize: "1.1rem",
                       letterSpacing: "0.5px",
-                      display:"inline",
-                      verticalAlign:"middle"
+                      display: "inline",
+                      verticalAlign: "middle",
+                      textAlign: "right",
                     }}
                   >
                     R$ {Math.abs(balance)}
@@ -229,7 +249,7 @@ export default function BalanceList({ group }: BalanceListProps) {
                         >
                           Pessoas te devendo:
                         </Typography>
-                        {unpaidExpenses.map((expense:ExtendedExpense) => (
+                        {unpaidExpenses.map((expense: ExtendedExpense) => (
                           <Box key={expense.id} sx={{ mb: 2, pl: 2 }}>
                             <Typography
                               variant="body2"
@@ -238,14 +258,16 @@ export default function BalanceList({ group }: BalanceListProps) {
                               {expense.description}
                             </Typography>
                             {expense.shares
-                              .filter((share:ExtendedExpenseShare) => !share.paid)
-                              .map((share:ExtendedExpenseShare) => (
+                              .filter(
+                                (share: ExtendedExpenseShare) => !share.paid
+                              )
+                              .map((share: ExtendedExpenseShare) => (
                                 <Typography
                                   key={share.id}
                                   variant="body2"
                                   sx={{ color: "text.secondary", pl: 1 }}
                                 >
-                                  {share.debtor.name}: R$ {" "} 
+                                  {share.debtor.name}: R${" "}
                                   {share.amount.toFixed(2)}
                                 </Typography>
                               ))}
@@ -266,13 +288,14 @@ export default function BalanceList({ group }: BalanceListProps) {
                         {owedExpenses.map((expense) => {
                           const debtAmount =
                             expense.shares.find(
-                              (share:ExtendedExpenseShare) => share.debtor.id === groupMember.user.id
+                              (share: ExtendedExpenseShare) =>
+                                share.debtor.id === groupMember.user.id
                             )?.amount || 0;
                           return (
                             <Box key={expense.id} sx={{ mb: 1, pl: 2 }}>
                               <Typography variant="body2">
-                                {expense.description} (para{" "}
-                                {expense.payer.name}): R$ {debtAmount.toFixed(2)}
+                                {expense.description} (para {expense.payer.name}
+                                ): R$ {debtAmount.toFixed(2)}
                               </Typography>
                             </Box>
                           );
