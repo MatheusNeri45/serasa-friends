@@ -1,7 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const prisma = globalThis.prisma || new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,10 +30,7 @@ export async function POST(request: NextRequest) {
       name: member.user.name,
     }));
     if (groupInfo) {
-      return NextResponse.json(
-        { members: members },
-        { status: 200 }
-      );
+      return NextResponse.json({ members: members }, { status: 200 });
     }
   } catch {
     return NextResponse.json({ members: [] }, { status: 200 });

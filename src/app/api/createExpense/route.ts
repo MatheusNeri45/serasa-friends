@@ -1,8 +1,12 @@
-import { PrismaClient } from "@prisma/client";
+
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { User } from "@prisma/client";
-const prisma = new PrismaClient();
+import { PrismaClient } from '@prisma/client';
+
+const prisma = globalThis.prisma || new PrismaClient();
+
+if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
 
 interface splitAmountUser extends User {
   splitAmount: number;

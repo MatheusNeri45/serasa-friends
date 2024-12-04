@@ -1,14 +1,16 @@
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { serialize } from "cookie";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const prisma = globalThis.prisma || new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 
 export async function POST(request: NextRequest) {
-  const JWT_SECRET =process.env.JWT_SECRET_KEY;
+  const JWT_SECRET = process.env.JWT_SECRET_KEY;
   if (!JWT_SECRET) {
     throw new Error("JWT_SECRET is not defined");
   }

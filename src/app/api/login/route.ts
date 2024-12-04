@@ -1,12 +1,14 @@
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import dotenv from "dotenv";
 import { serialize } from "cookie";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const prisma = globalThis.prisma || new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 
 dotenv.config();
 
