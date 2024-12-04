@@ -13,6 +13,9 @@ dotenv.config();
 export async function POST(request: NextRequest) {
   try {
     const JWT_SECRET = process.env.JWT_SECRET_KEY;
+    if (!JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined");
+    }
     const req = await request.json();
     console.log(process.env.JWT_SECRET);
     const userFound = await prisma.user.findFirst({

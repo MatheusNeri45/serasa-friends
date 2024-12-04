@@ -9,6 +9,9 @@ const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   const JWT_SECRET =process.env.JWT_SECRET_KEY;
+  if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined");
+  }
   const req = await request.json();
   const userFound = await prisma.user.findFirst({
     where: {
