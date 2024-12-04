@@ -71,13 +71,18 @@ export default function EditExpenseModal({
   const fetchUsers = async () => {
     const response = await fetch("/api/getUsersInGroup", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
       body: JSON.stringify({ groupId: Number(groupId) }),
     });
     const res = await response.json();
     setUsers(res.members);
     setSelectedParticipants(
-      selectedExpense?.shares.map((share:ExtendedExpenseShare) => share.debtor) || []
+      selectedExpense?.shares.map(
+        (share: ExtendedExpenseShare) => share.debtor
+      ) || []
     );
     setDescription(selectedExpense?.description || "");
     setPaidBy(selectedExpense?.payer.id || null);
@@ -98,7 +103,10 @@ export default function EditExpenseModal({
     };
     const res = await fetch("/api/updateExpenseEdit", {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
       body: JSON.stringify(data),
     });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -257,7 +265,7 @@ export default function EditExpenseModal({
                         {participant.name}
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        R${" "}{splitAmount.toFixed(2)}
+                        R$ {splitAmount.toFixed(2)}
                       </Typography>
                     </Box>
                   ))}

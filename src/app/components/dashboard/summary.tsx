@@ -70,7 +70,9 @@ export default function Summary({ groups }: SummaryGroupsProps) {
     setExpandedGroup(expandedGroup === groupId ? null : groupId);
   };
   const fetchGroupBalance = async () => {
-    const res = await fetch("/api/getUserBalances");
+    const res = await fetch("/api/getUserBalances", {
+      headers: { Authorization: `Bearer ${process.env.API_KEY}` },
+    });
     if (res.ok) {
       const response = await res.json();
       setGroupBalances(response.balances);

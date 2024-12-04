@@ -56,7 +56,11 @@ export default function DashboardPage() {
   }, []);
 
   const fetchGroupsList = async () => {
-    const response = await fetch("/api/getAllGroupsUser");
+    const response = await fetch("/api/getAllGroupsUser", {
+      headers: {
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
+    });
     const res = await response.json();
     setGroups(res.groups);
   };

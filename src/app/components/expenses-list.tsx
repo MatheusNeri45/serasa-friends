@@ -102,7 +102,10 @@ export default function ExpensesList({
   const onPayExpenseShare = async (expenseShare: ExtendedExpenseShare) => {
     const res = await fetch("/api/updateExpenseShareStatus", {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
       body: JSON.stringify({ expenseShare: expenseShare }),
     });
     if (res.ok) {
@@ -112,7 +115,10 @@ export default function ExpensesList({
   const onPayExpense = async (expense: extendedExpense) => {
     const res = await fetch("/api/updateExpenseStatus", {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
       body: JSON.stringify({ expense: expense }),
     });
     if (res.ok) {

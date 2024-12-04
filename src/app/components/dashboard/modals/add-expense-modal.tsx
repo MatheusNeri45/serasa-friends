@@ -69,11 +69,13 @@ export default function AddExpenseModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose]);
 
-
   const fetchUsers = async () => {
     const response = await fetch("/api/getUsersInGroup", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
       body: JSON.stringify({ groupId: Number(groupId) }),
     });
     const res = await response.json();
@@ -114,7 +116,10 @@ export default function AddExpenseModal({
       };
       const res = await fetch("/api/createExpense", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.API_KEY}`,
+        },
         body: JSON.stringify(data),
       });
       if (res.ok) {
@@ -124,9 +129,9 @@ export default function AddExpenseModal({
         setPaidBy("");
         setCategory("");
         setSplitType("");
-        onClose()
+        onClose();
       }
-    } 
+    }
   };
   const splitAmount =
     selectedParticipants.length > 0

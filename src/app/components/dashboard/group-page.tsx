@@ -67,7 +67,10 @@ export default function GroupPageClient() {
   const fetchGroupInfo = async () => {
     const response = await fetch("/api/getGroupInfo", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
       body: JSON.stringify({ groupId: Number(groupId) }),
     });
     const res = await response.json();
@@ -77,7 +80,10 @@ export default function GroupPageClient() {
   const onDeleteExpense = async (expenseId: number) => {
     const response = await fetch("/api/deleteExpense", {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
       body: JSON.stringify({ expenseId: expenseId }),
     });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -21,9 +21,12 @@ export default function LoginPage() {
   const fetchUser = async () => {
     const res = await fetch("api/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
       body: JSON.stringify({ email, password }),
-        credentials: "include",
+      credentials: "include",
     });
     if (res.ok) {
       router.push("/dashboard");

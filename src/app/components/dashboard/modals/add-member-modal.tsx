@@ -19,23 +19,30 @@ import { useEffect, useState } from "react";
 interface AddMemberModalProps {
   open: boolean;
   onClose: () => void;
-  onAddMember: ()=>void;
+  onAddMember: () => void;
 }
 
-export default function AddMemberModal({ open, onClose, onAddMember }: AddMemberModalProps) {
+export default function AddMemberModal({
+  open,
+  onClose,
+  onAddMember,
+}: AddMemberModalProps) {
   const { groupId } = useParams();
   const [email, setEmail] = useState("");
   const [members, SetMembers] = useState([]);
 
   useEffect(() => {
     fetchMembers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onAddMember]);
 
   const fetchMembers = async () => {
     const res = await fetch("/api/getUsersNotInGroup", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
       body: JSON.stringify({ groupId: Number(groupId) }),
     });
     const response = await res.json();
@@ -48,14 +55,17 @@ export default function AddMemberModal({ open, onClose, onAddMember }: AddMember
     e.preventDefault();
     const res = await fetch("/api/addMemberToGroup", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, groupId:Number(groupId) }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
+      body: JSON.stringify({ email: email, groupId: Number(groupId) }),
     });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const response = await res.json();
 
     if (res.ok) {
-      onAddMember()
+      onAddMember();
       onClose();
     }
   };
@@ -95,7 +105,7 @@ export default function AddMemberModal({ open, onClose, onAddMember }: AddMember
                 onChange={(e) => setEmail(e.target.value)}
                 required
               >
-                {members.map((member:User) => (
+                {members.map((member: User) => (
                   <MenuItem key={member.id} value={member.email}>
                     {member.name}
                   </MenuItem>

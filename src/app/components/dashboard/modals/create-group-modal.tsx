@@ -39,10 +39,15 @@ export default function CreateGroupModal({
     };
     const res = await fetch("/api/createGroup", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.API_KEY}`,
+      },
       body: JSON.stringify({ groupInfo }),
     });
-    const resUser = await fetch("/api/getLoggedUser");
+    const resUser = await fetch("/api/getLoggedUser", {
+      headers: { Authorization: `Bearer ${process.env.API_KEY}` },
+    });
     const responseUser = await resUser.json();
     const loggedUser = responseUser.user;
     if (res.ok) {
@@ -54,7 +59,9 @@ export default function CreateGroupModal({
     setCreatedGroupOpen(false);
   };
   const onCloseModal = async () => {
-    const resUser = await fetch("/api/getLoggedUser");
+    const resUser = await fetch("/api/getLoggedUser", {
+      headers: { Authorization: `Bearer ${process.env.API_KEY}` },
+    });
     const responseUser = await resUser.json();
     const loggedUser = responseUser.user;
 
@@ -72,10 +79,14 @@ export default function CreateGroupModal({
   }, []);
 
   const fetchMembers = async () => {
-    const res = await fetch("/api/getUsers");
+    const res = await fetch("/api/getUsers", {
+      headers: { Authorization: `Bearer ${process.env.API_KEY}` },
+    });
     const response = await res.json();
     if (res.ok) {
-      const resUser = await fetch("/api/getLoggedUser");
+      const resUser = await fetch("/api/getLoggedUser", {
+        headers: { Authorization: `Bearer ${process.env.API_KEY}` },
+      });
       const responseUser = await resUser.json();
       const loggedUser = responseUser.user;
       setSelectedMembers([...selectedMembers, loggedUser]);

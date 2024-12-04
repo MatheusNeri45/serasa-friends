@@ -26,7 +26,8 @@ export default function RegisterPage() {
   const fetchUser = async () => {
     const res = await fetch("api/createUser", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ,
+        Authorization: `Bearer ${process.env.API_KEY}`, },
       body: JSON.stringify({ email, password, name }),
       credentials: "include",
     });
