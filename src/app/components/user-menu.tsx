@@ -18,22 +18,24 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@prisma/client";
+import UserMenuSkeleton from "./dashboard/user-menu-skeleton";
 
 export default function UserMenu() {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [user, setUser] = useState<User>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchLoggedUser();
   }, []);
 
   const fetchLoggedUser = async () => {
-    const response = await fetch("/api/getLoggedUser", {
-    });
+    const response = await fetch("/api/getLoggedUser", {});
     const res = await response.json();
     setUser(res.user);
+    setLoading(false);
   };
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -50,15 +52,16 @@ export default function UserMenu() {
   };
 
   const handleLogout = async () => {
-    const res = await fetch("/api/logout", {
-    });
+    const res = await fetch("/api/logout", {});
     if (res.ok) {
       router.push("/");
       handleClose();
     }
   };
 
-  return (
+  return loading ? (
+    <UserMenuSkeleton />
+  ) : (
     <Box>
       <IconButton
         onClick={handleClick}

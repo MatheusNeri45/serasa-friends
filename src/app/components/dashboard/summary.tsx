@@ -22,7 +22,8 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
 } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import SummarySkeleton from "./groups-summary-skeleton";
 interface owedExpenses extends ExtendedExpense {
   debtAmount: number;
 }
@@ -57,18 +58,33 @@ interface ExtendedGroup extends Group {
 
 interface SummaryGroupsProps {
   groups: ExtendedGroup[];
-  groupBalances: groupBalances[];
 }
 
-export default function Summary({ groups, groupBalances }: SummaryGroupsProps) {
+export default function Summary({ groups }: SummaryGroupsProps) {
   const [expandedGroup, setExpandedGroup] = useState<number | null>(null);
+  const [groupBalances, setGroupBalances] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchGroupBalance();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const fetchGroupBalance = async () => {
+    const res = await fetch("/api/getUserBalances", {});
+    if (res.ok) {
+      const response = await res.json();
+      setGroupBalances(response.balances);
+      setLoading(false)
+    }
+  };
 
   const handleShowBalanceDetails = (groupId: number) => {
     setExpandedGroup(expandedGroup === groupId ? null : groupId);
   };
 
-
-  return (
+  return loading ? (
+    <SummarySkeleton />
+  ) : (
     <Card sx={{ mt: 4, mb: 4, borderRadius: 1 }}>
       <CardContent>
         <List>
@@ -270,17 +286,16 @@ export default function Summary({ groups, groupBalances }: SummaryGroupsProps) {
                                 >
                                   {expense.description}
                                 </Typography>
-                                {owedExpenses
-                                  .map((expense) => (
-                                    <Typography
-                                      key={expense.id}
-                                      variant="body2"
-                                      sx={{ color: "text.secondary", pl: 1 }}
-                                    >
-                                      {expense.payer.name}: R${" "}
-                                      {expense.debtAmount.toFixed(2)}
-                                    </Typography>
-                                  ))}
+                                {owedExpenses.map((expense) => (
+                                  <Typography
+                                    key={expense.id}
+                                    variant="body2"
+                                    sx={{ color: "text.secondary", pl: 1 }}
+                                  >
+                                    {expense.payer.name}: R${" "}
+                                    {expense.debtAmount.toFixed(2)}
+                                  </Typography>
+                                ))}
                               </Box>
                             ))}
                             {owedExpenses.length > 0 && (

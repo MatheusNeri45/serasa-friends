@@ -33,6 +33,7 @@ import {
 import ExpensesList from "../expenses-list";
 import BalanceList from "./balance-list";
 import UserMenu from "../user-menu";
+import GroupPageSkeleton from "../group-page-skeleton";
 
 interface ExtendedGroupMember extends GroupMember {
   user: { id: number; name: string; email: string };
@@ -58,6 +59,7 @@ export default function GroupPageClient() {
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [addExpenseOpen, setAddExpenseOpen] = useState(false);
   const [group, setGroup] = useState<ExtendedGroup>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchGroupInfo();
@@ -74,6 +76,7 @@ export default function GroupPageClient() {
     });
     const res = await response.json();
     setGroup(res.group);
+    setLoading(false);
   };
 
   const onDeleteExpense = async (expenseId: number) => {
@@ -89,7 +92,9 @@ export default function GroupPageClient() {
     fetchGroupInfo();
   };
 
-  return (
+  return loading ? (
+    <GroupPageSkeleton />
+  ) : (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh", pb: 4 }}>
       <AppBar
         position="fixed"
