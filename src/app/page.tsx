@@ -8,16 +8,31 @@ import {
   TextField,
   Button,
   Link,
+  keyframes,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AccountBalanceWallet } from "@mui/icons-material";
 
+const dotsAnimation = keyframes`
+  0% {
+    content: "";
+  }
+  33% {
+    content: ".";
+  }
+  66% {
+    content: "..";
+  }
+  100% {
+    content: "...";
+  }
+`;
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const fetchUser = async () => {
     const res = await fetch("api/login", {
@@ -37,7 +52,7 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
     fetchUser();
   };
 
@@ -121,10 +136,17 @@ export default function LoginPage() {
                 "&:hover": {
                   bgcolor: "primary.dark",
                 },
+                ...(loading && {
+                  "&::after": {
+                    content: '""',
+                    display: "inline-block",
+                    animation: `${dotsAnimation} 1.5s infinite steps(3)`,
+                  },
+                }),
                 boxShadow: "0 4px 14px 0 rgba(27, 67, 50, 0.4)",
               }}
             >
-              {loading?"Entrando...":"Entrar"}
+              {loading ? "Entrando" : "Entrar"}
             </Button>
           </form>
           <Box sx={{ mt: 3, textAlign: "center" }}>
