@@ -57,9 +57,10 @@ interface ExtendedGroup extends Group {
 
 interface SummaryGroupsProps {
   groups: ExtendedGroup[];
+  onFinishedLoading: ()=>void;
 }
 
-export default function Summary({ groups }: SummaryGroupsProps) {
+export default function Summary({ groups, onFinishedLoading }: SummaryGroupsProps) {
   const [expandedGroup, setExpandedGroup] = useState<number | null>(null);
   const [groupBalances, setGroupBalances] = useState([]);
 
@@ -76,6 +77,7 @@ export default function Summary({ groups }: SummaryGroupsProps) {
       const response = await res.json();
       setGroupBalances(response.balances);
       console.log(response.balances);
+      onFinishedLoading()
     }
   };
 

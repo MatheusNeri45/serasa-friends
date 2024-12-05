@@ -63,8 +63,10 @@ export default function DashboardPage() {
     });
     const res = await response.json();
     setGroups(res.groups);
-    setLoading((prev) => !prev);
   };
+  const onFinishedLoading = () =>{
+    setLoading((prev)=>!prev)
+  }
   return loading ? (
     <DashboardSkeleton />
   ) : (
@@ -338,7 +340,7 @@ export default function DashboardPage() {
             </Grid2>
           ))}
         </Grid2>
-        {groups.length > 0 && <Summary groups={groups} />}
+        {groups.length > 0 && <Summary groups={groups} onFinishedLoading={onFinishedLoading}/>}
       </Container>
 
       <CreateGroupModal
