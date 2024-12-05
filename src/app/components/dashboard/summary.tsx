@@ -66,7 +66,9 @@ export default function Summary({ groups, onFinishedLoading }: SummaryGroupsProp
 
   useEffect(() => {
     fetchGroupBalance();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
   const handleShowBalanceDetails = (groupId: number) => {
     setExpandedGroup(expandedGroup === groupId ? null : groupId);
   };
@@ -76,7 +78,6 @@ export default function Summary({ groups, onFinishedLoading }: SummaryGroupsProp
     if (res.ok) {
       const response = await res.json();
       setGroupBalances(response.balances);
-      console.log(response.balances);
       onFinishedLoading()
     }
   };
