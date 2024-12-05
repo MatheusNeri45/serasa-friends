@@ -52,11 +52,16 @@ export default function DashboardPage() {
   const [createGroupOpen, setCreateGroupOpen] = useState(false);
   const [groups, setGroups] = useState<ExtendedGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  const [groupBalances, setGroupBalances] = useState([]);
 
   useEffect(() => {
     fetchGroupsList();
   }, []);
-
+  
+  useEffect(() => {
+    fetchGroupBalance();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const fetchGroupsList = async () => {
     const response = await fetch("/api/getAllGroupsUser", {
       headers: {},
@@ -64,8 +69,15 @@ export default function DashboardPage() {
     const res = await response.json();
     setGroups(res.groups);
   };
-  const onFinishedLoading = () => {
-    setLoading(false);
+
+  const fetchGroupBalance = async () => {
+    const res = await fetch("/api/getUserBalances", {});
+    if (res.ok) {
+      const response = await res.json();
+      console.log(1);
+      setGroupBalances(response.balances);
+      setLoading(false);
+    }
   };
   return loading ? (
     <DashboardSkeleton />
@@ -341,7 +353,7 @@ export default function DashboardPage() {
           ))}
         </Grid2>
         {groups.length > 0 && (
-          <Summary groups={groups} onFinishedLoading={onFinishedLoading} />
+          <Summary groups={groups} groupBalances={groupBalances} />
         )}
       </Container>
 

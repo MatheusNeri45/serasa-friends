@@ -22,7 +22,7 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
 } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 interface owedExpenses extends ExtendedExpense {
   debtAmount: number;
 }
@@ -57,30 +57,16 @@ interface ExtendedGroup extends Group {
 
 interface SummaryGroupsProps {
   groups: ExtendedGroup[];
-  onFinishedLoading: ()=>void;
+  groupBalances: groupBalances[];
 }
 
-export default function Summary({ groups, onFinishedLoading }: SummaryGroupsProps) {
+export default function Summary({ groups, groupBalances }: SummaryGroupsProps) {
   const [expandedGroup, setExpandedGroup] = useState<number | null>(null);
-  const [groupBalances, setGroupBalances] = useState([]);
 
-  useEffect(() => {
-    fetchGroupBalance();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  
   const handleShowBalanceDetails = (groupId: number) => {
     setExpandedGroup(expandedGroup === groupId ? null : groupId);
   };
-  const fetchGroupBalance = async () => {
-    const res = await fetch("/api/getUserBalances", {
-    });
-    if (res.ok) {
-      const response = await res.json();
-      setGroupBalances(response.balances);
-      onFinishedLoading()
-    }
-  };
+
 
   return (
     <Card sx={{ mt: 4, mb: 4, borderRadius: 1 }}>
