@@ -74,7 +74,7 @@ export default function Summary({ groups }: SummaryGroupsProps) {
     if (res.ok) {
       const response = await res.json();
       setGroupBalances(response.balances);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -286,21 +286,17 @@ export default function Summary({ groups }: SummaryGroupsProps) {
                                 >
                                   {expense.description}
                                 </Typography>
-                                {owedExpenses.map((expense) => (
-                                  <Typography
-                                    key={expense.id}
-                                    variant="body2"
-                                    sx={{ color: "text.secondary", pl: 1 }}
-                                  >
-                                    {expense.payer.name}: R${" "}
-                                    {expense.debtAmount.toFixed(2)}
-                                  </Typography>
-                                ))}
+                                <Typography
+                                  key={expense.id}
+                                  variant="body2"
+                                  sx={{ color: "text.secondary", pl: 1 }}
+                                >
+                                  {expense.payer.name}: R${" "}
+                                  {expense.debtAmount.toFixed(2)}
+                                </Typography>
+                                <Divider sx={{ my: 2 }} />
                               </Box>
                             ))}
-                            {owedExpenses.length > 0 && (
-                              <Divider sx={{ my: 2 }} />
-                            )}
                           </>
                         )}
                       </>
