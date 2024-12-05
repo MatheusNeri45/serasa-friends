@@ -41,7 +41,6 @@ export default function AddMemberModal({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify({ groupId: Number(groupId) }),
     });
@@ -57,7 +56,6 @@ export default function AddMemberModal({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify({ email: email, groupId: Number(groupId) }),
     });

@@ -104,7 +104,6 @@ export default function ExpensesList({
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify({ expenseShare: expenseShare }),
     });
@@ -117,7 +116,6 @@ export default function ExpensesList({
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify({ expense: expense }),
     });

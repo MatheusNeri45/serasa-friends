@@ -71,7 +71,6 @@ export default function Summary({ groups }: SummaryGroupsProps) {
   };
   const fetchGroupBalance = async () => {
     const res = await fetch("/api/getUserBalances", {
-      headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}` },
     });
     if (res.ok) {
       const response = await res.json();

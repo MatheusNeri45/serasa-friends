@@ -58,7 +58,6 @@ export default function DashboardPage() {
   const fetchGroupsList = async () => {
     const response = await fetch("/api/getAllGroupsUser", {
       headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
       },
     });
     const res = await response.json();
