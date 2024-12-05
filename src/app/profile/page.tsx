@@ -17,11 +17,13 @@ import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { User } from "@prisma/client";
+import ProfileSkeleton from "../components/skeletons/profile-skeleton";
 
 export default function ProfilePage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -38,8 +40,7 @@ export default function ProfilePage() {
   const fetchLoggedUser = async () => {
     try {
       const response = await fetch("/api/getLoggedUser", {
-        headers: {
-        },
+        headers: {},
       });
       const data = await response.json();
       if (data.user) {
@@ -50,6 +51,7 @@ export default function ProfilePage() {
           phoneNumber: data.user.phoneNumber || "",
           pixKey: data.user.pixKey || "",
         });
+        setLoading(false);
       }
     } catch (error) {
       setError("Failed to load profile");
@@ -81,9 +83,9 @@ export default function ProfilePage() {
     }
   };
 
-  if (!user) return null;
-
-  return (
+  return loading || !user ? (
+    <ProfileSkeleton />
+  ) : (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: 4 }}>
       <Container maxWidth="md">
         <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 2 }}>
