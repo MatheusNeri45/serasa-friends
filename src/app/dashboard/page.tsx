@@ -11,6 +11,7 @@ import {
   CardContent,
   LinearProgress,
   AvatarGroup,
+  ButtonBase,
 } from "@mui/material";
 import { Category as OtherIcon } from "@mui/icons-material";
 import { Grid2 } from "@mui/material";
@@ -27,7 +28,7 @@ import {
 } from "@prisma/client";
 import Summary from "../components/dashboard/summary";
 import UserMenu from "../components/user-menu";
-import DashboardSkeleton from "../components/dashboard/dashboard-skeleton";
+import DashboardSkeleton from "../components/skeletons/dashboard-skeleton";
 
 interface ExtendedExpenseShare extends ExpenseShare {
   debtor: User;
@@ -183,6 +184,8 @@ export default function DashboardPage() {
             <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={group.id}>
               <Card
                 sx={{
+                  overflow: "hidden", // Para que o efeito ripple não transborde
+                  borderRadius: 2, // Arredondar os cantos se necessário
                   cursor: "pointer",
                   "&:hover": {
                     transform: "translateY(-4px)",
@@ -190,94 +193,66 @@ export default function DashboardPage() {
                     boxShadow: "0 12px 24px rgba(0,0,0,0.1)",
                   },
                 }}
-                onClick={() => router.push(`/dashboard/${group.id}`)}
               >
-                <CardContent>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-                    <GroupIcon
+                <ButtonBase
+                  sx={{
+                    display: "block",
+                    width: "100%",
+                    height: "100%",
+                  }}
+                  onClick={() => router.push(`/dashboard/${group.id}`)}
+                >
+                  <CardContent>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                      <GroupIcon
+                        sx={{
+                          color: "primary.main",
+                          mr: 1.5,
+                          fontSize: "2rem",
+                        }}
+                      />
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: 700,
+                          color: "primary.dark",
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {group.name}
+                      </Typography>
+                    </Box>
+                    <Typography
+                      variant="h4"
                       sx={{
                         color: "primary.main",
-                        mr: 1.5,
-                        fontSize: "2rem",
-                      }}
-                    />
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: 700,
-                        color: "primary.dark",
-                        lineHeight: 1.2,
+                        fontWeight: 800,
+                        mb: 2,
+                        display: "flex",
+                        alignItems: "baseline",
+                        gap: 0.5,
                       }}
                     >
-                      {group.name}
+                      R$
+                      {group.expenses.reduce(
+                        (total, expense) => total + expense.amount,
+                        0
+                      )}
+                      <Typography
+                        component="span"
+                        variant="subtitle2"
+                        sx={{
+                          color: "text.secondary",
+                          fontWeight: "normal",
+                        }}
+                      >
+                        total
+                      </Typography>
                     </Typography>
-                  </Box>
-                  <Typography
-                    variant="h4"
-                    sx={{
-                      color: "primary.main",
-                      fontWeight: 800,
-                      mb: 2,
-                      display: "flex",
-                      alignItems: "baseline",
-                      gap: 0.5,
-                    }}
-                  >
-                    R$
-                    {group.expenses.reduce(
-                      (total, expense) => total + expense.amount,
-                      0
-                    )}
-                    <Typography
-                      component="span"
-                      variant="subtitle2"
-                      sx={{
-                        color: "text.secondary",
-                        fontWeight: "normal",
-                      }}
-                    >
-                      total
-                    </Typography>
-                  </Typography>
-                  <Box sx={{ mt: 2, mb: 1 }}>
-                    <LinearProgress
-                      variant="determinate"
-                      value={
-                        Math.ceil(
-                          (100 *
-                            group.expenses.reduce(
-                              (total, expense) => total + expense.paidAmount,
-                              0
-                            )) /
-                            group.expenses.reduce(
-                              (total, expense) => total + expense.amount,
-                              0
-                            )
-                        ) || 100
-                      }
-                      sx={{
-                        height: 8,
-                        borderRadius: 0.5,
-                        bgcolor: "rgba(183, 228, 199, 0.3)",
-                        "& .MuiLinearProgress-bar": {
-                          bgcolor:
-                            group.expenses.length > 0
-                              ? "primary.main"
-                              : "grey.400",
-                        },
-                      }}
-                    />
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      mb: 2,
-                      fontWeight: 500,
-                    }}
-                  >
-                    {group.expenses.length > 0
-                      ? "Dívidas pagas:" +
+                    <Box sx={{ mt: 2, mb: 1 }}>
+                      <LinearProgress
+                        variant="determinate"
+                        value={
                           Math.ceil(
                             (100 *
                               group.expenses.reduce(
@@ -288,53 +263,92 @@ export default function DashboardPage() {
                                 (total, expense) => total + expense.amount,
                                 0
                               )
-                          ) +
-                          "%" || 100 + "%"
-                      : "Sem dívidas por enquanto."}
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      mt: 2,
-                    }}
-                  >
-                    <AvatarGroup
-                      max={4}
-                      sx={{
-                        "& .MuiAvatar-root": {
-                          width: 32,
-                          height: 32,
-                          fontSize: "0.875rem",
-                          bgcolor: "primary.main",
-                          border: "2px solid white",
-                        },
-                      }}
-                    >
-                      {group.members.map((groupMember: ExtendedGroupMember) => (
-                        <Avatar
-                          key={groupMember.user.id}
-                          alt={groupMember.user.name}
-                        >
-                          {groupMember.user.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </Avatar>
-                      ))}
-                    </AvatarGroup>
+                          ) || 100
+                        }
+                        sx={{
+                          height: 8,
+                          borderRadius: 0.5,
+                          bgcolor: "rgba(183, 228, 199, 0.3)",
+                          "& .MuiLinearProgress-bar": {
+                            bgcolor:
+                              group.expenses.length > 0
+                                ? "primary.main"
+                                : "grey.400",
+                          },
+                        }}
+                      />
+                    </Box>
                     <Typography
                       variant="body2"
+                      color="text.secondary"
                       sx={{
-                        color: "text.secondary",
+                        mb: 2,
                         fontWeight: 500,
                       }}
                     >
-                      {group.members.length} membros
+                      {group.expenses.length > 0
+                        ? "Dívidas pagas:" +
+                            Math.ceil(
+                              (100 *
+                                group.expenses.reduce(
+                                  (total, expense) =>
+                                    total + expense.paidAmount,
+                                  0
+                                )) /
+                                group.expenses.reduce(
+                                  (total, expense) => total + expense.amount,
+                                  0
+                                )
+                            ) +
+                            "%" || 100 + "%"
+                        : "Sem dívidas por enquanto."}
                     </Typography>
-                  </Box>
-                </CardContent>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        mt: 2,
+                      }}
+                    >
+                      <AvatarGroup
+                        max={4}
+                        sx={{
+                          "& .MuiAvatar-root": {
+                            width: 32,
+                            height: 32,
+                            fontSize: "0.875rem",
+                            bgcolor: "primary.main",
+                            border: "2px solid white",
+                          },
+                        }}
+                      >
+                        {group.members.map(
+                          (groupMember: ExtendedGroupMember) => (
+                            <Avatar
+                              key={groupMember.user.id}
+                              alt={groupMember.user.name}
+                            >
+                              {groupMember.user.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </Avatar>
+                          )
+                        )}
+                      </AvatarGroup>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "text.secondary",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {group.members.length} membros
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </ButtonBase>
               </Card>
             </Grid2>
           ))}

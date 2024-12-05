@@ -33,7 +33,7 @@ import {
 import ExpensesList from "../expenses-list";
 import BalanceList from "./balance-list";
 import UserMenu from "../user-menu";
-import GroupPageSkeleton from "../group-page-skeleton";
+import GroupPageSkeleton from "../skeletons/group-page-skeleton";
 
 interface ExtendedGroupMember extends GroupMember {
   user: { id: number; name: string; email: string };

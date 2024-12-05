@@ -23,7 +23,7 @@ import {
   ArrowDownward as ArrowDownwardIcon,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import SummarySkeleton from "./groups-summary-skeleton";
+import SummarySkeleton from "../skeletons/groups-summary-skeleton";
 interface owedExpenses extends ExtendedExpense {
   debtAmount: number;
 }

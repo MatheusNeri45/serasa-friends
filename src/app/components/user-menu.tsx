@@ -18,7 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@prisma/client";
-import UserMenuSkeleton from "./dashboard/user-menu-skeleton";
+import UserMenuSkeleton from "./skeletons/user-menu-skeleton";
 
 export default function UserMenu() {
   const router = useRouter();
