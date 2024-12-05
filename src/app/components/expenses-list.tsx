@@ -161,9 +161,8 @@ export default function ExpensesList({
             mx: "auto",
           }}
         >
-          {
-            "Adicione despesas e evite que seus amigos caloteiros passem a perna em você, ou não."
-          }
+          Adicione despesas e evite que seus amigos caloteiros passem a perna em
+          você, ou não.
         </Typography>
       </Box>
     );
@@ -212,16 +211,21 @@ export default function ExpensesList({
                   >
                     {expense.description}
                   </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: "text.secondary",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                    }}
-                  >
-                    Pago por {expense.payer.name}
+                  <Box sx={{
+                    display:"inline-flex",
+                  }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "text.secondary",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mr:1,
+                      }}
+                    >
+                      Pago por {expense.payer.name}
+                    </Typography>
                     <Chip
                       label={expense.category}
                       size="small"
@@ -231,7 +235,7 @@ export default function ExpensesList({
                         fontWeight: 500,
                       }}
                     />
-                  </Typography>
+                  </Box>
                 </Box>
                 <Box sx={{ textAlign: "right" }}>
                   <Typography
