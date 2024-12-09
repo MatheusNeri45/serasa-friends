@@ -29,6 +29,7 @@ export default function CreateGroupModal({
   const [description, setDescription] = useState("");
   const [members, setMembers] = useState<User[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,21 +45,18 @@ export default function CreateGroupModal({
       },
       body: JSON.stringify({ groupInfo }),
     });
-    const resUser = await fetch("/api/getLoggedUser", {
-    });
+    const resUser = await fetch("/api/getLoggedUser", {});
     const responseUser = await resUser.json();
     const loggedUser = responseUser.user;
     if (res.ok) {
       onGroupCreated();
-      //NOTE REVER ISSO AQUI
-
+      setLoading(true);
       setSelectedMembers([...selectedMembers, loggedUser]);
+      setCreatedGroupOpen(false);
     }
-    setCreatedGroupOpen(false);
   };
   const onCloseModal = async () => {
-    const resUser = await fetch("/api/getLoggedUser", {
-    });
+    const resUser = await fetch("/api/getLoggedUser", {});
     const responseUser = await resUser.json();
     const loggedUser = responseUser.user;
 
@@ -76,12 +74,10 @@ export default function CreateGroupModal({
   }, []);
 
   const fetchMembers = async () => {
-    const res = await fetch("/api/getUsers", {
-    });
+    const res = await fetch("/api/getUsers", {});
     const response = await res.json();
     if (res.ok) {
-      const resUser = await fetch("/api/getLoggedUser", {
-      });
+      const resUser = await fetch("/api/getLoggedUser", {});
       const responseUser = await resUser.json();
       const loggedUser = responseUser.user;
       setSelectedMembers([...selectedMembers, loggedUser]);
@@ -166,7 +162,7 @@ export default function CreateGroupModal({
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button onClick={onCloseModal} variant="outlined">
+          <Button disabled={loading} onClick={onCloseModal} variant="outlined">
             Cancelar
           </Button>
           <Button type="submit" variant="contained">
