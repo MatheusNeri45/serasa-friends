@@ -33,7 +33,7 @@ export default function CreateGroupModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading((prev:boolean)=>true);
+    setLoading(true);
     const groupInfo = {
       name: groupName,
       description: description,
