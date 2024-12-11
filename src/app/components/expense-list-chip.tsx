@@ -4,6 +4,7 @@ import { Chip } from "@mui/material";
 import { Expense, ExpenseShare, User } from "@prisma/client";
 import { useState } from "react";
 import CustomAlert from "./alert";
+import { useRouter } from "next/navigation";
 
 interface ExtendedExpenseShare extends ExpenseShare {
   debtor: User;
@@ -25,6 +26,7 @@ export default function ExpenseChip({
   expense,
   onEditExpense,
 }: ExpenseChipProps) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({ status: false, message: "" });
 
@@ -40,7 +42,8 @@ export default function ExpenseChip({
     const response = await res.json();
     if (res.ok) {
       onEditExpense();
-      setLoading(false)
+      setLoading(false);
+      router.refresh();
     } else {
       setAlert({ status: true, message: response.message });
     }
@@ -70,7 +73,9 @@ export default function ExpenseChip({
         }
         size="small"
         sx={{
-          bgcolor: loading?"grey[200]":expenseShare.paid
+          bgcolor: loading
+            ? "grey[200]"
+            : expenseShare.paid
             ? expenseShare.amount == 0
               ? "grey[200]"
               : expenseShare.debtorId !== expense.payer.id
