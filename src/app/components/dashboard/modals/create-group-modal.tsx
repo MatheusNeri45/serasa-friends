@@ -183,7 +183,7 @@ export default function CreateGroupModal({
             Cancelar
           </Button>
           <Button disabled={loading} type="submit" variant="contained">
-            {loading ? "Criando grupo" : "Criar Grupo"}
+            {loading ? "Criando grupo..." : "Criar Grupo"}
           </Button>
         </DialogActions>
       </form>

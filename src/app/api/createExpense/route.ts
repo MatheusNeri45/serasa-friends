@@ -67,11 +67,17 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+    if(expense){
     return NextResponse.json({
       message: "Expense created",
       expenseCreated: expense,
       status: 200,
     });
+  }    return NextResponse.json({
+    message: "Unable to create expense",
+    expenseCreated: expense,
+    status: 500,
+  });
   } catch (error) {
     console.error("", error);
     return NextResponse.json({

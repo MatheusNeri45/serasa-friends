@@ -17,8 +17,9 @@ import {
   Chip,
 } from "@mui/material";
 import { User } from "@prisma/client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import CustomAlert from "../../alert";
 
 interface splitAmountUser extends User {
   splitAmount: number;
@@ -52,6 +53,7 @@ export default function AddExpenseModal({
   onClose,
   onExpenseCreated,
 }: AddExpenseModalProps) {
+  const router = useRouter()
   const { groupId } = useParams();
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
@@ -63,6 +65,8 @@ export default function AddExpenseModal({
   const [shareSplitAmounts, setShareSplitAmounts] = useState<splitAmountUser[]>(
     []
   );
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ status: false, message: "" });
 
   useEffect(() => {
     fetchUsers();
@@ -89,6 +93,7 @@ export default function AddExpenseModal({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLoading(true);
     let sumSplits = 0;
 
     const filteredDebtors = shareSplitAmounts.filter((user: splitAmountUser) =>
@@ -120,6 +125,7 @@ export default function AddExpenseModal({
         },
         body: JSON.stringify(data),
       });
+      const response = await res.json();
       if (res.ok) {
         onExpenseCreated();
         setAmount("");
@@ -128,6 +134,9 @@ export default function AddExpenseModal({
         setCategory("");
         setSplitType("");
         onClose();
+        router.refresh()
+      } else {
+        setAlert({ status: true, message: response.message });
       }
     }
   };
@@ -151,6 +160,12 @@ export default function AddExpenseModal({
         },
       }}
     >
+      {alert.status && (
+        <CustomAlert
+          message={alert.message}
+          onClose={() => setAlert({ status: false, message: "" })}
+        />
+      )}
       <DialogTitle
         sx={{
           pb: 1,
@@ -482,10 +497,11 @@ export default function AddExpenseModal({
               !amount ||
               !paidBy ||
               !splitType ||
-              selectedParticipants.length === 0
+              selectedParticipants.length === 0 ||
+              loading
             }
           >
-            Adicionar despesa
+            {loading ? "Adicionando despesa..." : "Adicionar despesa"}
           </Button>
         </DialogActions>
       </form>
