@@ -61,8 +61,7 @@ export async function PUT(request: NextRequest) {
     if (!updatedExpenseShare) {
       return NextResponse.json(
         {
-          message:
-            "There is no expense registered with this ID in the database",
+          message: "Expense share not updated.",
         },
         { status: 200 }
       );

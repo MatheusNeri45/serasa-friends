@@ -16,8 +16,14 @@ export async function DELETE(request: NextRequest) {
         id: expenseId,
       },
     });
+    if (expenseDeleted) {
+      return NextResponse.json({
+        expenseDeleted: expenseDeleted,
+        status: 200,
+      });
+    }
     return NextResponse.json({
-      expenseDeleted: expenseDeleted,
+      message: "Expense not deleted",
       status: 200,
     });
   } catch (error) {

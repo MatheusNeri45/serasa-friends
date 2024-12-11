@@ -11,10 +11,9 @@ export async function GET() {
     };
     const cookieHeader = serialize("token", "", cookieOptions);
     return NextResponse.json(
-      { message: "Login Successfull" },
+      { message: "Logout Successful" },
       { status: 200, headers: { "Set-Cookie": cookieHeader } }
     );
-
   } catch (error) {
     return NextResponse.json({ message: "Unable to logout" }, { status: 500 });
   }
