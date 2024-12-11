@@ -19,6 +19,8 @@ import {
 import { Expense, ExpenseShare, User } from "@prisma/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import CustomAlert from "../../alert";
+import { useRouter } from "next/navigation";
 
 interface ExtendedExpenseShare extends ExpenseShare {
   debtor: User;
@@ -55,6 +57,7 @@ export default function EditExpenseModal({
   selectedExpense,
   closeMenu,
 }: AddExpenseModalProps) {
+  const router = useRouter();
   const { groupId } = useParams();
   const [description, setDescription] = useState("");
   const [value, setValue] = useState<number | null>(null);
@@ -62,6 +65,8 @@ export default function EditExpenseModal({
   const [users, setUsers] = useState<User[]>([]);
   const [selectedParticipants, setSelectedParticipants] = useState<User[]>([]);
   const [category, setCategory] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ status: false, message: "" });
 
   useEffect(() => {
     fetchUsers();
@@ -89,6 +94,7 @@ export default function EditExpenseModal({
     setCategory(selectedExpense?.category || "");
   };
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setLoading(true);
     event.preventDefault();
     const data = {
       expense: {
@@ -113,6 +119,9 @@ export default function EditExpenseModal({
       onExpenseEdited();
       onClose();
       closeMenu();
+      router.refresh();
+    } else {
+      setAlert({ status: true, message: response.message });
     }
   };
   const splitAmount =
@@ -132,6 +141,12 @@ export default function EditExpenseModal({
         },
       }}
     >
+      {alert.status && (
+        <CustomAlert
+          message={alert.message}
+          onClose={() => setAlert({ status: false, message: "" })}
+        />
+      )}
       <DialogTitle
         sx={{
           pb: 1,
@@ -288,10 +303,11 @@ export default function EditExpenseModal({
               !description ||
               !value ||
               !paidBy ||
-              selectedParticipants?.length === 0
+              selectedParticipants?.length === 0 ||
+              loading
             }
           >
-            Editar despesa
+            {loading ? "Editando despesa..." : "Editar despesa"}
           </Button>
         </DialogActions>
       </form>

@@ -48,9 +48,10 @@ export default function LoginPage() {
     const response = await res.json();
     if (res.ok) {
       router.push("/dashboard");
+    } else {
+      setAlert({ status: true, message: response.message });
+      setLoading(false);
     }
-    setAlert({ status: true, message: response.message });
-    setLoading(false);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

@@ -63,8 +63,13 @@ export async function PATCH(request: NextRequest) {
         },
       },
     });
-
-    return NextResponse.json({ updatedExpense }, { status: 200 });
+    if (updatedExpense) {
+      return NextResponse.json({ updatedExpense }, { status: 200 });
+    }
+    return NextResponse.json(
+      { message: "Unable to edit expense" },
+      { status: 500 }
+    );
   } catch {
     return NextResponse.json(
       {
