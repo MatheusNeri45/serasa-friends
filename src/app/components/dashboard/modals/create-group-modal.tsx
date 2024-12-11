@@ -27,7 +27,7 @@ export default function CreateGroupModal({
   setCreatedGroupOpen,
   onGroupCreated,
 }: CreateGroupModalProps) {
-  const router = useRouter()
+  const router = useRouter();
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [members, setMembers] = useState<User[]>([]);
@@ -51,15 +51,14 @@ export default function CreateGroupModal({
       body: JSON.stringify({ groupInfo }),
     });
     const resUser = await fetch("/api/getLoggedUser", {});
-    const response = await res.json()
+    const response = await res.json();
     const responseUser = await resUser.json();
     const loggedUser = responseUser.user;
     if (res.ok) {
       onGroupCreated();
       setSelectedMembers([...selectedMembers]);
       setCreatedGroupOpen(false);
-      router.refresh()
-      
+      router.refresh();
     } else {
       setAlert({ status: true, message: response.message });
       setSelectedMembers([...selectedMembers, loggedUser]);

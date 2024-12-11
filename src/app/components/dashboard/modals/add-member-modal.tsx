@@ -13,8 +13,9 @@ import {
   Select,
 } from "@mui/material";
 import { User } from "@prisma/client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import CustomAlert from "../../alert";
 
 interface AddMemberModalProps {
   open: boolean;
@@ -27,9 +28,12 @@ export default function AddMemberModal({
   onClose,
   onAddMember,
 }: AddMemberModalProps) {
+  const router = useRouter();
   const { groupId } = useParams();
   const [email, setEmail] = useState("");
   const [members, SetMembers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ status: false, message: "" });
 
   useEffect(() => {
     fetchMembers();
@@ -52,6 +56,7 @@ export default function AddMemberModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const res = await fetch("/api/addMemberToGroup", {
       method: "POST",
       headers: {
@@ -65,6 +70,10 @@ export default function AddMemberModal({
     if (res.ok) {
       onAddMember();
       onClose();
+      router.refresh();
+    } else {
+      setAlert({ status: true, message: response.message });
+      setLoading(false);
     }
   };
 
@@ -81,6 +90,13 @@ export default function AddMemberModal({
         },
       }}
     >
+      {" "}
+      {alert.status && (
+        <CustomAlert
+          message={alert.message}
+          onClose={() => setAlert({ status: false, message: "" })}
+        />
+      )}
       <DialogTitle
         sx={{
           pb: 1,
@@ -116,8 +132,8 @@ export default function AddMemberModal({
           <Button onClick={onClose} variant="outlined">
             Cancelar
           </Button>
-          <Button type="submit" variant="contained">
-            Adicionar membro
+          <Button type="submit" variant="contained" disabled={loading}>
+            {loading ? "Adicionando membro..." : "Adicionar membro"}
           </Button>
         </DialogActions>
       </form>
