@@ -33,6 +33,7 @@ export default function CreateGroupModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const groupInfo = {
       name: groupName,
       description: description,
@@ -161,14 +162,7 @@ export default function CreateGroupModal({
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button
-            disabled={loading}
-            onClick={() => {
-              setLoading(true);
-              onCloseModal();
-            }}
-            variant="outlined"
-          >
+          <Button disabled={loading} onClick={onCloseModal} variant="outlined">
             Cancelar
           </Button>
           <Button type="submit" variant="contained">

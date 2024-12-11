@@ -13,12 +13,11 @@ if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 dotenv.config();
 
 export async function POST(request: NextRequest) {
-  
-    const JWT_SECRET = process.env.JWT_SECRET_KEY;
-    if (!JWT_SECRET) {
-      throw new Error("JWT_SECRET is not defined");
-    }
-    try {
+  const JWT_SECRET = process.env.JWT_SECRET_KEY;
+  if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined");
+  }
+  try {
     const req = await request.json();
     const userFound = await prisma.user.findFirst({
       where: {
@@ -46,8 +45,11 @@ export async function POST(request: NextRequest) {
         );
       }
     }
+    return NextResponse.json(
+      { message: "Wrong password or e-mail" },
+      { status: 500 }
+    );
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       { message: "Unable to register or find user" },
       { status: 500 }

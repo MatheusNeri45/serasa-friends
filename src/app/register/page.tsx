@@ -11,12 +11,14 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import CustomAlert from "../components/alert";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [alert, setAlert] = useState({ status: false, message: "" });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,15 +34,22 @@ export default function RegisterPage() {
       body: JSON.stringify({ email, password, name }),
       credentials: "include",
     });
+    const response = await res.json();
     if (res.ok) {
       router.push("/dashboard");
     } else {
-      console.error("Authentication failed");
+      setAlert({ status: true, message: response.message });
     }
   };
 
   return (
     <Container maxWidth="sm">
+      {alert.status && (
+        <CustomAlert
+          message={alert.message}
+          onClose={() => setAlert({ status: false, message: "" })}
+        />
+      )}
       <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center" }}>
         <Paper sx={{ width: "100%", p: 4 }}>
           <Typography variant="h5" component="h1" gutterBottom align="center">

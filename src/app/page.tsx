@@ -13,6 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AccountBalanceWallet } from "@mui/icons-material";
+import CustomAlert from "./components/alert";
 
 const dotsAnimation = keyframes`
   0% {
@@ -33,6 +34,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ status: false, message: "" });
 
   const fetchUser = async () => {
     const res = await fetch("api/login", {
@@ -43,11 +45,12 @@ export default function LoginPage() {
       body: JSON.stringify({ email, password }),
       credentials: "include",
     });
+    const response = await res.json();
     if (res.ok) {
       router.push("/dashboard");
-    } else {
-      console.error("Authentication failed");
     }
+    setAlert({ status: true, message: response.message });
+    setLoading(false);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -70,6 +73,7 @@ export default function LoginPage() {
           <AccountBalanceWallet
             sx={{ fontSize: 64, color: "#B7E4C7", mb: 2 }}
           />
+
           <Typography
             variant="h3"
             component="h1"
@@ -97,7 +101,12 @@ export default function LoginPage() {
             Outro app para você dever seus amigos
           </Typography>
         </Box>
-
+        {alert.status && (
+          <CustomAlert
+            message={alert.message}
+            onClose={() => setAlert({ status: false, message: "" })}
+          />
+        )}
         <Paper
           sx={{
             borderRadius: 4,
