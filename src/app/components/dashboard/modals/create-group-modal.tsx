@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import { User } from "@prisma/client";
 import { useEffect, useState } from "react";
+import CustomAlert from "../../alert";
+import { useRouter } from "next/navigation";
 
 interface CreateGroupModalProps {
   open: boolean;
@@ -25,11 +27,13 @@ export default function CreateGroupModal({
   setCreatedGroupOpen,
   onGroupCreated,
 }: CreateGroupModalProps) {
+  const router = useRouter()
   const [groupName, setGroupName] = useState("");
   const [description, setDescription] = useState("");
   const [members, setMembers] = useState<User[]>([]);
   const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ status: false, message: "" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,10 +51,17 @@ export default function CreateGroupModal({
       body: JSON.stringify({ groupInfo }),
     });
     const resUser = await fetch("/api/getLoggedUser", {});
+    const response = await res.json()
     const responseUser = await resUser.json();
     const loggedUser = responseUser.user;
     if (res.ok) {
       onGroupCreated();
+      setSelectedMembers([...selectedMembers]);
+      setCreatedGroupOpen(false);
+      router.refresh()
+      
+    } else {
+      setAlert({ status: true, message: response.message });
       setSelectedMembers([...selectedMembers, loggedUser]);
       setCreatedGroupOpen(false);
     }
@@ -98,6 +109,12 @@ export default function CreateGroupModal({
         },
       }}
     >
+      {alert.status && (
+        <CustomAlert
+          message={alert.message}
+          onClose={() => setAlert({ status: false, message: "" })}
+        />
+      )}
       <DialogTitle
         sx={{
           pb: 1,
@@ -162,10 +179,10 @@ export default function CreateGroupModal({
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3 }}>
-          <Button disabled={loading} onClick={onCloseModal} variant="outlined">
+          <Button onClick={onCloseModal} variant="outlined">
             Cancelar
           </Button>
-          <Button type="submit" variant="contained">
+          <Button disabled={loading} type="submit" variant="contained">
             {loading ? "Criando grupo" : "Criar Grupo"}
           </Button>
         </DialogActions>

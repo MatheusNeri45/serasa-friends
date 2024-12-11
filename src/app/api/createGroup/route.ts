@@ -30,9 +30,15 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+    if (group) {
+      return NextResponse.json(
+        { message: "Group created", groupCreated: group },
+        { status: 200 }
+      );
+    }
     return NextResponse.json(
-      { message: "Group created", groupCreated: group },
-      { status: 200 }
+      { message: "Unable to create group" },
+      { status: 500 }
     );
   } catch (error) {
     console.error(error);
