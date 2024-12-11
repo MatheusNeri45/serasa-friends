@@ -27,6 +27,7 @@ import {
 import { useState } from "react";
 import { Expense, ExpenseShare, User } from "@prisma/client";
 import EditExpenseModal from "./dashboard/modals/edit-expense-modal";
+import ExpenseChip from "./expense-list-chip";
 
 interface ExtendedExpenseShare extends ExpenseShare {
   debtor: User;
@@ -99,18 +100,6 @@ export default function ExpensesList({
     handleMenuClose();
   };
 
-  const onPayExpenseShare = async (expenseShare: ExtendedExpenseShare) => {
-    const res = await fetch("/api/updateExpenseShareStatus", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ expenseShare: expenseShare }),
-    });
-    if (res.ok) {
-      onEditExpense();
-    }
-  };
   const onPayExpense = async (expense: extendedExpense) => {
     const res = await fetch("/api/updateExpenseStatus", {
       method: "PUT",
@@ -211,9 +200,11 @@ export default function ExpensesList({
                   >
                     {expense.description}
                   </Typography>
-                  <Box sx={{
-                    display:"inline-flex",
-                  }}>
+                  <Box
+                    sx={{
+                      display: "inline-flex",
+                    }}
+                  >
                     <Typography
                       variant="body2"
                       sx={{
@@ -221,7 +212,7 @@ export default function ExpensesList({
                         display: "flex",
                         alignItems: "center",
                         gap: 1,
-                        mr:1,
+                        mr: 1,
                       }}
                     >
                       Pago por {expense.payer.name}
@@ -305,54 +296,12 @@ export default function ExpensesList({
                   {expense.shares
                     .sort((a, b) => a.debtor.name.localeCompare(b.debtor.name))
                     .map((ExpenseShare: ExtendedExpenseShare) => (
-                      <Chip
-                        clickable
-                        onClick={() => {
-                          if (ExpenseShare.debtor.id !== expense.payer.id) {
-                            onPayExpenseShare(ExpenseShare);
-                          }
-                        }}
+                      <ExpenseChip
                         key={ExpenseShare.id}
-                        label={`${
-                          ExpenseShare.debtor.name
-                        }: R$ ${ExpenseShare.amount.toFixed(2)}`}
-                        size="small"
-                        sx={{
-                          bgcolor: ExpenseShare.paid
-                            ? ExpenseShare.amount == 0
-                              ? "grey[200]"
-                              : ExpenseShare.debtorId !== expense.payer.id
-                              ? "secondary.main"
-                              : "primary.light"
-                            : ExpenseShare.amount == 0
-                            ? "grey[200]"
-                            : "error.light",
-                          fontWeight: 500,
-                          color:
-                            ExpenseShare.debtorId !== expense.payer.id
-                              ? "text.primary"
-                              : "white",
-                          "&:hover": {
-                            color:
-                              ExpenseShare.debtorId !== expense.payer.id
-                                ? "text.primary"
-                                : "white",
-                            bgcolor: ExpenseShare.paid
-                              ? ExpenseShare.amount == 0
-                                ? "grey[200]"
-                                : ExpenseShare.debtor.id !== expense.payer.id
-                                ? "error.light"
-                                : "primary.main"
-                              : ExpenseShare.amount == 0
-                              ? "grey[200]"
-                              : "secondary.main",
-                            transform: "scale(1.1)",
-                          },
-                          transition: "all 0.2s",
-                          alignSelf: "center",
-                          mr: "4px",
-                        }}
-                      ></Chip>
+                        expenseShare={ExpenseShare}
+                        expense={expense}
+                        onEditExpense={() => onEditExpense()}
+                      />
                     ))}
                 </Box>
                 <IconButton
