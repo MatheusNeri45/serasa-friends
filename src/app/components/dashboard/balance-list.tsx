@@ -278,31 +278,40 @@ export default function BalanceList({ group }: BalanceListProps) {
                         >
                           Você deve:
                         </Typography>
-                        {owedExpenses.map((expense) => (
-                          <Box key={expense.id} sx={{ mb: 2, pl: 2 }}>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                fontWeight: 600,
-                                mb: 0.5,
-                              }}
-                            >
-                              {expense.description}
-                            </Typography>
-                            {owedExpenses.map((expense) => (
+                        {owedExpenses
+                          .filter((expense) =>
+                            expense.shares.some(
+                              (share) =>
+                                share.debtor.id === groupMember.user.id &&
+                                !share.paid
+                            )
+                          )
+                          .map((expense) => (
+                            <Box key={expense.id} sx={{ mb: 2, pl: 2 }}>
                               <Typography
-                                key={expense.id}
                                 variant="body2"
-                                sx={{ color: "text.secondary", pl: 1 }}
+                                sx={{
+                                  fontWeight: 600,
+                                  mb: 0.5,
+                                }}
                               >
-                                {expense.payer.name}: R${" "}
-                                {(expense.amount - expense.paidAmount).toFixed(
-                                  2
-                                )}
+                                {expense.description}
                               </Typography>
-                            ))}
-                          </Box>
-                        ))}
+                              {expense?.shares.map(
+                                (share) =>
+                                  share.debtorId === groupMember.userId && (
+                                    <Typography
+                                      key={share.id}
+                                      variant="body2"
+                                      sx={{ color: "text.secondary", pl: 1 }}
+                                    >
+                                      {expense.payer?.name || "Desconhecido"}:
+                                      R$ {share.amount.toFixed(2)}
+                                    </Typography>
+                                  )
+                              )}
+                            </Box>
+                          ))}
                         {owedExpenses.length > 0 && <Divider sx={{ my: 2 }} />}
                       </>
                     )}
