@@ -42,8 +42,8 @@ export default function ExpenseChip({
     const response = await res.json();
     if (res.ok) {
       onEditExpense();
-      setLoading(false);
       router.refresh();
+      setLoading(false);
     } else {
       setAlert({ status: true, message: response.message });
     }
@@ -63,7 +63,6 @@ export default function ExpenseChip({
             onPayExpenseShare(expenseShare);
           }
         }}
-        key={expenseShare.id}
         label={
           loading
             ? "Atualizando..."

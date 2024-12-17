@@ -22,6 +22,7 @@ model User {
   ownedGroups   Group[]        @relation("GroupOwner")
   memberships   GroupMember[]  // Through table for group memberships
   debtorIn      ExpenseShare[] // Through table for expense shares
+  resetPasswordToken String?
 
   @@index([email])
 }

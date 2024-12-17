@@ -133,10 +133,12 @@ export default function AddExpenseModal({
         setPaidBy("");
         setCategory("");
         setSplitType("");
+        setLoading(false)
         onClose();
         router.refresh()
       } else {
         setAlert({ status: true, message: response.message });
+        setLoading(false)
       }
     }
   };

@@ -43,10 +43,13 @@ export async function POST(request: NextRequest) {
           { message: "Login Successfull" },
           { status: 200, headers: { "Set-Cookie": cookieHeader } }
         );
-      }
+      }return NextResponse.json(
+        { message: "Wrong password" },
+        { status: 500}
+      );
     }
     return NextResponse.json(
-      { message: "Wrong password or e-mail" },
+      { message: "User not found" },
       { status: 500 }
     );
   } catch (error) {

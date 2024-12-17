@@ -173,6 +173,20 @@ export default function LoginPage() {
             >
               {"Ainda não tem uma conta? Cadastre-se clicando aqui."}
             </Link>
+            <br></br>
+            <Link
+              href="/password-reset"
+              sx={{
+                color: "primary.main",
+                textDecoration: "none",
+                fontWeight: 500,
+                "&:hover": {
+                  textDecoration: "underline",
+                },
+              }}
+            >
+              {"Esqueceu sua senha? Clique aqui para modificá-la."}
+            </Link>
           </Box>
         </Paper>
       </Container>

@@ -34,6 +34,7 @@ export default function CreateGroupModal({
   const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({ status: false, message: "" });
+  const [loggedUser, setLoggedUser] = useState();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,20 +79,24 @@ export default function CreateGroupModal({
     }
     setCreatedGroupOpen(false);
   };
+
   useEffect(() => {
     fetchMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchMembers = async () => {
-    const res = await fetch("/api/getUsers", {});
+    const res = await fetch("/api/getUsers");
     const response = await res.json();
     if (res.ok) {
       const resUser = await fetch("/api/getLoggedUser", {});
       const responseUser = await resUser.json();
       const loggedUser = responseUser.user;
-      setSelectedMembers([...selectedMembers, loggedUser]);
-      setMembers(response.users);
+      setLoggedUser(loggedUser.id);
+      setSelectedMembers([loggedUser]);
+      setMembers(
+        response.users.filter((user: User) => user.id !== loggedUser.id)
+      );
     }
   };
 
@@ -159,20 +164,28 @@ export default function CreateGroupModal({
                 />
               )}
               renderTags={(value, getTagProps) =>
-                value.map((user, index) => (
-                  <Chip
-                    label={user.name}
-                    {...getTagProps({ index })}
-                    key={user.id}
-                    sx={{
-                      bgcolor: "primary.light",
-                      color: "white",
-                      "& .MuiChip-deleteIcon": {
-                        color: "white",
-                      },
-                    }}
-                  />
-                ))
+                value.map((user, index) => {
+                  const isLoggedUser = user.id === loggedUser;
+                  return (
+                    <Chip
+                      label={user.name}
+                      {...getTagProps({ index })}
+                      key={user.id}
+                      sx={{
+                        bgcolor: isLoggedUser ? "primary.light" : "default",
+                        color: isLoggedUser ? "white" : "inherit",
+                        "& .MuiChip-deleteIcon": {
+                          color: isLoggedUser ? "transparent" : "inherit", // Remove o ícone de delete
+                        },
+                      }}
+                      onDelete={
+                        isLoggedUser
+                          ? undefined
+                          : getTagProps({ index }).onDelete
+                      }
+                    />
+                  );
+                })
               }
             />
           </Box>
