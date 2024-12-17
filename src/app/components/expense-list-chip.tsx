@@ -4,7 +4,6 @@ import { Chip } from "@mui/material";
 import { Expense, ExpenseShare, User } from "@prisma/client";
 import { useState } from "react";
 import CustomAlert from "./alert";
-import { useRouter } from "next/navigation";
 import { alpha, useTheme } from "@mui/material/styles";
 
 interface ExtendedExpenseShare extends ExpenseShare {
@@ -28,7 +27,6 @@ export default function ExpenseChip({
   onEditExpense,
 }: ExpenseChipProps) {
   const theme = useTheme();
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({ status: false, message: "" });
 
