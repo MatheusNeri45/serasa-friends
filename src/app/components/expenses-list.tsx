@@ -159,7 +159,7 @@ export default function ExpensesList({
 
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper", borderRadius: 1 }}>
-      {expenses?.map((expense, index) => (
+      {expenses?.sort((a,b)=> new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()).map((expense, index) => (
         <Box key={expense.id}>
           <ListItem
             sx={{
@@ -295,7 +295,7 @@ export default function ExpensesList({
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                   {expense.shares
                     .sort((a, b) => a.debtor.name.localeCompare(b.debtor.name))
-                    .map((ExpenseShare: ExtendedExpenseShare) => (
+                    .map((ExpenseShare: ExtendedExpenseShare) => (ExpenseShare.debtorId!==expense.payerId&&
                       <ExpenseChip
                         key={ExpenseShare.id}
                         expenseShare={ExpenseShare}

@@ -5,6 +5,7 @@ import { Expense, ExpenseShare, User } from "@prisma/client";
 import { useState } from "react";
 import CustomAlert from "./alert";
 import { useRouter } from "next/navigation";
+import { alpha, useTheme } from "@mui/material/styles";
 
 interface ExtendedExpenseShare extends ExpenseShare {
   debtor: User;
@@ -26,6 +27,7 @@ export default function ExpenseChip({
   expense,
   onEditExpense,
 }: ExpenseChipProps) {
+  const theme = useTheme();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({ status: false, message: "" });
@@ -72,17 +74,15 @@ export default function ExpenseChip({
         }
         size="small"
         sx={{
+          padding: "8px 16px",
+          fontSize:"12px",
           bgcolor: loading
             ? "grey[200]"
             : expenseShare.paid
             ? expenseShare.amount == 0
               ? "grey[200]"
-              : expenseShare.debtorId !== expense.payer.id
-              ? "secondary.main"
-              : "primary.light"
-            : expenseShare.amount == 0
-            ? "grey[200]"
-            : "error.light",
+              : alpha(theme.palette.secondary.main, 0.3)
+            : alpha(theme.palette.error.light, 0.3),
           fontWeight: 500,
           color:
             expenseShare.debtorId !== expense.payer.id
@@ -96,12 +96,8 @@ export default function ExpenseChip({
             bgcolor: expenseShare.paid
               ? expenseShare.amount == 0
                 ? "grey[200]"
-                : expenseShare.debtor.id !== expense.payer.id
-                ? "error.light"
-                : "primary.main"
-              : expenseShare.amount == 0
-              ? "grey[200]"
-              : "secondary.main",
+                : alpha(theme.palette.secondary.main, 0.3)
+              : alpha(theme.palette.error.light, 0.3),
             transform: "scale(1.1)",
           },
           transition: "all 0.2s",
