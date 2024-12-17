@@ -44,7 +44,6 @@ export default function ExpenseChip({
     const response = await res.json();
     if (res.ok) {
       onEditExpense();
-      router.refresh();
       setLoading(false);
     } else {
       setAlert({ status: true, message: response.message });
