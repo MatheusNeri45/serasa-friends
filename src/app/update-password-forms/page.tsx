@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Box,
@@ -13,10 +13,18 @@ import {
 import { AccountBalanceWallet, ArrowBack } from "@mui/icons-material";
 import CustomAlert from "@/app/components/alert";
 import ConfirmationModal from "../components/confirmation-alert";
+import ForgotPasswordSkeleton from "../components/skeletons/reset-password-skeleton";
 
-export default function ForgotPasswordPage() {
+export default function UpdatePasswordPage() {
+  return (
+    <Suspense fallback={<ForgotPasswordSkeleton />}>
+      <ForgotPasswordPage />
+    </Suspense>
+  );
+}
+export function ForgotPasswordPage() {
   const router = useRouter();
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
   const [password, setPassword] = useState({
     password: "",
     confirmationPassword: "",
@@ -25,7 +33,7 @@ export default function ForgotPasswordPage() {
   const [alert, setAlert] = useState({ status: false, message: "" });
 
   const updatePassword = async () => {
-    const token = searchParams.get('token')
+    const token = searchParams.get("token");
     const res = await fetch("/api/updatePassword", {
       method: "PATCH",
       headers: {
