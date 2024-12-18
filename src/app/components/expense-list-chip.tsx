@@ -78,8 +78,8 @@ export default function ExpenseChip({
             : expenseShare.paid
             ? expenseShare.amount == 0
               ? "grey[200]"
-              : alpha(theme.palette.secondary.main, 0.3)
-            : alpha(theme.palette.error.light, 0.3),
+              : alpha(theme.palette.secondary.main, 0.5)
+            : alpha(theme.palette.error.light, 0.5),
           fontWeight: 500,
           color:
             expenseShare.debtorId !== expense.payer.id
@@ -93,8 +93,8 @@ export default function ExpenseChip({
             bgcolor: expenseShare.paid
               ? expenseShare.amount == 0
                 ? "grey[200]"
-                : alpha(theme.palette.secondary.main, 0.3)
-              : alpha(theme.palette.error.light, 0.3),
+                : alpha(theme.palette.secondary.main, 0.5)
+              : alpha(theme.palette.error.light, 0.5),
             transform: "scale(1.1)",
           },
           transition: "all 0.2s",

@@ -59,9 +59,7 @@ export default function DashboardPage() {
   }, []);
 
   const fetchGroupsList = async () => {
-    const response = await fetch("/api/getAllGroupsUser", {
-      headers: {},
-    });
+    const response = await fetch("/api/getAllGroupsUser");
     const res = await response.json();
     setGroups(res.groups);
     setLoading(false);
@@ -252,19 +250,34 @@ export default function DashboardPage() {
                     <Box sx={{ mt: 2, mb: 1 }}>
                       <LinearProgress
                         variant="determinate"
-                        value={
-                          Math.ceil(
-                            (100 *
-                              group.expenses.reduce(
-                                (total, expense) => total + expense.paidAmount,
-                                0
-                              )) /
-                              group.expenses.reduce(
-                                (total, expense) => total + expense.amount,
-                                0
-                              )
-                          ) || 100
-                        }
+                        value={Math.ceil(
+                          (100 *
+                            group.expenses.reduce((total, expense) => {
+                              return (
+                                total +
+                                expense.shares.reduce((sum, share) => {
+                                  if (
+                                    share.paid &&
+                                    expense.payer.id !== share.debtor.id
+                                  ) {
+                                    return sum + share.amount;
+                                  }
+                                  return sum;
+                                }, 0)
+                              );
+                            }, 0)) /
+                            group.expenses.reduce((total, expense) => {
+                              return (
+                                total +
+                                expense.shares.reduce((sum, share) => {
+                                  if (share.debtorId !== expense.payerId) {
+                                    return sum + share.amount;
+                                  }
+                                  return sum;
+                                }, 0)
+                              );
+                            }, 0)
+                        )}
                         sx={{
                           height: 8,
                           borderRadius: 0.5,
@@ -290,15 +303,31 @@ export default function DashboardPage() {
                         ? "Dívidas pagas:" +
                             Math.ceil(
                               (100 *
-                                group.expenses.reduce(
-                                  (total, expense) =>
-                                    total + expense.paidAmount,
-                                  0
-                                )) /
-                                group.expenses.reduce(
-                                  (total, expense) => total + expense.amount,
-                                  0
-                                )
+                                group.expenses.reduce((total, expense) => {
+                                  return (
+                                    total +
+                                    expense.shares.reduce((sum, share) => {
+                                      if (
+                                        share.paid &&
+                                        expense.payer.id !== share.debtor.id
+                                      ) {
+                                        return sum + share.amount;
+                                      }
+                                      return sum;
+                                    }, 0)
+                                  );
+                                }, 0)) /
+                                group.expenses.reduce((total, expense) => {
+                                  return (
+                                    total +
+                                    expense.shares.reduce((sum, share) => {
+                                      if (share.debtorId !== expense.payerId) {
+                                        return sum + share.amount;
+                                      }
+                                      return sum;
+                                    }, 0)
+                                  );
+                                }, 0)
                             ) +
                             "%" || 100 + "%"
                         : "Sem dívidas por enquanto."}

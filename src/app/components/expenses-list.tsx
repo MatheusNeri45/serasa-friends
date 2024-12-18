@@ -159,199 +159,229 @@ export default function ExpensesList({
 
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper", borderRadius: 1 }}>
-      {expenses?.sort((a,b)=> new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()).map((expense, index) => (
-        <Box key={expense.id}>
-          <ListItem
-            sx={{
-              py: 2,
-              px: 3,
-              display: "flex",
-              alignItems: "flex-start",
-              borderRadius: "10px",
-              transition: "all 0.2s ease",
-              "&:hover": {
-                bgcolor: "rgba(45, 106, 79, 0.05)",
-                transform: "translateY(-2px)",
-              },
-            }}
-          >
-            <Avatar
+      {expenses
+        ?.sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        )
+        .map((expense, index) => (
+          <Box key={expense.id}>
+            <ListItem
               sx={{
-                bgcolor: categoryColors[expense.category],
-                mr: 2,
-                mt: 1,
+                py: 2,
+                px: 3,
+                display: "flex",
+                alignItems: "flex-start",
+                borderRadius: "10px",
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  bgcolor: "rgba(45, 106, 79, 0.05)",
+                  transform: "translateY(-2px)",
+                },
               }}
             >
-              {categoryIcons[expense.category]}
-            </Avatar>
-
-            <Box sx={{ flexGrow: 1 }}>
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
-              >
-                <Box>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      fontWeight: 600,
-                      color: "text.primary",
-                      mb: 0.5,
-                    }}
-                  >
-                    {expense.description}
-                  </Typography>
-                  <Box
-                    sx={{
-                      display: "inline-flex",
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: "text.secondary",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                        mr: 1,
-                      }}
-                    >
-                      Pago por {expense.payer.name}
-                    </Typography>
-                    <Chip
-                      label={expense.category}
-                      size="small"
-                      sx={{
-                        bgcolor: `${categoryColors[expense.category]}20`,
-                        color: categoryColors[expense.category],
-                        fontWeight: 500,
-                      }}
-                    />
-                  </Box>
-                </Box>
-                <Box sx={{ textAlign: "right" }}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: "primary.main",
-                      fontWeight: 700,
-                    }}
-                  >
-                    R${" "}
-                    {expense.shares
-                      .reduce(
-                        (total, ExpenseShare) =>
-                          total + (ExpenseShare.paid ? ExpenseShare.amount : 0),
-                        0
-                      )
-                      .toFixed(0)}
-                    /{expense.amount.toFixed(0)}
-                  </Typography>
-                  <LinearProgress
-                    variant="determinate"
-                    value={
-                      Math.ceil(
-                        (100 *
-                          expense.shares.reduce(
-                            (total, ExpenseShare) =>
-                              total +
-                              (ExpenseShare.paid ? ExpenseShare.amount : 0),
-                            0
-                          )) /
-                          expense.shares.reduce(
-                            (total, ExpenseShare) =>
-                              total + ExpenseShare.amount,
-                            0
-                          )
-                      ) || 100
-                    }
-                    sx={{
-                      height: 8,
-                      borderRadius: 0.5,
-                      bgcolor: "rgba(183, 228, 199, 0.3)",
-                      "& .MuiLinearProgress-bar": {
-                        bgcolor: "primary.main",
-                      },
-                    }}
-                  />
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "text.secondary",
-                      display: "block",
-                    }}
-                  >
-                    {new Date(expense.createdAt).toLocaleDateString()}
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Box
+              <Avatar
                 sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
+                  bgcolor: categoryColors[expense.category],
+                  mr: 2,
+                  mt: 1,
                 }}
               >
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                  {expense.shares
-                    .sort((a, b) => a.debtor.name.localeCompare(b.debtor.name))
-                    .map((ExpenseShare: ExtendedExpenseShare) => (ExpenseShare.debtorId!==expense.payerId&&
-                      <ExpenseChip
-                        key={ExpenseShare.id}
-                        expenseShare={ExpenseShare}
-                        expense={expense}
-                        onEditExpense={() => onEditExpense()}
-                      />
-                    ))}
-                </Box>
-                <IconButton
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleMenuOpen(e, expense);
+                {categoryIcons[expense.category]}
+              </Avatar>
+
+              <Box sx={{ flexGrow: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    mb: 1,
                   }}
-                  sx={{ ml: 1 }}
                 >
-                  <MoreVertIcon />
-                </IconButton>
+                  <Box>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: 600,
+                        color: "text.primary",
+                        mb: 0.5,
+                      }}
+                    >
+                      {expense.description}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "inline-flex",
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "text.secondary",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          mr: 1,
+                        }}
+                      >
+                        Pago por {expense.payer.name}
+                      </Typography>
+                      <Chip
+                        label={expense.category}
+                        size="small"
+                        sx={{
+                          bgcolor: `${categoryColors[expense.category]}20`,
+                          color: categoryColors[expense.category],
+                          fontWeight: 500,
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                  <Box sx={{ textAlign: "right" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color: "primary.main",
+                        fontWeight: 700,
+                      }}
+                    >
+                      R${" "}
+                      {expense.shares
+                        .reduce((total, ExpenseShare) => {
+                          return (
+                            total +
+                            (ExpenseShare.paid
+                              ? expense.payerId !== ExpenseShare.debtorId
+                                ? ExpenseShare.amount
+                                : 0
+                              : 0)
+                          );
+                        }, 0)
+                        .toFixed(0)}
+                      /
+                      {expense.shares
+                        .reduce((total, ExpenseShare) => {
+                          if (expense.payerId !== ExpenseShare.debtorId) {
+                            return total + ExpenseShare.amount;
+                          }
+                          return total;
+                        }, 0)
+                        .toFixed(0)}
+                    </Typography>
+                    <LinearProgress
+                      variant="determinate"
+                      value={Math.ceil(
+                        (100 *
+                          expense.shares.reduce((total, ExpenseShare) => {
+                            return (
+                              total +
+                              (ExpenseShare.paid
+                                ? expense.payerId !== ExpenseShare.debtorId
+                                  ? ExpenseShare.amount
+                                  : 0
+                                : 0)
+                            );
+                          }, 0)) /
+                          expense.shares.reduce((total, ExpenseShare) => {
+                            if (expense.payerId !== ExpenseShare.debtorId) {
+                              return total + ExpenseShare.amount;
+                            }
+                            return total;
+                          }, 0)
+                      )}
+                      sx={{
+                        height: 8,
+                        borderRadius: 0.5,
+                        bgcolor: "rgba(183, 228, 199, 0.3)",
+                        "& .MuiLinearProgress-bar": {
+                          bgcolor: "primary.main",
+                        },
+                      }}
+                    />
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                        display: "block",
+                      }}
+                    >
+                      {new Date(expense.createdAt).toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                    {expense.shares
+                      .sort((a, b) =>
+                        a.debtor.name.localeCompare(b.debtor.name)
+                      )
+                      .map(
+                        (ExpenseShare: ExtendedExpenseShare) =>
+                          ExpenseShare.debtorId !== expense.payerId && (
+                            <ExpenseChip
+                              key={ExpenseShare.id}
+                              expenseShare={ExpenseShare}
+                              expense={expense}
+                              onEditExpense={() => onEditExpense()}
+                            />
+                          )
+                      )}
+                  </Box>
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleMenuOpen(e, expense);
+                    }}
+                    sx={{ ml: 1 }}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                </Box>
               </Box>
-            </Box>
-          </ListItem>
-          {index < expenses.length - 1 && (
-            <Divider sx={{ mt: 1, mb: 1, ml: 9, mr: 3 }} />
-          )}
-          <EditExpenseModal
-            editExpenseOpen={editExpenseOpen}
-            onClose={() => setEditExpenseOpen(false)}
-            selectedExpense={selectedExpense}
-            onExpenseEdited={() => onEditExpense()}
-            closeMenu={() => handleMenuClose()}
-          />
+            </ListItem>
+            {index < expenses.length - 1 && (
+              <Divider sx={{ mt: 1, mb: 1, ml: 9, mr: 3 }} />
+            )}
+            <EditExpenseModal
+              editExpenseOpen={editExpenseOpen}
+              onClose={() => setEditExpenseOpen(false)}
+              selectedExpense={selectedExpense}
+              onExpenseEdited={() => onEditExpense()}
+              closeMenu={() => handleMenuClose()}
+            />
 
-          <Menu
-            anchorEl={menuAnchorEl}
-            open={Boolean(menuAnchorEl)}
-            onClose={handleMenuClose}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          >
-            <MenuItem onClick={() => handleEdit()}>Editar despesa</MenuItem>
+            <Menu
+              anchorEl={menuAnchorEl}
+              open={Boolean(menuAnchorEl)}
+              onClose={handleMenuClose}
+              transformOrigin={{ horizontal: "right", vertical: "top" }}
+              anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+            >
+              <MenuItem onClick={() => handleEdit()}>Editar despesa</MenuItem>
 
-            <MenuItem
-              onClick={() => handleDelete()}
-              sx={{ color: "error.main" }}
-            >
-              Deletar despesa
-            </MenuItem>
-            <MenuItem
-              onClick={() => onPayExpense(expense)}
-              sx={{ color: "primary.main" }}
-            >
-              Marcar pago
-            </MenuItem>
-          </Menu>
-        </Box>
-      ))}
+              <MenuItem
+                onClick={() => handleDelete()}
+                sx={{ color: "error.main" }}
+              >
+                Deletar despesa
+              </MenuItem>
+              <MenuItem
+                onClick={() => onPayExpense(expense)}
+                sx={{ color: "primary.main" }}
+              >
+                Marcar pago
+              </MenuItem>
+            </Menu>
+          </Box>
+        ))}
     </List>
   );
 }
