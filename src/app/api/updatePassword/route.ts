@@ -11,6 +11,7 @@ export async function PATCH(request: NextRequest) {
   try {
     const req = await request.json();
     const token = req.token
+    
     console.log(token)
     if (token) {
       console.log(token)
