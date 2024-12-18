@@ -15,14 +15,14 @@ import CustomAlert from "@/app/components/alert";
 import ConfirmationModal from "../components/confirmation-alert";
 import ForgotPasswordSkeleton from "../components/skeletons/reset-password-skeleton";
 
-export default function UpdatePasswordPage() {
+const UpdatePasswordPage = () => {
   return (
     <Suspense fallback={<ForgotPasswordSkeleton />}>
       <ForgotPasswordPage />
     </Suspense>
   );
 }
-export function ForgotPasswordPage() {
+const ForgotPasswordPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [password, setPassword] = useState({
@@ -201,4 +201,6 @@ export function ForgotPasswordPage() {
       </Container>
     </Box>
   );
-}
+};
+
+export default UpdatePasswordPage;
