@@ -61,14 +61,14 @@ export async function PUT(request: NextRequest) {
     if (!updatedExpenseShare) {
       return NextResponse.json(
         {
-          message: "Despesa parcial paga.",
+          message: "Não foi possível editar esta parcela da despesa.",
         },
-        { status: 200 }
+        { status: 500 }
       );
     }
     return NextResponse.json(
-      { updatedExpenseShare: updatedExpenseShare },
-      { status: 200 }
+      { updatedExpenseShare: updatedExpenseShare ,
+      status: 200, message:"Status da parcela da despesa atualizada com sucesso. Aguarde alguns segundos enquanto fazemos a alteração." }
     );
   } catch (error) {
     return NextResponse.json(
