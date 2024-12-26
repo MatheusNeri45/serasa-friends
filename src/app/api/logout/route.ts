@@ -11,10 +11,10 @@ export async function GET() {
     };
     const cookieHeader = serialize("token", "", cookieOptions);
     return NextResponse.json(
-      { message: "Logout Successful" },
+      { message: "Deslogado com sucesso." },
       { status: 200, headers: { "Set-Cookie": cookieHeader } }
     );
   } catch (error) {
-    return NextResponse.json({ message: "Unable to logout" }, { status: 500 });
+    return NextResponse.json({ message: "Não foi possível deslogar." }, { status: 500 });
   }
 }

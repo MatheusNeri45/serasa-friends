@@ -1,12 +1,11 @@
-
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { User } from "@prisma/client";
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = globalThis.prisma || new PrismaClient();
 
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;
 
 interface splitAmountUser extends User {
   splitAmount: number;
@@ -48,6 +47,7 @@ export async function POST(request: NextRequest) {
         amount: data.value,
         paidAmount: valuePaid,
         category: data.category,
+        splitType: data.splitType,
         payer: {
           connect: { id: data.payerId },
         },
@@ -67,21 +67,24 @@ export async function POST(request: NextRequest) {
         },
       },
     });
-    if(expense){
+    if (expense) {
+      return NextResponse.json({
+        message: "Despesa criada com sucesso.",
+        expenseCreated: expense,
+        status: 200,
+      });
+    }
     return NextResponse.json({
-      message: "Expense created",
+      message:
+        "Não foi possível criar a despesa. Verifique se todas as informações estão corretas.",
       expenseCreated: expense,
-      status: 200,
+      status: 500,
     });
-  }    return NextResponse.json({
-    message: "Unable to create expense",
-    expenseCreated: expense,
-    status: 500,
-  });
   } catch (error) {
     console.error("", error);
     return NextResponse.json({
-      message: "Unable to create expense",
+      message:
+        "Não foi possível criar a despesa. Verifique se todas as informações estão corretas.",
       status: 500,
     });
   }

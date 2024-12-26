@@ -71,7 +71,7 @@ export default function ForgotPasswordPage() {
               mb: 2,
             }}
           >
-            Resetar palavra-chave
+            Resetar senha
           </Typography>
           <Typography
             variant="h6"

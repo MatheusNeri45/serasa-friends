@@ -36,11 +36,12 @@ export async function PUT(request: NextRequest) {
         { status: 200 }
       );
     }
-    return NextResponse.json(
-      { expenseUpdated: updatedExpense },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      expenseUpdated: updatedExpense,
+      status: 200,
+      message: "Despesa paga totalmente.",
+    });
   } catch (error) {
-    return NextResponse.json({ expenseUpdated: [] }, { status: 200 });
+    return NextResponse.json({ expenseUpdated: [], status: 500, message:"Erro ao pagar despesa." });
   }
 }

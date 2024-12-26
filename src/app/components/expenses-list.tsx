@@ -62,7 +62,7 @@ const categoryColors: { [key: string]: string } = {
 
 interface ExpensesListProps {
   expenses: extendedExpense[];
-  onEditExpense: () => void;
+  onEditExpense: (message: string, status: boolean) => Promise<void>;
   onDeleteExpense: (expenseId: number) => void;
 }
 
@@ -108,8 +108,9 @@ export default function ExpensesList({
       },
       body: JSON.stringify({ expense: expense }),
     });
+    const response = await res.json();
     if (res.ok) {
-      onEditExpense();
+      onEditExpense(response.message, false);
     }
   };
 
@@ -329,7 +330,7 @@ export default function ExpensesList({
                               key={ExpenseShare.id}
                               expenseShare={ExpenseShare}
                               expense={expense}
-                              onEditExpense={() => onEditExpense()}
+                              onEditExpense={onEditExpense}
                             />
                           )
                       )}
@@ -354,7 +355,7 @@ export default function ExpensesList({
               editExpenseOpen={editExpenseOpen}
               onClose={() => setEditExpenseOpen(false)}
               selectedExpense={selectedExpense}
-              onExpenseEdited={() => onEditExpense()}
+              onExpenseEdited={onEditExpense}
               closeMenu={() => handleMenuClose()}
             />
 

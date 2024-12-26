@@ -24,13 +24,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ groupUpdated }, { status: 200 });
   }
   return NextResponse.json(
-    { message: "Unable to register or find user" },
+    { message: "Caloteiro adicionado com sucesso." },
     { status: 200 }
   );
 }catch (error) {
   console.error("", error);
   return NextResponse.json({
-    message: "Unable to add member",
+    message: "O calote é real, não foi possível adicionar o seu amigo ao grupo.",
     status: 500,
   });
 }

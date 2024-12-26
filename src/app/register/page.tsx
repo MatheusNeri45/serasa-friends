@@ -16,6 +16,7 @@ import CustomAlert from "../components/alert";
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [surName, setSurName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [alert, setAlert] = useState({ status: false, message: "" });
@@ -26,12 +27,13 @@ export default function RegisterPage() {
   };
 
   const fetchUser = async () => {
+    const fullName = name + " " + surName
     const res = await fetch("api/createUser", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password, name }),
+      body: JSON.stringify({ email, password, fullName }),
       credentials: "include",
     });
     const response = await res.json();
@@ -58,10 +60,17 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label="Nome e Sobrenome"
+              label="Nome"
               margin="normal"
               value={name}
               onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+              fullWidth
+              label="Sobrenome"
+              margin="normal"
+              value={surName}
+              onChange={(e) => setSurName(e.target.value)}
             />
             <TextField
               fullWidth
@@ -72,7 +81,7 @@ export default function RegisterPage() {
             />
             <TextField
               fullWidth
-              label="Palavra-chave"
+              label="Senha"
               type="password"
               margin="normal"
               value={password}

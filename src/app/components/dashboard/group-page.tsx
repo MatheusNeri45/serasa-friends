@@ -34,6 +34,7 @@ import ExpensesList from "../expenses-list";
 import BalanceList from "./balance-list";
 import UserMenu from "../user-menu";
 import GroupPageSkeleton from "../skeletons/group-page-skeleton";
+import ConfirmationModal from "../confirmation-alert";
 
 interface ExtendedGroupMember extends GroupMember {
   user: { id: number; name: string; email: string };
@@ -60,6 +61,7 @@ export default function GroupPageClient() {
   const [addExpenseOpen, setAddExpenseOpen] = useState(false);
   const [group, setGroup] = useState<ExtendedGroup>();
   const [loading, setLoading] = useState(true);
+  const [alert, setAlert] = useState({ status: false, message: "" });
 
   useEffect(() => {
     fetchGroupInfo();
@@ -87,9 +89,14 @@ export default function GroupPageClient() {
       },
       body: JSON.stringify({ expenseId: expenseId }),
     });
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const res = await response.json();
+    setAlert({ status: false, message: res.message });
     fetchGroupInfo();
+  };
+
+  const onEditExpense = async (message: string, status: boolean) => {
+    fetchGroupInfo();
+    setAlert({ status: status, message: message });
   };
 
   return loading ? (
@@ -101,6 +108,13 @@ export default function GroupPageClient() {
         elevation={0}
         sx={{ bgcolor: "white", color: "text.primary" }}
       >
+        {!alert.status && alert.message !== "" && (
+          <ConfirmationModal
+            open={true}
+            message={alert.message}
+            onClose={() => setAlert({ status: false, message: "" })}
+          />
+        )}
         <Toolbar>
           <Typography
             variant="h6"
@@ -256,7 +270,7 @@ export default function GroupPageClient() {
                     <ExpensesList
                       expenses={group?.expenses}
                       onDeleteExpense={onDeleteExpense}
-                      onEditExpense={() => fetchGroupInfo()}
+                      onEditExpense={onEditExpense}
                     />
                   )}
                 </CardContent>
@@ -307,7 +321,7 @@ export default function GroupPageClient() {
       <AddExpenseModal
         open={addExpenseOpen}
         onClose={() => setAddExpenseOpen((prev) => !prev)}
-        onExpenseCreated={() => fetchGroupInfo()}
+        onExpenseCreated={onEditExpense}
       />
     </Box>
   );

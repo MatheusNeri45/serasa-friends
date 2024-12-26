@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     if (!email) {
       return NextResponse.json(
-        { message: "Email is required" },
+        { message: "Favor digitar o email." },
         { status: 400 }
       );
     }
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
 
     if (!userFound) {
       return NextResponse.json(
-        { message: "No user registered with this email" },
+        { message: "Nenhum usuário cadastrado com esse e-mail." },
         { status: 404 }
       );
     }
@@ -127,12 +127,12 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { message: "Password reset link sent to your email" },
+      { message: "Link para reset de senha enviada para o e-mail fornecido." },
       { status: 200 }
     );
 
   } catch (error) {
-    console.error("Error sending recovery email:", error);
+    console.error("Não foi possível enviar um e-mail de recuperação, verifique o e-mail:", error);
     
     if (error instanceof Error) {
       return NextResponse.json(
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { message: "Failed to send recovery email" },
+      { message: "Não foi possível enviar um e-mail de recuperação." },
       { status: 500 }
     );
   }

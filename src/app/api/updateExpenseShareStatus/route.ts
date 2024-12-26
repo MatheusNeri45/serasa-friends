@@ -61,7 +61,7 @@ export async function PUT(request: NextRequest) {
     if (!updatedExpenseShare) {
       return NextResponse.json(
         {
-          message: "Expense share not updated.",
+          message: "Despesa parcial paga.",
         },
         { status: 200 }
       );
@@ -72,7 +72,7 @@ export async function PUT(request: NextRequest) {
     );
   } catch (error) {
     return NextResponse.json(
-      { message: "Unable to find split expenses for this expense." },
+      { message: "Não foi possível editar esta parcela da despesa." },
       { status: 500 }
     );
   }

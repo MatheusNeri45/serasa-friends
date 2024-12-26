@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     const newUser = await prisma.user.create({
       data: {
         email: req.email,
-        name: req.name,
+        name: req.fullName,
         password: hashedPassword,
       },
     });
@@ -66,18 +66,18 @@ export async function POST(request: NextRequest) {
       };
       const cookieHeader = serialize("token", token, cookieOptions);
       return NextResponse.json(
-        { message: "Login Successfull" },
+        { message: "Logado com sucesso." },
         { status: 200, headers: { "Set-Cookie": cookieHeader } }
       );
     } else {
       return NextResponse.json(
-        { message: "Unable to register user" },
+        { message: "Não foi possível cadastrar o usuário. Tente novamente mais tarde." },
         { status: 500 }
       );
     }
   } catch (error) {
     return NextResponse.json(
-      { message: "Unable to register or find user" },
+      { message: "Não foi possível cadastrar o usuário. Tente novamente mais tarde." },
       { status: 500 }
     );
   }

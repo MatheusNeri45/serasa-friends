@@ -31,12 +31,12 @@ export async function PATCH(request: NextRequest) {
         });
         if (updatedUser) {
           return NextResponse.json(
-            { message: "User updated." },
+            { message: "Senha alterada com sucesso." },
             { status: 200 }
           );
         }
         return NextResponse.json(
-          { message: "User not updated, probably missing info or wrong userId" },
+          { message: "Não foi possível alterar sua senha, favor gerar o link novamente." },
           { status: 500 }
         );
       }

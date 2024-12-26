@@ -32,18 +32,18 @@ export async function POST(request: NextRequest) {
     });
     if (group) {
       return NextResponse.json(
-        { message: "Group created", groupCreated: group },
+        { message: "Grupo criado com sucesso.", groupCreated: group },
         { status: 200 }
       );
     }
     return NextResponse.json(
-      { message: "Unable to create group" },
+      { message: "Não foi possível criar o grupo." },
       { status: 500 }
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { message: "Unable to create group" },
+      { message: "Não foi possível criar o grupo." },
       { status: 500 }
     );
   }

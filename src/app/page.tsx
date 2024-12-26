@@ -127,7 +127,7 @@ export default function LoginPage() {
             />
             <TextField
               fullWidth
-              label="Palavra-chave"
+              label="Senha"
               type="password"
               margin="normal"
               value={password}

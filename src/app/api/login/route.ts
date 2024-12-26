@@ -40,21 +40,21 @@ export async function POST(request: NextRequest) {
         };
         const cookieHeader = serialize("token", token, cookieOptions);
         return NextResponse.json(
-          { message: "Login Successfull" },
+          { message: "Logado com sucesso." },
           { status: 200, headers: { "Set-Cookie": cookieHeader } }
         );
       }return NextResponse.json(
-        { message: "Wrong password" },
+        { message: "Senha errada." },
         { status: 500}
       );
     }
     return NextResponse.json(
-      { message: "User not found" },
+      { message: "Usuário não cadastrado." },
       { status: 500 }
     );
   } catch (error) {
     return NextResponse.json(
-      { message: "Unable to register or find user" },
+      { message: "Não foi possível logar. Tente novamente mais tarde." },
       { status: 500 }
     );
   }

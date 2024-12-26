@@ -20,16 +20,17 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({
         expenseDeleted: expenseDeleted,
         status: 200,
+        message:"Despesa excluída com sucesso."
       });
     }
     return NextResponse.json({
-      message: "Expense not deleted",
-      status: 200,
+      message: "Despesa não excluída.",
+      status: 500,
     });
   } catch (error) {
     console.error("", error);
     return NextResponse.json({
-      message: "Unable to delete expense",
+      message: "Erro excluindo despesa.",
       status: 500,
     });
   }

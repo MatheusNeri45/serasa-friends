@@ -17,7 +17,7 @@ import {
   Chip,
 } from "@mui/material";
 import { User } from "@prisma/client";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import CustomAlert from "../../alert";
 
@@ -28,7 +28,7 @@ interface splitAmountUser extends User {
 interface AddExpenseModalProps {
   open: boolean;
   onClose: () => void;
-  onExpenseCreated: () => void;
+  onExpenseCreated: (message: string, status: boolean) => Promise<void>;
 }
 
 const categories = [
@@ -53,7 +53,6 @@ export default function AddExpenseModal({
   onClose,
   onExpenseCreated,
 }: AddExpenseModalProps) {
-  const router = useRouter()
   const { groupId } = useParams();
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
@@ -127,19 +126,22 @@ export default function AddExpenseModal({
       });
       const response = await res.json();
       if (res.ok) {
-        onExpenseCreated();
+        onExpenseCreated(response.message, false);
         setAmount("");
         setDescription("");
         setPaidBy("");
         setCategory("");
         setSplitType("");
-        setLoading(false)
+        setLoading(false);
         onClose();
-        router.refresh()
       } else {
         setAlert({ status: true, message: response.message });
-        setLoading(false)
+        setLoading(false);
       }
+    }
+    else{
+      setAlert({status: true, message: "Cheque a soma dos valores."})
+      setLoading(false)
     }
   };
   const splitAmount =
