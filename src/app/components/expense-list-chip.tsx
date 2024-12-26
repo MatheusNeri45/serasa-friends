@@ -18,7 +18,7 @@ interface extendedExpense extends Expense {
 interface ExpenseChipProps {
   expenseShare: ExtendedExpenseShare;
   expense: extendedExpense;
-  onEditExpense: (message:string, status:boolean) => Promise<void>;
+  onEditExpense: (message: string, status: boolean) => Promise<void>;
 }
 
 export default function ExpenseChip({
@@ -42,7 +42,7 @@ export default function ExpenseChip({
     const response = await res.json();
     if (res.ok) {
       onEditExpense(response.message, false);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 2000);
     } else {
       setAlert({ status: true, message: response.message });
     }
@@ -72,7 +72,7 @@ export default function ExpenseChip({
         size="small"
         sx={{
           padding: "8px 16px",
-          fontSize:"12px",
+          fontSize: "12px",
           bgcolor: loading
             ? "grey[200]"
             : expenseShare.paid
