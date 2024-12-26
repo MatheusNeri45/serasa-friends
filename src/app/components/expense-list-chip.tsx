@@ -42,7 +42,7 @@ export default function ExpenseChip({
     const response = await res.json();
     if (res.ok) {
       onEditExpense(response.message, false);
-      setTimeout(() => setLoading(false), 2000);
+      setTimeout(() => setLoading(false), 4000);
     } else {
       setAlert({ status: true, message: response.message });
     }
