@@ -8,10 +8,26 @@ import {
   TextField,
   Button,
   Link,
+  keyframes,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import CustomAlert from "../components/alert";
+
+const dotsAnimation = keyframes`
+  0% {
+    content: "";
+  }
+  33% {
+    content: ".";
+  }
+  66% {
+    content: "..";
+  }
+  100% {
+    content: "...";
+  }
+`;
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,14 +36,16 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [alert, setAlert] = useState({ status: false, message: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     fetchUser();
   };
 
   const fetchUser = async () => {
-    const fullName = name + " " + surName
+    const fullName = name + " " + surName;
     const res = await fetch("api/createUser", {
       method: "POST",
       headers: {
@@ -92,9 +110,24 @@ export default function RegisterPage() {
               variant="contained"
               size="large"
               type="submit"
-              sx={{ mt: 3 }}
+              sx={{
+                py: 2,
+                bgcolor: "primary.main",
+                "&:hover": {
+                  bgcolor: "primary.dark",
+                },
+                ...(loading && {
+                  "&::after": {
+                    content: '""',
+                    display: "inline-block",
+                    animation: `${dotsAnimation} 1.5s infinite steps(3)`,
+                  },
+                }),
+                boxShadow: "0 4px 14px 0 rgba(27, 67, 50, 0.4)",
+              }}
+              disabled={loading}
             >
-              Criar Conta
+              {loading ? "Criando conta" : "Criar conta"}
             </Button>
           </form>
           <Box sx={{ mt: 2, textAlign: "center" }}>
