@@ -70,7 +70,7 @@ export default function Summary({ groups }: SummaryGroupsProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const fetchGroupBalance = async () => {
-    const res = await fetch("/api/getUserBalances", {});
+    const res = await fetch("/api/getUserGroupBalances", {});
     if (res.ok) {
       const response = await res.json();
       setGroupBalances(response.balances);

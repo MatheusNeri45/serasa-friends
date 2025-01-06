@@ -163,7 +163,7 @@ export default function ExpensesList({
       {expenses
         ?.sort(
           (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )
         .map((expense, index) => (
           <Box key={expense.id}>

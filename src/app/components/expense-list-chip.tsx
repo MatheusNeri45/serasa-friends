@@ -81,9 +81,9 @@ export default function ExpenseChip({
               : alpha(theme.palette.secondary.main, 0.5)
             : alpha(theme.palette.error.light, 0.5),
           fontWeight: 500,
-          color: "white",
+          color: "grey[200]",
           "&:hover": {
-            color: "white",
+            color: "grey[200]",
             bgcolor: expenseShare.paid
               ? expenseShare.amount == 0
                 ? "grey[200]"

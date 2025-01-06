@@ -29,6 +29,8 @@ import {
 import Summary from "../components/dashboard/summary";
 import UserMenu from "../components/user-menu";
 import DashboardSkeleton from "../components/skeletons/dashboard-skeleton";
+import ViewToggle from "../components/dashboard/toggle-view";
+import FriendsBalance from "../components/dashboard/summary-friends";
 
 interface ExtendedExpenseShare extends ExpenseShare {
   debtor: User;
@@ -48,11 +50,14 @@ interface ExtendedGroupMember extends GroupMember {
   user: { id: number; name: string; email: string };
 }
 
+export type SummaryViewType = "groups" | "people";
+
 export default function DashboardPage() {
   const router = useRouter();
   const [createGroupOpen, setCreateGroupOpen] = useState(false);
   const [groups, setGroups] = useState<ExtendedGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<SummaryViewType>("groups");
 
   useEffect(() => {
     fetchGroupsList();
@@ -382,7 +387,20 @@ export default function DashboardPage() {
             </Grid2>
           ))}
         </Grid2>
-        {groups.length > 0 && <Summary groups={groups} />}
+        {groups.length > 0 && (
+          <Grid2 sx={{ mt: 4 }}>
+            <Grid2 justifyItems={"center"}>
+              <ViewToggle view={view} onViewChange={setView} />
+            </Grid2>
+            <Grid2>
+              {view === "groups" ? (
+                <Summary groups={groups} />
+              ) : (
+                <FriendsBalance />
+              )}
+            </Grid2>
+          </Grid2>
+        )}
       </Container>
 
       <CreateGroupModal

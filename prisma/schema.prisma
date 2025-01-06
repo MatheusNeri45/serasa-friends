@@ -12,16 +12,15 @@ model User {
   email         String         @unique
   name          String
   password      String
-  pixKey        String?       // Changed from chavePix for consistency
+  pixKey        String?       
   phoneNumber   String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
-  // Relations
   expenses      Expense[]      @relation("UserExpenses")
   ownedGroups   Group[]        @relation("GroupOwner")
-  memberships   GroupMember[]  // Through table for group memberships
-  debtorIn      ExpenseShare[] // Through table for expense shares
+  memberships   GroupMember[]  
+  debtorIn      ExpenseShare[] 
   resetPasswordToken String?
 
   @@index([email])
@@ -35,10 +34,10 @@ model Group {
   updatedAt   DateTime      @updatedAt
   ownerId     Int
 
-  // Relations
+  
   owner       User          @relation("GroupOwner", fields: [ownerId], references: [id])
   expenses    Expense[]
-  members     GroupMember[] // Through table for members
+  members     GroupMember[] 
   status      GroupStatus @default(ACTIVE)
 
   @@index([ownerId])
@@ -50,7 +49,7 @@ model GroupMember {
   userId    Int
   joinedAt  DateTime @default(now())
 
-  // Relations
+
   group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -62,19 +61,19 @@ model GroupMember {
 model Expense {
   id          Int            @id @default(autoincrement())
   description String
-  amount      Float          // Changed from value for clarity
-  paidAmount  Float          @default(0) // Changed from valuePaid
+  amount      Float         
+  paidAmount  Float          @default(0)
   category    String
   status      ExpenseStatus  @default(PENDING)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   splitType   String
   
-  // Foreign keys
-  payerId     Int           // Changed from userId
+  
+  payerId     Int
   groupId     Int
 
-  // Relations
+  
   payer       User          @relation("UserExpenses", fields: [payerId], references: [id])
   group       Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
   shares      ExpenseShare[] 
@@ -86,16 +85,16 @@ model Expense {
 
 model ExpenseShare {
   id        Int      @id @default(autoincrement())
-  amount    Float    // Changed from value
+  amount    Float    
   paid      Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Foreign keys
+  
   expenseId Int
-  debtorId  Int     // Changed from participantId
+  debtorId  Int     
 
-  // Relations
+  
   expense   Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
   debtor    User    @relation(fields: [debtorId], references: [id])
 
