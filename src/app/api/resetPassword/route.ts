@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
     const token = jwt.sign(
       { userId: userFound.id },
       JWT_SECRET,
-      { expiresIn: "24h" }
+      { expiresIn: "365d" }
     );
 
     const resetLink = `${process.env.NEXT_PUBLIC_BASE_URL}/update-password-forms?token=${token}`;

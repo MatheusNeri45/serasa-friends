@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       );
       const userId = userFound.id;
       if (passwordMatch) {
-        const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "365d" });
         const cookieOptions = {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
